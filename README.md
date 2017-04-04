@@ -7,11 +7,11 @@ This software is provided "as is" without any kind of warranty or support. Use i
 
 # Dependencies
 
-JDA (Java Discord API)
+JDA (Java Discord API)<br />
 https://github.com/DV8FromTheWorld/JDA
 
-lavaplayer
+lavaplayer<br/>
 https://github.com/sedmelluq/lavaplayer
 
-Jeval
+Jeval<br />
 http://jeval.sourceforge.net/
