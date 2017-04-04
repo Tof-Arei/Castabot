@@ -37,7 +37,6 @@ public class LoopHandler implements TrackMarkerHandler {
     
     private void loopTrack() {
         player.playTrack(track.makeClone());
-        //track.setPosition(0);
         track.setMarker(new TrackMarker(marker, this));
     }
     
