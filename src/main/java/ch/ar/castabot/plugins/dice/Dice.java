@@ -41,19 +41,12 @@ public class Dice extends Plugin {
         ArrayList<String> lstDice = new ArrayList<>();
         String d = "+";
         for (char ch : str.toCharArray()) {
-            switch (ch) {
-                case '+':
-                    lstDice.add(d);
-                    d = "";
-                    d += ch;
-                    break;
-                case '-':
-                    lstDice.add(d);
-                    d = "";
-                    d += ch;
-                    break;
-                default:
-                    d += ch;
+            if (ch == '+' || ch == '-') {
+                lstDice.add(d);
+                d = "";
+                d += ch;
+            } else {
+                d += ch;
             }
         }
         lstDice.add(d);
