@@ -37,7 +37,7 @@ public class Dice extends Plugin {
     
     @Override
     public PluginResponse run() throws PluginException {
-        String str = args[0].replace("!", "");
+        String str = args[0].replaceAll("D", "d");
         ArrayList<String> lstDice = new ArrayList<>();
         String d = "+";
         for (char ch : str.toCharArray()) {
