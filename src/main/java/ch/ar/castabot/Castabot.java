@@ -33,6 +33,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -160,50 +161,52 @@ public class Castabot {
             }
         } 
         
-        PluginResponse response = null;
+        ArrayList<PluginResponse> lstResponse = new ArrayList<>();
         // Check if the command exists
         JSONObject permCommands = settings.getJSONObject("commands");
         if (permCommands.has(command)) {
             // Check if the user is allowed to use the command
             if (checkPermission(message.getAuthor(), command, args)) {
-                response = executeCommand(command, args, message.getTextChannel(), message.getAuthor());
+                lstResponse = executeCommand(command, args, message.getTextChannel(), message.getAuthor());
             } else {
                 sendPrivateMessage(message.getAuthor(), "<@"+message.getAuthor().getId()+"> Vous ne pouvez pas utiliser la commande ["+command+"].");
                 return;
             }
         } else {
-            sendPrivateMessage(message.getAuthor(), "<@"+message.getAuthor().getId()+"> La commande ["+command+"] n'éxiste pas. Commande [help] disponible.");
+            //sendPrivateMessage(message.getAuthor(), "<@"+message.getAuthor().getId()+"> La commande ["+command+"] n'éxiste pas. Commande [help] disponible.");
             return;
         }
         
-        if (response != null) {
-            if (isSecret || message.getPrivateChannel() != null) {
-                if (response.getFile() != null) {
-                    Message msg= null;
-                    if (response.getText() != null) {
-                        MessageBuilder msgBuild = new MessageBuilder();
-                        msgBuild.append("<@"+message.getAuthor().getId()+"> "+response.getText());
-                        msg = msgBuild.build();
-                    }
-                    sendPrivateFile(message.getAuthor(), response.getFile(), msg);
-                } else {
-                    sendPrivateMessage(message.getAuthor(), "<@"+message.getAuthor().getId()+"> "+response.getText());
-                }
-            } else {
-                if (response.getFile() != null) {
-                    Message msg= null;
-                    if (response.getText() != null) {
-                        MessageBuilder msgBuild = new MessageBuilder();
-                        msgBuild.append("<@"+message.getAuthor().getId()+"> "+response.getText());
-                        msg = msgBuild.build();
-                    }
-                    try {
-                        message.getChannel().sendFile(response.getFile(), msg).queue();
-                    } catch (IOException ex) {
-                        Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
+        if (!lstResponse.isEmpty()) {
+            for (PluginResponse response : lstResponse) {
+                if (isSecret || message.getPrivateChannel() != null) {
+                    if (response.getFile() != null) {
+                        Message msg= null;
+                        if (response.getText() != null) {
+                            MessageBuilder msgBuild = new MessageBuilder();
+                            msgBuild.append("<@"+response.getTarget().getId()+"> "+response.getText());
+                            msg = msgBuild.build();
+                        }
+                        sendPrivateFile(response.getTarget(), response.getFile(), msg);
+                    } else {
+                        sendPrivateMessage(response.getTarget(), "<@"+response.getTarget().getId()+"> "+response.getText());
                     }
                 } else {
-                    message.getChannel().sendMessage("<@"+message.getAuthor().getId()+"> "+response.getText()).queue();
+                    if (response.getFile() != null) {
+                        Message msg= null;
+                        if (response.getText() != null) {
+                            MessageBuilder msgBuild = new MessageBuilder();
+                            msgBuild.append("<@"+response.getTarget().getId()+"> "+response.getText());
+                            msg = msgBuild.build();
+                        }
+                        try {
+                            message.getChannel().sendFile(response.getFile(), msg).queue();
+                        } catch (IOException ex) {
+                            Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    } else {
+                        message.getChannel().sendMessage("<@"+response.getTarget().getId()+"> "+response.getText()).queue();
+                    }
                 }
             }
         }
@@ -312,8 +315,8 @@ public class Castabot {
     /*
     * Actual command execution.
     */
-    private PluginResponse executeCommand(String command, String[] args, TextChannel source, User user) {
-        PluginResponse ret = null;
+    private ArrayList<PluginResponse> executeCommand(String command, String[] args, TextChannel source, User user) {
+        ArrayList<PluginResponse> ret = new ArrayList<>();
         // Heres comes the ugly bit
         try {
             if (args == null) {
@@ -330,20 +333,21 @@ public class Castabot {
             if (args.length > 0) {
                 if (args[0].equals("-h") || args[0].equals("--help")) {
                     JSONObject permCommands = settings.getJSONObject("commands");
-                    ret = new PluginResponse(permCommands.getString(command));
+                    ret.add(new PluginResponse(permCommands.getString(command), user));
                 }
             }
-            if (ret == null) {
+            if (ret.isEmpty()) {
                 ret = instance.run();
                 if (ret == null) {
                     throw new PluginException("PLG-?", "Erreur durant l'exécution de la commande ["+command+"].");
                 }
             }
         } catch (PluginException e) {
-            ret = new PluginResponse(e.getMessage());
+            ret.add(new PluginResponse(e.getMessage(), user));
         } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
         return ret;
     }
     

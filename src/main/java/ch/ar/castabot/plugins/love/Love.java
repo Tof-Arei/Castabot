@@ -18,6 +18,7 @@ package ch.ar.castabot.plugins.love;
 import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
+import java.util.ArrayList;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.TextChannel;
 
@@ -43,13 +44,13 @@ public class Love extends Plugin {
     }
 
     @Override
-    public PluginResponse run() throws PluginException {
-        String ret = null;
+    public ArrayList<PluginResponse> run() throws PluginException {
+        ArrayList<PluginResponse> ret = new ArrayList<>();
         switch (args[0]) {
             case "love":
-                ret = love();
+                ret.add(new PluginResponse(love(), user));
                 break;
         }
-        return new PluginResponse(ret);
+        return ret;
     }
 }

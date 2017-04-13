@@ -19,6 +19,7 @@ import ch.ar.castabot.CastabotClient;
 import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
+import java.util.ArrayList;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.TextChannel;
 
@@ -56,8 +57,8 @@ public class Audio extends Plugin {
     }
     
     @Override
-    public PluginResponse run() throws PluginException {
-        String ret = "Commande audio: [" + args[0] + "]";
+    public ArrayList<PluginResponse> run() throws PluginException {
+        ArrayList<PluginResponse> ret = new ArrayList<>();
         switch (args[0]) {
             case "play":
                 play();
@@ -78,7 +79,7 @@ public class Audio extends Plugin {
                 stop();
                 break;
         }
-        
-        return new PluginResponse(ret);
+        ret.add(new PluginResponse("Commande audio: [" + args[0] + "]", user));
+        return ret;
     }
 }

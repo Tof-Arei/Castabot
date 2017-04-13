@@ -36,7 +36,8 @@ public class Dice extends Plugin {
     }
     
     @Override
-    public PluginResponse run() throws PluginException {
+    public ArrayList<PluginResponse> run() throws PluginException {
+        ArrayList<PluginResponse> ret = new ArrayList<>();
         String str = args[0].replaceAll("D", "d");
         ArrayList<String> lstDice = new ArrayList<>();
         String d = "+";
@@ -81,8 +82,9 @@ public class Dice extends Plugin {
         } catch (EvaluationException ex) {
             throw new PluginException("DICE1", "[" + args[0] + "] n'est pas un jet valide.");
         }
-        
+
         DecimalFormat df = new DecimalFormat("###.#");
-        return new PluginResponse("Lancer: {"+retStr+"} \r\n Total: ["+df.format(Double.parseDouble(total))+"]");
+        ret.add(new PluginResponse("Lancer: {"+retStr+"} \r\n Total: ["+df.format(Double.parseDouble(total))+"]", user));
+        return ret;
     }
 }

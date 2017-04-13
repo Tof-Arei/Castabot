@@ -28,6 +28,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.TextChannel;
 import org.json.JSONArray;
@@ -124,6 +126,21 @@ public class Cards extends Plugin {
         return ret;
     }
     
+    private ArrayList<PluginResponse> drawAll() throws PluginException, FileNotFoundException {
+        ArrayList<PluginResponse> ret = new ArrayList<>();
+        
+        List<Member> lstMember = new ArrayList(source.getMembers());
+        Collections.shuffle(lstMember);
+        for (Member member : lstMember) {
+            if (!member.getUser().isBot() && member.getOnlineStatus() == OnlineStatus.ONLINE) {
+                Card card = draw();
+                ret.add(new PluginResponse(card.print(), card.getFile(), member.getUser()));
+            }
+        }
+        
+        return ret;
+    }
+    
     private void shuffle() throws PluginException {
         if (lstCardsIn.size() > 0 || lstCardsOut.size() > 0) {
             lstCardsIn.addAll(lstCardsOut);
@@ -135,8 +152,8 @@ public class Cards extends Plugin {
     }
 
     @Override
-    public PluginResponse run() throws PluginException {
-        String ret = null;
+    public ArrayList<PluginResponse> run() throws PluginException {
+        ArrayList<PluginResponse> ret = new ArrayList<>();
         Card card = null;
         try {
             switch (args[0]) {
@@ -146,27 +163,28 @@ public class Cards extends Plugin {
                     } else {
                         init("default");
                     }
-                    ret = "Jeu de cartes initié avec le deck ["+deck+"] et mélangé.";
+                    ret.add(new PluginResponse("Jeu de cartes initié avec le deck ["+deck+"] et mélangé.", user));
                     save();
                     break;
                 case "draw" :
                     card = draw();
-                    ret = card.print();
+                    ret.add(new PluginResponse(card.print(), card.getFile(), user));
+                    save();
+                    break;
+                case "drawall":
+                    ret = drawAll();
                     save();
                     break;
                 case "shuffle" :
                     shuffle();
-                    ret = "Jeu de cartes mélangé.";
+                    ret.add(new PluginResponse("Jeu de cartes mélangé.", user));
                     save();
                     break;
             }
         } catch (IOException ex) {
             Logger.getLogger(Cards.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if (card != null) {
-            return new PluginResponse(ret, card.getFile());
-        } else {
-            return new PluginResponse(ret);
-        }
+        
+        return ret;
     }
 }

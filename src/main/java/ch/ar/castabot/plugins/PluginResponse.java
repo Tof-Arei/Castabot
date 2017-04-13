@@ -16,7 +16,7 @@
 package ch.ar.castabot.plugins;
 
 import java.io.File;
-
+import net.dv8tion.jda.core.entities.User;
 /**
  *
  * @author Arei
@@ -24,18 +24,22 @@ import java.io.File;
 public class PluginResponse {
     private String text;
     private File file;
+    private final User target;
     
-    public PluginResponse(String text, File file) {
+    public PluginResponse(String text, File file, User target) {
         this.text = text;
         this.file = file;
+        this.target = target;
     }
     
-    public PluginResponse(String text) {
+    public PluginResponse(String text, User target) {
         this.text = text;
+        this.target = target;
     }
     
-    public PluginResponse(File file) {
+    public PluginResponse(File file, User target) {
         this.file = file;
+        this.target = target;
     }
 
     public String getText() {
@@ -44,5 +48,9 @@ public class PluginResponse {
 
     public File getFile() {
         return file;
+    }
+    
+    public User getTarget() {
+        return target;
     }
 }

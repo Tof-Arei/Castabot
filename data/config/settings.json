@@ -4,7 +4,7 @@
         ["secret", "&"]
     ],
     "commands": {
-        "audio": "Jouer des fichiers audio sur le canal vocal. Arguments \r\n play <url> | pause/resume | loop | stop \r\n Exemple: !audio play <youtube_id>",
+        "audio": "Jouer des fichiers audio sur le canal vocal. \r\n Arguments: play <url> | pause/resume | loop | stop \r\n Exemple: !audio play <youtube_id>",
         "cards": "Interagir avec le jeu de cartes virtuel. \r\n Arguments: init <deck> | draw | shuffle \r\n Exemple: !cards draw",
         "dice": "Tirer un ou plusieurs dés virtuels. \r\n Exemple: !dice 2d6+1d10+3",
         "help": "Informations sur les commandes.",
@@ -15,13 +15,14 @@
     },
    "cmd_shorts": [
         ["audio", "(play) (.+)"],
-        ["audio", "(pause)"],
-        ["audio", "(resume)"],
-        ["audio", "(loop)"],
-        ["audio", "(skip)"],
-        ["audio", "(stop)"],
-        ["cards", "(draw)"],
-        ["cards", "(shuffle)"],
+        ["audio", "(^pause$)"],
+        ["audio", "(^resume$)"],
+        ["audio", "(^loop$)"],
+        ["audio", "(^skip$)"],
+        ["audio", "(^stop$)"],
+        ["cards", "(^draw$)"],
+        ["cards", "(^drawall$)"],
+        ["cards", "(^shuffle$)"],
         ["dice", "((?:\\-?\\+?[0-9]{1,2}[dD][0-9]{1,3}|\\-?\\+?[0-9]{1,3}){1,})"],
         ["love", "(love)"]
     ],
