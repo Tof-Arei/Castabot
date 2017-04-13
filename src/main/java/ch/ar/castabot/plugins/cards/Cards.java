@@ -15,6 +15,7 @@
  */
 package ch.ar.castabot.plugins.cards;
 
+import ch.ar.castabot.CastabotClient;
 import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
@@ -130,12 +131,18 @@ public class Cards extends Plugin {
         ArrayList<PluginResponse> ret = new ArrayList<>();
         
         List<Member> lstMember = new ArrayList(source.getMembers());
-        Collections.shuffle(lstMember);
-        for (Member member : lstMember) {
-            if (!member.getUser().isBot() && member.getOnlineStatus() == OnlineStatus.ONLINE) {
-                Card card = draw();
-                ret.add(new PluginResponse(card.print(), card.getFile(), member.getUser()));
+        
+        if (lstCardsIn.size() >= lstMember.size()) {
+            Collections.shuffle(lstMember);
+            for (Member member : lstMember) {
+                if (!member.getUser().isBot() && member.getOnlineStatus() == OnlineStatus.ONLINE) {
+                    Card card = draw();
+                    //ret.add(new PluginResponse(card.print(), card.getFile(), member.getUser()));
+                    ret.add(new PluginResponse(card.print()+"\r\n"+CastabotClient.getCastabot().getConfig().getProperty("web_root")+"files/cards/default/"+card+".png", member.getUser()));
+                }
             }
+        } else {
+            throw new PluginException("CARDS-4", "Plus assez de cartes pour tout le monde. Veuillez mélanger.");
         }
         
         return ret;
@@ -168,7 +175,8 @@ public class Cards extends Plugin {
                     break;
                 case "draw" :
                     card = draw();
-                    ret.add(new PluginResponse(card.print(), card.getFile(), user));
+                    //ret.add(new PluginResponse(card.print(), card.getFile(), user));
+                    ret.add(new PluginResponse(card.print()+"\r\n"+CastabotClient.getCastabot().getConfig().getProperty("web_root")+"files/cards/default/"+card+".png", user));
                     save();
                     break;
                 case "drawall":

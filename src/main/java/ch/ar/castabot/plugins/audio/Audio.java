@@ -25,7 +25,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 
 /**
  *
- * @author christophe
+ * @author Arei
  */
 public class Audio extends Plugin {    
     public Audio(String[] args, TextChannel source, User user) {

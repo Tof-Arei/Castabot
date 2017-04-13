@@ -26,7 +26,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.SplittableRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.dv8tion.jda.core.entities.User;
@@ -39,14 +38,22 @@ import net.sourceforge.jeval.Evaluator;
  * @author Arei
  */
 public class Dice extends Plugin {
+    private Rules rules = new Rules("default");
+    
+    
     public Dice(String[] args, TextChannel source, User user) {
         super(args, source, user);
+    }
+    
+    private void rules(String rules) {
+        this.rules = new Rules(rules);
     }
     
     private int generateWebInteger(int min, int max) {
         int ret = 0;
         try {
-            String strUrl = CastabotClient.getCastabot().getConfig().getProperty("rand_url").replace("$min", String.valueOf(min)).replace("$max", String.valueOf(max));
+            String strUrl = CastabotClient.getCastabot().getConfig().getProperty("web_root") + "rand.php?min=" + String.valueOf(min) + "&max=" + String.valueOf(max);
+            strUrl = strUrl.replace("$min", String.valueOf(min)).replace("$max", String.valueOf(max));
             URL url = new URL(strUrl);
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
             
@@ -64,8 +71,7 @@ public class Dice extends Plugin {
         return ret;
     }
     
-    @Override
-    public ArrayList<PluginResponse> run() throws PluginException {
+    private String roll() throws PluginException {
         ArrayList<PluginResponse> ret = new ArrayList<>();
         String str = args[0].replaceAll("D", "d");
         ArrayList<String> lstDice = new ArrayList<>();
@@ -114,7 +120,25 @@ public class Dice extends Plugin {
         }
 
         DecimalFormat df = new DecimalFormat("###.#");
-        ret.add(new PluginResponse("Lancer: {"+retStr+"} \r\n Total: ["+df.format(Double.parseDouble(total))+"]", user));
+        return "Lancer: {"+retStr+"} \r\n Total: ["+df.format(Double.parseDouble(total))+"]";
+    }
+    
+    @Override
+    public ArrayList<PluginResponse> run() throws PluginException {
+        ArrayList<PluginResponse> ret = new ArrayList<>();
+        switch (args[0]) {
+            case "rules":
+                if (args.length > 1) {
+                    rules(args[1]);
+                } else {
+                    rules("default");
+                }
+                
+                ret.add(new PluginResponse("Activation des règles de roll ["+rules.getName()+"].", user));
+                break;
+            default:
+                ret.add(new PluginResponse(roll(), user));
+        }
         return ret;
     }
 }
