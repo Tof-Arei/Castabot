@@ -15,12 +15,20 @@
  */
 package ch.ar.castabot.plugins.dice;
 
+import ch.ar.castabot.CastabotClient;
 import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.SplittableRandom;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.sourceforge.jeval.EvaluationException;
@@ -33,6 +41,27 @@ import net.sourceforge.jeval.Evaluator;
 public class Dice extends Plugin {
     public Dice(String[] args, TextChannel source, User user) {
         super(args, source, user);
+    }
+    
+    private int generateWebInteger(int min, int max) {
+        int ret = 0;
+        try {
+            String strUrl = CastabotClient.getCastabot().getConfig().getProperty("rand_url").replace("$min", String.valueOf(min)).replace("$max", String.valueOf(max));
+            URL url = new URL(strUrl);
+            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+            
+            String inputLine;
+            while ((inputLine = in.readLine()) != null) {
+                ret = Integer.parseInt(inputLine);
+            }
+            in.close();
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(Dice.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Dice.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return ret;
     }
     
     @Override
@@ -61,7 +90,8 @@ public class Dice extends Plugin {
                retStr += "["+rawDice+"=";
                 for (int i = 0; i < Integer.parseInt(dice[0]); i++) {
                     try {
-                        int val = (new SplittableRandom()).nextInt(Integer.parseInt(dice[1])) + 1;
+                        //int val = (new SplittableRandom()).nextInt(Integer.parseInt(dice[1])) + 1;
+                        int val = generateWebInteger(1, Integer.parseInt(dice[1]));
                         str += bound+val;
                         retStr += "("+val+")";
                     } catch (IllegalArgumentException e) {
