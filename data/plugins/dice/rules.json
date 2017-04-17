@@ -4,8 +4,6 @@
         "rolltypes": [],
         "critical_failure": "{IF;{dice_1:val};==;1;TRUE;FALSE}",
         "critical_success": "{IF;{{dice_1:val};==;{dice_1:max};TRUE;FALSE}}",
-        "explode": false,
-        "explode_action": null,
         "total": null
     },
     "savage": {
@@ -15,6 +13,8 @@
                 "name": "action",
                 "desc": "Jet d'action/dégâts.",
                 "default": true,
+                "explode": false,
+                "explode_action": null,
                 "arg": "a",
                 "format": "",
                 "action": "{SUM;{dice_1:val};{dice_2:val}}"
@@ -23,6 +23,8 @@
                 "name": "hit",
                 "desc": "Jet de toucher.",
                 "default": false,
+                "explode": true,
+                "explode_action": "{IF;{dice_1:val};==;{dice_1:max};{IF;{dice_2:val};==;{dice_2:max};{reroll;{dice_1};{dice_2}};{reroll;{dice_1}}};{IF;{dice_2:val};==;{dice_2:max};{reroll;{dice_2}};FALSE}}",
                 "arg": "h",
                 "format": "(?:1[dD][0-9]{1,2}\\+1[dD]6)",
                 "action": "{IF;{dice_1:val};>;{dice_2:val};{dice_1:val};{dice_2:val}}"
@@ -31,6 +33,8 @@
                 "name": "token",
                 "desc": "Jet de tokens.",
                 "default": false,
+                "explode": false,
+                "explode_action": null,
                 "arg": "t",
                 "format": "",
                 "action": "{roll;2d4;2d4;2d4}"
@@ -38,8 +42,6 @@
         ],
         "critical_failure": "{AND;{dice_1:val};==;1;{dice_2:val};==;1}",
         "critical_success": "{OR;{dice_1:val};==;{dice_1:max};{dice_2:val};==;{dice_2:max}}",
-        "explode": true,
-        "explode_action": "reroll",
         "total": "{IF;{dice_groups};>;1;{SUM;{dice_1:val};{dice_2:val}};{dice_1:val}}"
     }
 }
