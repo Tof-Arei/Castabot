@@ -31,7 +31,7 @@
                 "name": "token",
                 "desc": "Jet de tokens.",
                 "default": false,
-                "arg": "h",
+                "arg": "t",
                 "format": "",
                 "action": "{roll;2d4;2d4;2d4}"
             }
