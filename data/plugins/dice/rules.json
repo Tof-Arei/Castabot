@@ -1,47 +1,60 @@
 {
     "default": {
         "dices": [],
-        "rolltypes": [],
-        "critical_failure": "{IF;{dice_1:val};==;1;TRUE;FALSE}",
-        "critical_success": "{IF;{{dice_1:val};==;{dice_1:max};TRUE;FALSE}}",
-        "total": null
+        "rolltypes": [
+            {
+                "name": "default",
+                "desc": "Jet par défaut.",
+                "default": true,
+                "critical_failure": "{IF;{DICE;value;0};==;1;TRUE;FALSE}",
+                "critical_success": "{IF;{DICE;value;0};==;{DICE;max;0};TRUE;FALSE}",
+                "explode": false,
+                "explode_action": "",
+                "arg": "a",
+                "format": "",
+                "total": ""
+            }
+        ]
     },
     "savage": {
-        "dices": ["d4", "d6", "d8", "d10", "d12"],
+        "dices": ["Xd4", "Xd6", "Xd8", "Xd10", "Xd12"],
         "rolltypes": [
             {
                 "name": "action",
                 "desc": "Jet d'action/dégâts.",
                 "default": true,
+                "critical_failure": "",
+                "critical_success": "",
                 "explode": false,
-                "explode_action": null,
+                "explode_action": "",
                 "arg": "a",
                 "format": "",
-                "action": "{SUM;{dice_1:val};{dice_2:val}}"
+                "total": ""
             },
             {
                 "name": "hit",
                 "desc": "Jet de toucher.",
                 "default": false,
+                "critical_failure": "{AND;{DICE;value;0};==;1;{DICE;value;1};==;1}",
+                "critical_success": "{OR;{DICE;value;0};==;{DICE;max;0};{DICE;value;1};==;{DICE;max;1}}",
                 "explode": true,
-                "explode_action": "{IF;{dice_1:val};==;{dice_1:max};{IF;{dice_2:val};==;{dice_2:max};{reroll;{dice_1};{dice_2}};{reroll;{dice_1}}};{IF;{dice_2:val};==;{dice_2:max};{reroll;{dice_2}};FALSE}}",
+                "explode_action": "{IF;{DICE;value;0};==;{DICE;max;0};{IF;{DICE;value;1};==;{DICE;max;1};{DICE;reroll;0;1};{DICE;reroll;0}};{IF;{DICE;value;1};==;{DICE;max;1};{DICE;reroll;1};FALSE}}",
                 "arg": "h",
                 "format": "(?:1[dD][0-9]{1,2}\\+1[dD]6)",
-                "action": "{IF;{dice_1:val};>;{dice_2:val};{dice_1:val};{dice_2:val}}"
+                "total": "{IF;{DICE;value;0};>;{DICE;value;1};{DICE;value;0};{DICE;value;1}}"
             },
             {
                 "name": "token",
                 "desc": "Jet de tokens.",
                 "default": false,
+                "critical_failure": "",
+                "critical_success": "",
                 "explode": false,
-                "explode_action": null,
+                "explode_action": "",
                 "arg": "t",
                 "format": "",
-                "action": "{roll;2d4;2d4;2d4}"
+                "total": "{DICE;roll;2d4;2d4;2d4}"
             }
-        ],
-        "critical_failure": "{AND;{dice_1:val};==;1;{dice_2:val};==;1}",
-        "critical_success": "{OR;{dice_1:val};==;{dice_1:max};{dice_2:val};==;{dice_2:max}}",
-        "total": "{IF;{dice_groups};>;1;{SUM;{dice_1:val};{dice_2:val}};{dice_1:val}}"
+        ]
     }
 }
