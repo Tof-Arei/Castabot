@@ -36,7 +36,7 @@ public class Help extends Plugin {
         String ret = "Commandes disponibles: \r\n";
         ret += "- audio : Permet de jouer de la musique sur le canal audio General. \r\n";
         ret += "- cards : Permet d'utiliser un jeu de cartes virtuel. \r\n";
-        ret += "- dice : Permet d'utiliser des dés virtuels. \r\n";
+        ret += "- roll : Permet d'utiliser des dés virtuels. \r\n";
         ret += "- help : affice la liste des commandes.  \r\n";
         ret += "Nb: Utiliser une commande avec l'argument -h (ou --help) permet d'afficher les informations sur la commande. \r\n";
         ret += "Utiliser le caractère & (ou lancer la commande via message privé) permet d'effectuer un lancement de commande secret. \r\n";

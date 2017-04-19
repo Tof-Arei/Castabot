@@ -5,8 +5,8 @@
     ],
     "commands": {
         "audio": "Jouer des fichiers audio sur le canal vocal. \r\n Arguments: play <url> | pause/resume | loop | stop \r\n Exemple: !audio play <youtube_id>",
-        "cards": "Interagir avec le jeu de cartes virtuel. \r\n Arguments: init <deck> | draw | shuffle \r\n Exemple: !cards draw",
-        "dice": "Tirer un ou plusieurs dés virtuels. \r\n Exemple: !dice 2d6+1d10+3",
+        "cards": "Interagir avec le jeu de cartes virtuel. \r\n Arguments: deck <deck> | draw | shuffle \r\n Exemple: !cards draw",
+        "roll": "Tirer un ou plusieurs dés virtuels. \r\n Exemple: !dice 2d6+1d10+3",
         "help": "Informations sur les commandes.",
         "love": "Commande réservée à Kyuuji."
     },
@@ -20,18 +20,19 @@
         ["audio", "(^loop$)"],
         ["audio", "(^skip$)"],
         ["audio", "(^stop$)"],
+        ["cards", "(deck) (.+)"],
         ["cards", "(^draw$)"],
         ["cards", "(^drawall$)"],
         ["cards", "(^shuffle$)"],
-        ["dice", "((?:\\-?\\+?[0-9]{1,2}[dD][0-9]{1,3}|\\-?\\+?[0-9]{1,3}){1,})"],
-        ["dice", "(^rules$)"],
-        ["love", "(love)"]
+        ["roll", "((?:\\-?\\+?[0-9]{1,2}[dD][0-9]{1,3}|\\-?\\+?[0-9]{1,3}){1,})"],
+        ["roll", "(rules) (.+)"],
+        ["love", "(^love$)"]
     ],
     "permissions": {
         "global":{
             "audio": true,
             "cards": true,
-            "dice": true,
+            "roll": true,
             "help": true,
             "love": true
         }
@@ -50,9 +51,12 @@
                 "cards": {
                     "draw": true,
                     "shuffle": true,
+                    "deck": true
+                },
+                "roll": {
+                    "default": true,
                     "init": true
                 },
-                "dice": true,
                 "help": true
             },
             "MJ": {
@@ -67,9 +71,12 @@
                 "cards": {
                     "draw": true,
                     "shuffle": true,
+                    "deck": true
+                },
+                "roll": {
+                    "default": true,
                     "init": true
                 },
-                "dice": true,
                 "help": true
             },
             "PJ": {
@@ -84,9 +91,12 @@
                 "cards": {
                     "draw": true,
                     "shuffle": true,
-                    "init": true
+                    "deck": true
                 },
-                "dice": true,
+                "roll": {
+                    "default": true,
+                    "init": false
+                },
                 "help": true
             },
             "@everyone": {
@@ -101,9 +111,12 @@
                 "cards": {
                     "draw": false,
                     "shuffle": false,
+                    "deck": false
+                },
+                "roll": {
+                    "default": true,
                     "init": false
                 },
-                "dice": true,
                 "help": true
             }
         },

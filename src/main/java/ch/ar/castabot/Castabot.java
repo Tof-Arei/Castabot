@@ -16,8 +16,8 @@
  */
 package ch.ar.castabot;
 
-import ch.ar.castabot.audio.MusicManager;
-import ch.ar.castabot.audio.LoadResultHandler;
+import ch.ar.castabot.env.audio.MusicManager;
+import ch.ar.castabot.env.audio.LoadResultHandler;
 import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
@@ -31,10 +31,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -52,8 +56,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * @todo better entropy options; choose between pseudo-random and true-random
- * @todo better permissions (add permissions by group/user to global command permissions)
+ * @todo replace cards.json file Using PluginSettings object
+ * @todo dice rules
+ * @todo actual permissions (add permissions by group/user to global command permissions)
  * @author Arei
  */
 public class Castabot {
@@ -63,6 +68,8 @@ public class Castabot {
     
     private AudioPlayerManager playerManager;
     private Map<Long, MusicManager> musicManagers;
+    
+    private PluginSettings pluginSetting = new PluginSettings();
 
     public Castabot() {
          try {
@@ -425,5 +432,94 @@ public class Castabot {
     
     public AudioPlayerManager getPlayerManager() {
         return playerManager;
+    }
+    
+    public PluginSettings getPluginSettings() {
+        return pluginSetting;
+    }
+    
+    public static List<Class<?>> getClasses(String packageName, ClassLoader loader) throws ClassNotFoundException {
+         // Create the list that will hold the testable classes
+         List<Class<?>> ret = new ArrayList<>();
+         // If we don't have a class loader, get one.
+         if (loader == null) {
+             loader = Thread.currentThread().getContextClassLoader();
+         }
+         // Convert the package path to file path
+         String path = packageName.replace('.', '/');
+         // Try to get all of nested directories.
+         try {
+            // Get all of the resources for the given path
+            Enumeration<URL> res = loader.getResources(path);
+            // While we have directories to look at, recursively
+            // get all their classes.
+            while (res.hasMoreElements()) {
+                // Get the file path the the directory
+                String dirPath = URLDecoder.decode(res.nextElement().getPath(), "UTF-8");
+                // Make a file handler for easy managing
+                File dir = new File(dirPath);
+                // Check every file in the directory, if it's a
+                // directory, recursively add its viable files
+                for (File file : dir.listFiles()) {
+                    if (file.isDirectory()) 
+                        ret.addAll(getClasses(packageName + '.' + file.getName(), loader));
+                }
+            }
+        } catch (IOException e) {
+            // We didn' find any nested directories;
+        }
+        // We need access to our directory, so we can pull
+        // all the classes.
+        URL tmp = loader.getResource(path);
+        if (tmp == null)
+            return ret;
+        File currDir = new File(tmp.getPath());
+        // Now we iterate through all of the classes we find
+        for (String classFile : currDir.list()) {
+            // Ensure that we only find class files; can't load gif's!
+            if (classFile.endsWith(".class")) {
+                // Attempt to load the class
+                Class<?> add = Class.forName(packageName + '.' + classFile.substring(0, classFile.length() - 6));
+                ret.add(add);
+            }
+        }
+        return ret;
+    }
+    
+    public class PluginSettings {
+        private final HashMap<String, HashMap<String, String>> lstSetting = new HashMap<>();
+        
+        public PluginSettings() {
+            try {
+                initSettings();
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        private void initSettings() throws ClassNotFoundException {
+            /*for (Class clazz : Castabot.getClasses("ch.ar.castabot.plugins", PseudoCode.class.getClassLoader())) {
+                lstSetting.put(clazz.getName(), new HashMap<>());
+            }*/
+            HashMap<String, String> cardsSetting = new HashMap<>();
+            cardsSetting.put("deck", "default");
+            lstSetting.put("cards", cardsSetting);
+            
+            HashMap<String, String> rollSetting = new HashMap<>();
+            rollSetting.put("rules", "default");
+            lstSetting.put("roll", rollSetting);
+        }
+        
+        public void addValue(String plugin, String setting, String value) {
+            lstSetting.get(plugin).put(setting, value);
+        }
+        
+        public void setValue(String plugin, String setting, String value) {
+            lstSetting.get(plugin).replace(setting, value);
+        }
+        
+        public String getValue(String plugin, String setting) {
+            return lstSetting.get(plugin).get(setting);
+        }
     }
 }

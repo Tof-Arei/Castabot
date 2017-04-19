@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ch.df</groupId>
     <artifactId>Castabot</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <packaging>jar</packaging>
     <build>
         <plugins>
@@ -52,11 +52,6 @@
             <groupId>org.json</groupId> 
             <artifactId>json</artifactId> 
             <version>20160810</version> 
-        </dependency>
-        <dependency>
-            <groupId>net.sourceforge.jeval</groupId> 
-            <artifactId>jeval</artifactId> 
-            <version>0.9.4</version> 
         </dependency>
         <dependency>
             <groupId>com.sedmelluq</groupId>

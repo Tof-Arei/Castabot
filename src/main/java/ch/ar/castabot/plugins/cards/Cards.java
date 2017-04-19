@@ -164,7 +164,7 @@ public class Cards extends Plugin {
         Card card = null;
         try {
             switch (args[0]) {
-                case "init" :
+                case "deck" :
                     if (args.length > 1) {
                         init(args[1]);
                     } else {

@@ -8,6 +8,7 @@
                 "default": true,
                 "critical_failure": "{IF;{DICE;value;0};==;1;TRUE;FALSE}",
                 "critical_success": "{IF;{DICE;value;0};==;{DICE;max;0};TRUE;FALSE}",
+                "bonus_dice": "",
                 "explode": false,
                 "explode_action": "",
                 "arg": "a",
@@ -17,7 +18,7 @@
         ]
     },
     "savage": {
-        "dices": ["Xd4", "Xd6", "Xd8", "Xd10", "Xd12"],
+        "dices": ["Xd4", "Xd6", "Xd8", "Xd10", "Xd12, Xd20"],
         "rolltypes": [
             {
                 "name": "action",
@@ -25,6 +26,7 @@
                 "default": true,
                 "critical_failure": "",
                 "critical_success": "",
+                "bonus_dice": "",
                 "explode": false,
                 "explode_action": "",
                 "arg": "a",
@@ -37,10 +39,11 @@
                 "default": false,
                 "critical_failure": "{AND;{DICE;value;0};==;1;{DICE;value;1};==;1}",
                 "critical_success": "{OR;{DICE;value;0};==;{DICE;max;0};{DICE;value;1};==;{DICE;max;1}}",
+                "bonus_dice": "1d6",
                 "explode": true,
                 "explode_action": "{IF;{DICE;value;0};==;{DICE;max;0};{IF;{DICE;value;1};==;{DICE;max;1};{DICE;reroll;0;1};{DICE;reroll;0}};{IF;{DICE;value;1};==;{DICE;max;1};{DICE;reroll;1};FALSE}}",
                 "arg": "h",
-                "format": "(?:1[dD][0-9]{1,2}\\+1[dD]6)",
+                "format": "(?:1[dD][0-9]{1,2})",
                 "total": "{IF;{DICE;value;0};>;{DICE;value;1};{DICE;value;0};{DICE;value;1}}"
             },
             {
@@ -49,6 +52,7 @@
                 "default": false,
                 "critical_failure": "",
                 "critical_success": "",
+                "bonus_dice": "",
                 "explode": false,
                 "explode_action": "",
                 "arg": "t",
