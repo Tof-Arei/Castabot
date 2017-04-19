@@ -98,14 +98,17 @@ public class Castabot {
     */
     public boolean isMessageWorthAnsweringTo(Message message) {
         boolean ret = false;
-        JSONArray cmdChars = settings.getJSONArray("cmd_chars");
-        for (int i = 0; i < cmdChars.length(); i++) {
-            JSONArray cmdChar = cmdChars.getJSONArray(i);
-            if (message.getContent().substring(0, 1).equals(cmdChar.get(1))) {
-                ret = true;
-                break;
-            } 
+        if (message.getAttachments().isEmpty()) {
+            JSONArray cmdChars = settings.getJSONArray("cmd_chars");
+            for (int i = 0; i < cmdChars.length(); i++) {
+                JSONArray cmdChar = cmdChars.getJSONArray(i);
+                if (message.getContent().substring(0, 1).equals(cmdChar.get(1))) {
+                    ret = true;
+                    break;
+                } 
+            }
         }
+        
         return ret;
     }
     
@@ -506,7 +509,7 @@ public class Castabot {
             lstSetting.put("cards", cardsSetting);
             
             HashMap<String, String> rollSetting = new HashMap<>();
-            rollSetting.put("rules", "default");
+            rollSetting.put("rules", "savage");
             lstSetting.put("roll", rollSetting);
         }
         

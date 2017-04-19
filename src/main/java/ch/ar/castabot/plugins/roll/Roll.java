@@ -40,10 +40,10 @@ public class Roll extends Plugin {
         CastabotClient.getCastabot().getPluginSettings().setValue("roll", "rules", rules);
     }
     
-    // !1d8+1d6 (savage toucher)
-    // !1d4+1d6-2 (savage toucher)
-    // !2d6 (savage degats)
-    // !2d4+1d8 (savage degats)
+    // !1d8+1d6 (savage hit)
+    // !1d4+1d6-2 (savage hit)
+    // !2d6 (savage action)
+    // !2d4+1d8 (savage action)
     
     // 1. Players rolls a set of dice.
     // 2. Bot parses the roll, according to the active rules and optional argument :
@@ -58,7 +58,6 @@ public class Roll extends Plugin {
         
         String str = args[0].replaceAll("D", "d");
         ArrayList<FixedValue> lstFixed = new ArrayList<>();
-        //ArrayList<Dice> lstDice = new ArrayList<>();
         ArrayList<ArrayList<Dice>> lstDice = new ArrayList<>();
         
         // Extract argument if any
@@ -66,7 +65,7 @@ public class Roll extends Plugin {
         char arg = Character.MIN_VALUE;
         if (Character.isLetter(strChars[strChars.length-1])) {
             arg = (Character.isLetter(strChars[strChars.length-1])) ? strChars[strChars.length-1] : null;
-            str = str.replace(arg, Character.MIN_VALUE);
+            str = str.replace(arg, Character.MIN_VALUE).trim();
         }
         
         // Exctract the raw dices
@@ -88,13 +87,13 @@ public class Roll extends Plugin {
             String bound = rawDice.toCharArray()[0]+"";
             String[] tmpDice = rawDice.replace(bound, "").split("d");
             ArrayList<Dice> lstSubDice = new ArrayList<>();
-            if (tmpDice.length > 1) { // Dice
+            if (tmpDice.length > 1) {
                 for (int i = 0; i < Integer.parseInt(tmpDice[0]); i++) {
                     Dice dice = new Dice(Integer.parseInt(tmpDice[1]), (bound.equals("-")));
                     lstSubDice.add(dice);
                 }
                 lstDice.add(lstSubDice);
-            } else { // Fixed value
+            } else {
                 FixedValue fixed = new FixedValue(Integer.parseInt(tmpDice[0]), (bound.equals("-")));
                 lstFixed.add(fixed);
             }
@@ -123,15 +122,18 @@ public class Roll extends Plugin {
         String originalRoll = "";
         for (ArrayList<Dice> lstSubDice : rollResult.getLstDice()) {
             int nbDice = lstSubDice.size();
-            int maxDice = lstSubDice.get(0).getMax();
-            originalRoll += "[" + nbDice+"d"+maxDice + "=";
+            Dice tmpDice = lstSubDice.get(0);
+            int maxDice = tmpDice.getMax();
+            originalRoll +=  "[" + tmpDice.getCaption() + nbDice+"d"+maxDice + "=";
             for (Dice dice : lstSubDice) {
-                originalRoll += "(" + dice.getValue() + ")";
+                String bound = (dice.isNegative()) ? "-" : "+";
+                originalRoll += "(" + bound + dice.getValue() + ")";
             }
             originalRoll += "]";
         }
         for (FixedValue fixed : rollResult.getLstFixed()) {
-            originalRoll += "[" + fixed.getValue() + "]";
+            String bound = (fixed.isNegative()) ? "-" : "+";
+            originalRoll += "[" + bound + fixed.getValue() + "]";
         }
         
         // Output explosions if any

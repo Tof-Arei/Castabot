@@ -29,7 +29,8 @@ import java.util.logging.Logger;
  */
 public class PseudoCode {
     protected String formula;
-    protected final HashMap<Integer, Object> lstObject = new HashMap<>();
+    //protected final HashMap<Integer, Object> lstObject = new HashMap<>();
+    protected HashMap<String, HashMap<Integer, Object>> lstObject = new HashMap<>();
     
     public PseudoCode(String formula) {
         this.formula = formula;
@@ -60,7 +61,7 @@ public class PseudoCode {
             String[] splitFormula = formula.split(";");
             
             int posOpen = 0, posClose = formula.length(), cursor = 0;
-            boolean subFormulaEnd = false;
+            boolean subFormulaEnd = false;      
             for (char ch : formula.toCharArray()) {
                 switch (ch) {
                     case '{':
@@ -75,25 +76,24 @@ public class PseudoCode {
                     String subFormula = formula.substring(posOpen, posClose+1);
                     String evaluatedSubFormula = evaluate(subFormula);
                     formula = formula.replace(subFormula, evaluatedSubFormula);
-
-                    subFormulaEnd = false;
-                    splitFormula = formula.split(";");
-                    int diff = subFormula.length() - evaluatedSubFormula.length();
-                    cursor -= diff;
+                    ret = evaluate("{"+formula+"}");
+                    break;
                 }
                 cursor++;
             }
 
-            try {
-                Class<?> clazz = getModule("ch.ar.castabot.env.pc", splitFormula[0]);
-                Class[] types = {String.class};
-                Constructor<?> constructor = clazz.getConstructor(types);
-                Object[] classArgs = {formula};
-                PseudoCode pc = (PseudoCode) constructor.newInstance(classArgs);
-                pc.addObjects(lstObject);
-                ret = pc.calculate();
-            } catch (IOException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | ClassNotFoundException ex) {
-                Logger.getLogger(PseudoCode.class.getName()).log(Level.SEVERE, null, ex);
+            if (ret == null) {
+                try {
+                    Class<?> clazz = getModule("ch.ar.castabot.env.pc", splitFormula[0]);
+                    Class[] types = {String.class};
+                    Constructor<?> constructor = clazz.getConstructor(types);
+                    Object[] classArgs = {formula};
+                    PseudoCode pc = (PseudoCode) constructor.newInstance(classArgs);
+                    pc.setObjects(lstObject);
+                    ret = pc.calculate();
+                } catch (IOException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | ClassNotFoundException ex) {
+                    Logger.getLogger(PseudoCode.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
  
@@ -121,11 +121,22 @@ public class PseudoCode {
         this.formula = formula;
     }
     
-    public void addObject(int index, Object obj) {
-        lstObject.put(index, obj);
+    public HashMap<String, HashMap<Integer, Object>> getLstObject() {
+        return lstObject;
     }
     
-    public void addObjects(HashMap<Integer, Object> lstObject) {
-        this.lstObject.putAll(lstObject);
+    public void setObjects(HashMap<String, HashMap<Integer, Object>> lstObject) {
+        this.lstObject = lstObject;
+    }
+    
+    public void addObject(int index, Object object) {
+        HashMap<Integer, Object> subLstObject = lstObject.get(object.getClass().getName());
+        if (subLstObject != null) {
+            subLstObject.put(index, object);
+        } else {
+            subLstObject = new HashMap<>();
+            subLstObject.put(index, object);
+            lstObject.put(object.getClass().getName(), subLstObject);
+        }
     }
 }

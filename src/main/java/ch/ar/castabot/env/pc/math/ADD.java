@@ -21,16 +21,17 @@ import ch.ar.castabot.env.pc.PseudoCode;
  *
  * @author Arei
  */
-public class SUM extends PseudoCode {
-    public SUM(String formula) {
+public class ADD extends PseudoCode {
+    public ADD(String formula) {
         super(formula);
     }
 
     @Override
     public String calculate() {
         int total = 0;
-        for (String val : formula.split(";")) {
-            total += Integer.parseInt(val);
+        String[] splitFormula = formula.split(";");
+        for (int i = 1; i < splitFormula.length;i++) {
+            total += Integer.parseInt(splitFormula[i]);
         }
         return String.valueOf(total);
     }

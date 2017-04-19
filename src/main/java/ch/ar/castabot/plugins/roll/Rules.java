@@ -57,8 +57,9 @@ public class Rules {
                 JSONObject rawRolltype = rawRolltypes.getJSONObject(i);
                 lstRolltypes.add(new Rolltype(rawRolltype.getString("name"), rawRolltype.getString("desc"),
                         rawRolltype.getBoolean("default"), rawRolltype.getString("critical_failure"), rawRolltype.getString("critical_success"), 
-                        rawRolltype.getString("bonus_dice"), rawRolltype.getBoolean("explode"), rawRolltype.getString("explode_action"), 
-                        rawRolltype.getString("arg").charAt(0), rawRolltype.getString("format"), rawRolltype.getString("total")));
+                        rawRolltype.getString("bonus_dice"), rawRolltype.getBoolean("explode"), rawRolltype.getBoolean("explode_recursive"), 
+                        rawRolltype.getString("explode_action"), rawRolltype.getString("arg").charAt(0), rawRolltype.getString("format"), 
+                        rawRolltype.getString("total")));
             }
         } catch (IOException ex) {
             Logger.getLogger(Plugin.class.getName()).log(Level.SEVERE, null, ex);
@@ -109,29 +110,39 @@ public class Rules {
     }
     
     public RollResult getRollResults(ArrayList<ArrayList<Dice>> lstDice, ArrayList<FixedValue> lstFixed, char arg) {
+        Rolltype rolltype = getUsedRolltype(arg);
+        // Add bonus dice(s) to roll if available
+        if (rolltype.getBonusDice().length() > 0) {
+            Dice bonusDice = new Dice("(B) ", Integer.parseInt(rolltype.getBonusDice().split("d")[1]), false);
+            bonusDice.setBonus(true);
+            bonusDice.roll();
+            ArrayList<Dice> lstBonusDice = new ArrayList<>();
+            lstBonusDice.add(bonusDice);
+            lstDice.add(lstBonusDice);
+        }
+        
+        // Prepare the RollResult
         RollResult ret = new RollResult();
         ret.addDices(lstDice);
         ret.addFixedValues(lstFixed);
         
-        Rolltype rolltype = getUsedRolltype(arg);
-        // Add bonus dice(s) if available
-        if (rolltype.getBonusDice().length() > 0) {
-            Dice bonusDice = new Dice("Bonus", Integer.parseInt(rolltype.getBonusDice().split("d")[1]), false);
-            bonusDice.setBonus(true);
-            ret.addDice(bonusDice);
+        // Prepare the PseudoCode interpreter
+        PseudoCode pcRoll = new PseudoCode();
+        int index = 0;
+        for (ArrayList<Dice> lstSubDice : ret.getLstDice()) {
+            for (Dice dice : lstSubDice) {
+                pcRoll.addObject(index, dice);
+                index++;
+            }
         }
-        
+        index = 0;
+        for (FixedValue fixed : ret.getLstFixed()) {
+            pcRoll.addObject(index, fixed);
+        }
         
         // Check for critical success/failure
         boolean criticalFailure = false;
         boolean criticalSuccess = false;
-        PseudoCode pcRoll = new PseudoCode();
-        int nbDice = 0;
-        for (ArrayList<Dice> lstSubDice : ret.getLstDice()) {
-            for (Dice dice : lstSubDice) {
-                pcRoll.addObject(nbDice, dice);
-            }
-        }
         
         pcRoll.setFormula(rolltype.getCriticalFailure());
         if (Boolean.parseBoolean(pcRoll.evaluate())) {
@@ -147,15 +158,7 @@ public class Rules {
         if (criticalSuccess) {
             caption = "Réussite critique:";
             if (rolltype.canExplode()) {
-                caption += " Avec éxplosion(s)!";
-                pcRoll.setFormula(rolltype.getExplodeAction());
-                String[] explodeResult = pcRoll.evaluate().split("-");
-                for (int i = 0; i < explodeResult.length; i++) {
-                    String[] singleResult = explodeResult[i].split("/");
-                    Dice explodeDice = new Dice("Ex", Integer.parseInt(singleResult[1]), false);
-                    explodeDice.setValue(Integer.parseInt(singleResult[0]));
-                    ret.addExplode(explodeDice);
-                }
+                explosion(pcRoll, rolltype, ret);
             }
         } else if (criticalFailure) {
             caption = "Échec critique:";
@@ -163,9 +166,36 @@ public class Rules {
         ret.setCaption(caption);
         
         // Finally calculate the total and return the RollResult
-        ret.calculateTotal();
+        pcRoll.setFormula(rolltype.getTotal());
+        String strTotal = pcRoll.evaluate();
+        if (strTotal != null) {
+            ret.setTotal(Integer.parseInt(strTotal));
+        } else {
+            ret.calculateGlobalTotal();
+        }
         
         return ret;
+    }
+    
+    private void explosion(PseudoCode pcRoll, Rolltype rolltype, RollResult ret) {
+        int nbDice = pcRoll.getLstObject().get(Dice.class.getName()).size();
+        pcRoll.setFormula(rolltype.getExplodeAction());
+        String[] explodeResult = pcRoll.evaluate().split("-");
+        for (int i = 0; i < explodeResult.length; i++) {
+            String[] singleResult = explodeResult[i].split("/");
+            Dice explodeDice = new Dice("(EX) ", Integer.parseInt(singleResult[1]), false);
+            explodeDice.setBonus(Boolean.parseBoolean(singleResult[2]));
+            explodeDice.setValue(Integer.parseInt(singleResult[0]));
+            ret.addExplode(explodeDice);
+            pcRoll.addObject(nbDice, explodeDice);
+            nbDice++;
+        }
+        if (rolltype.isExplosionRecursive()) {
+            pcRoll.setFormula(rolltype.getCriticalSuccess());
+            if (Boolean.parseBoolean(pcRoll.evaluate())) {
+                explosion(pcRoll, rolltype, ret);
+            }
+        }
     }
     
     public String getName() {

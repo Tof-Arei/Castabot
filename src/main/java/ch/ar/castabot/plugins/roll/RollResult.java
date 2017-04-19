@@ -15,6 +15,7 @@
  */
 package ch.ar.castabot.plugins.roll;
 
+import ch.ar.castabot.env.pc.PseudoCode;
 import java.util.ArrayList;
 
 /**
@@ -32,7 +33,7 @@ public class RollResult {
         
     }
     
-    public void calculateTotal() {
+    public void calculateGlobalTotal() {
         for (ArrayList<Dice> lstSubDice : lstDice) {
             for (Dice dice : lstSubDice) {
                 if (dice.isNegative()) {
@@ -52,6 +53,10 @@ public class RollResult {
         for (Dice dice : lstExplode) {
             total += dice.getValue();
         }
+        
+        if (total <= 0) {
+            total = 1;
+        }
     }
 
     public String getCaption() {
@@ -67,6 +72,9 @@ public class RollResult {
     }
 
     public void setTotal(int total) {
+        if (total <= 0) {
+            total = 1;
+        }
         this.total = total;
     }
     

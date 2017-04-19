@@ -10,6 +10,7 @@
                 "critical_success": "{IF;{DICE;value;0};==;{DICE;max;0};TRUE;FALSE}",
                 "bonus_dice": "",
                 "explode": false,
+                "explode_recursive": false,
                 "explode_action": "",
                 "arg": "a",
                 "format": "",
@@ -18,7 +19,7 @@
         ]
     },
     "savage": {
-        "dices": ["Xd4", "Xd6", "Xd8", "Xd10", "Xd12, Xd20"],
+        "dices": ["Xd4", "Xd6", "Xd8", "Xd10", "Xd12", "Xd20"],
         "rolltypes": [
             {
                 "name": "action",
@@ -28,6 +29,7 @@
                 "critical_success": "",
                 "bonus_dice": "",
                 "explode": false,
+                "explode_recursive": false,
                 "explode_action": "",
                 "arg": "a",
                 "format": "",
@@ -37,14 +39,15 @@
                 "name": "hit",
                 "desc": "Jet de toucher.",
                 "default": false,
-                "critical_failure": "{AND;{DICE;value;0};==;1;{DICE;value;1};==;1}",
-                "critical_success": "{OR;{DICE;value;0};==;{DICE;max;0};{DICE;value;1};==;{DICE;max;1}}",
+                "critical_failure": "{AND;{DICE;value;normal};==;1;{DICE;value;bonus};==;1}",
+                "critical_success": "{OR;{DICE;value;normal};==;{DICE;max;normal};{DICE;value;bonus};==;{DICE;max;bonus}}",
                 "bonus_dice": "1d6",
                 "explode": true,
-                "explode_action": "{IF;{DICE;value;0};==;{DICE;max;0};{IF;{DICE;value;1};==;{DICE;max;1};{DICE;reroll;0;1};{DICE;reroll;0}};{IF;{DICE;value;1};==;{DICE;max;1};{DICE;reroll;1};FALSE}}",
+                "explode_recursive": true,
+                "explode_action": "{IF;{DICE;value;normal};==;{DICE;max;normal};{IF;{DICE;value;bonus};==;{DICE;max;bonus};{DICE;reroll;normal;bonus};{DICE;reroll;normal}};{IF;{DICE;value;bonus};==;{DICE;max;bonus};{DICE;reroll;bonus};FALSE}}",
                 "arg": "h",
-                "format": "(?:1[dD][0-9]{1,2})",
-                "total": "{IF;{DICE;value;0};>;{DICE;value;1};{DICE;value;0};{DICE;value;1}}"
+                "format": "(?:1[dD][0-9]{1,2}(?:\\+[0-9]{1,2}|\\-[0-9]{1,2})?)",
+                "total": "{IF;{DICE;all;normal};>;{DICE;all;bonus};{ADD;{DICE;all;normal};{FXVA;all}};{ADD;{DICE;all;bonus};{FXVA;all}}}"
             },
             {
                 "name": "token",
@@ -54,6 +57,7 @@
                 "critical_success": "",
                 "bonus_dice": "",
                 "explode": false,
+                "explode_recursive": false,
                 "explode_action": "",
                 "arg": "t",
                 "format": "",

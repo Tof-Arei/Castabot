@@ -27,13 +27,14 @@ public class Rolltype {
     private final String criticalSuccess;
     private final String bonusDice;
     private final boolean explode;
+    private final boolean explodeRecursive;
     private final String explodeAction;
     private final char arg;
     private final String format;
     private final String total;
 
     public Rolltype(String name, String desc, boolean dflt, String criticalFailure, String criticalSuccess, 
-            String bonusDice, boolean explode, String explodeAction, char arg, String format, String total) {
+            String bonusDice, boolean explode, boolean explodeRecursive, String explodeAction, char arg, String format, String total) {
         this.name = name;
         this.desc = desc;
         this.dflt = dflt;
@@ -41,6 +42,7 @@ public class Rolltype {
         this.criticalSuccess = criticalSuccess;
         this.bonusDice = bonusDice;
         this.explode = explode;
+        this.explodeRecursive = explodeRecursive;
         this.explodeAction = explodeAction;
         this.arg = arg;
         this.format = format;
@@ -73,6 +75,10 @@ public class Rolltype {
     
     public boolean canExplode() {
         return explode;
+    }
+    
+    public boolean isExplosionRecursive() {
+        return explodeRecursive;
     }
     
     public String getExplodeAction() {

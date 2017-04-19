@@ -39,11 +39,7 @@ public abstract class RollElement {
     }
 
     public int getValue() {
-        if (negative) {
-            return value *= -1;
-        } else {
-            return value;
-        }
+        return value;
     }
     
     public void setValue(int value) {

@@ -30,18 +30,16 @@ import java.util.logging.Logger;
  * @author Arei
  */
 public class Dice extends RollElement {
-    private boolean bonus;
+    private boolean bonus = false;
     private final int max;
     
     public Dice(int max, boolean negative) {
-        super("Dice", 0, negative);
-        this.bonus = false;
+        super("", 0, negative);
         this.max = max;
     }
     
     public Dice(String caption, int max, boolean negative) {
         super(caption, 0, negative);
-        this.bonus = false;
         this.max = max;
     }
     
@@ -71,6 +69,12 @@ public class Dice extends RollElement {
         value = (ThreadLocalRandom.current()).nextInt(max) + 1;
         //value = generateWebInteger(1, max);
     }
+    
+    // For rules testing purpose! D:
+    /*@Override
+    public int getValue() {
+        return max;
+    }*/
 
     public int getMax() {
         return max;

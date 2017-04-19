@@ -31,10 +31,10 @@ public class OR extends PseudoCode {
     public String calculate() {
         String ret = "FALSE";
         String[] splitFormula = formula.split(";");
-        for (int i = 0; i < (splitFormula.length / 3); i++) {
-            String cond1 = splitFormula[i*3];
-            String operator = splitFormula[(i*3)+1];
-            String cond2 = splitFormula[(i*3)+2];
+        for (int i = 1; i <= ((splitFormula.length - 1) / 3); i++) {
+            String cond1 = splitFormula[((i-1)*2)+i];
+            String operator = splitFormula[((i-1)*2)+(i+1)];
+            String cond2 = splitFormula[((i-1)*2)+(i+2)];
             
             Operation operation = new Operation(cond1, operator, cond2);
             if (operation.getLogicResult()) {
