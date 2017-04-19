@@ -12,6 +12,3 @@ https://github.com/DV8FromTheWorld/JDA
 
 lavaplayer<br/>
 https://github.com/sedmelluq/lavaplayer
-
-Jeval<br />
-http://jeval.sourceforge.net/
