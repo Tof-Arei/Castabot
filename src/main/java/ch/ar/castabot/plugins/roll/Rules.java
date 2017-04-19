@@ -81,13 +81,15 @@ public class Rules {
     }
     
     public boolean isRollValid(String str, ArrayList<ArrayList<Dice>> lstDice, char arg) {
-        boolean ret = false;
+        boolean ret = true;
         Rolltype rolltype = getUsedRolltype(arg);
         
-        Pattern patShort = Pattern.compile(rolltype.getFormat());
-        Matcher matShort = patShort.matcher(str);
-        if (matShort.find()) {
-            ret = true;
+        if (rolltype.getFormat().length() > 0) {
+            Pattern patShort = Pattern.compile(rolltype.getFormat());
+            Matcher matShort = patShort.matcher(str);
+            if (!matShort.matches()) {
+                ret = false;
+            }
         }
         
         for (ArrayList<Dice> lstSubDice : lstDice) {

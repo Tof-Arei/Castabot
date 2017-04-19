@@ -30,10 +30,12 @@ public class FXVA extends PseudoCode {
     
     private int all(){
         int ret = 0;
-        for (int i = 0; i < getAllFixedObj().size(); i++) {
-            FixedValue fixed = (FixedValue) getAllFixedObj().get(i);
-            String bound = (fixed.isNegative()) ? "-" : "+";
-            ret += Integer.parseInt(bound+fixed.getValue());
+        if (getAllFixedObj() != null) {
+            for (int i = 0; i < getAllFixedObj().size(); i++) {
+                FixedValue fixed = (FixedValue) getAllFixedObj().get(i);
+                String bound = (fixed.isNegative()) ? "-" : "+";
+                ret += Integer.parseInt(bound+fixed.getValue());
+            }
         }
         return ret;
     }

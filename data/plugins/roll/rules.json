@@ -46,7 +46,7 @@
                 "explode_recursive": true,
                 "explode_action": "{IF;{DICE;value;normal};==;{DICE;max;normal};{IF;{DICE;value;bonus};==;{DICE;max;bonus};{DICE;reroll;normal;bonus};{DICE;reroll;normal}};{IF;{DICE;value;bonus};==;{DICE;max;bonus};{DICE;reroll;bonus};FALSE}}",
                 "arg": "h",
-                "format": "(?:1[dD][0-9]{1,2}(?:\\+[0-9]{1,2}|\\-[0-9]{1,2})?)",
+                "format": "(?:1[dD][0-9]{1,2}(?:[\\+|\\-][0-9]{1,2}(?: [a-zA-Z]{1})?|(?: [a-zA-Z]{1}))?)",
                 "total": "{IF;{DICE;all;normal};>;{DICE;all;bonus};{ADD;{DICE;all;normal};{FXVA;all}};{ADD;{DICE;all;bonus};{FXVA;all}}}"
             },
             {

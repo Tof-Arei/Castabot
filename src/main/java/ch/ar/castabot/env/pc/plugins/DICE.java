@@ -31,23 +31,25 @@ public class DICE extends PseudoCode {
     private int all(String type) {
         int ret = 0;
         
-        switch (type) {
-            case "normal":
-                for (int i = 0; i < getAllDiceObj().size(); i++) {
-                    Dice dice = (Dice) getAllDiceObj().get(i);
-                    if (!dice.isBonus()) {
-                        ret += dice.getValue();
+        if (getAllDiceObj() != null) {
+            switch (type) {
+                case "normal":
+                    for (int i = 0; i < getAllDiceObj().size(); i++) {
+                        Dice dice = (Dice) getAllDiceObj().get(i);
+                        if (!dice.isBonus()) {
+                            ret += dice.getValue();
+                        }
                     }
-                }
-                break;
-            case "bonus":
-                for (int i = 0; i < getAllDiceObj().size(); i++) {
-                    Dice dice = (Dice) getAllDiceObj().get(i);
-                    if (dice.isBonus()) {
-                        ret += dice.getValue();
+                    break;
+                case "bonus":
+                    for (int i = 0; i < getAllDiceObj().size(); i++) {
+                        Dice dice = (Dice) getAllDiceObj().get(i);
+                        if (dice.isBonus()) {
+                            ret += dice.getValue();
+                        }
                     }
-                }
-                break;
+                    break;
+            }
         }
         
         return ret;

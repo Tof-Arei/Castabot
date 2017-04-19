@@ -124,10 +124,10 @@ public class Roll extends Plugin {
             int nbDice = lstSubDice.size();
             Dice tmpDice = lstSubDice.get(0);
             int maxDice = tmpDice.getMax();
-            originalRoll +=  "[" + tmpDice.getCaption() + nbDice+"d"+maxDice + "=";
+            String bound = (tmpDice.isNegative()) ? "-" : "+";
+            originalRoll +=  "[" + tmpDice.getCaption() + bound + nbDice+"d"+maxDice + "=";
             for (Dice dice : lstSubDice) {
-                String bound = (dice.isNegative()) ? "-" : "+";
-                originalRoll += "(" + bound + dice.getValue() + ")";
+                originalRoll += "(" + dice.getValue() + ")";
             }
             originalRoll += "]";
         }
