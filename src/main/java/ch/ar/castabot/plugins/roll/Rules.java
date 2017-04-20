@@ -98,6 +98,9 @@ public class Rules {
     public boolean isRollValid(String str, List<List<Dice>> lstDice, char arg) {
         boolean ret = true;
         Rolltype rolltype = getUsedRolltype(arg);
+        if (rolltype == null) {
+            return false;
+        }
         
         if (rolltype.getFormat().length() > 0) {
             Pattern patShort = Pattern.compile(rolltype.getFormat());

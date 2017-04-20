@@ -105,7 +105,11 @@ public class Roll extends Plugin {
         
         // Check roll validity (according to extracted argument)
         if (!rules.isRollValid(str, lstDice, arg)) {
-            throw new PluginException("ROLL1", "Format du jet invalide: \r\n ["+str+"]");
+            String errRoll = str;
+            if (arg != Character.MIN_VALUE) {
+                errRoll += " " + arg;
+            }
+            throw new PluginException("ROLL1", "Format du jet invalide: \r\n ["+errRoll+"]");
         }
         
         // Do the rolls
