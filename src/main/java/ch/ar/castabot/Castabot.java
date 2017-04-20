@@ -489,7 +489,7 @@ public class Castabot {
     }
     
     public class PluginSettings {
-        private final HashMap<String, HashMap<String, String>> lstSetting = new HashMap<>();
+        private final Map<String, Map<String, String>> lstSetting = new HashMap<>();
         
         public PluginSettings() {
             try {
@@ -503,11 +503,11 @@ public class Castabot {
             /*for (Class clazz : Castabot.getClasses("ch.ar.castabot.plugins", PseudoCode.class.getClassLoader())) {
                 lstSetting.put(clazz.getName(), new HashMap<>());
             }*/
-            HashMap<String, String> cardsSetting = new HashMap<>();
+            Map<String, String> cardsSetting = new HashMap<>();
             cardsSetting.put("deck", "default");
             lstSetting.put("cards", cardsSetting);
             
-            HashMap<String, String> rollSetting = new HashMap<>();
+            Map<String, String> rollSetting = new HashMap<>();
             rollSetting.put("rules", "savage");
             lstSetting.put("roll", rollSetting);
         }

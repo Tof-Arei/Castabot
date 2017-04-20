@@ -17,7 +17,7 @@ package ch.ar.castabot.env.pc.plugins.roll;
 
 import ch.ar.castabot.env.pc.PseudoCode;
 import ch.ar.castabot.plugins.roll.FixedValue;
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -43,7 +43,7 @@ public class FXVA extends PseudoCode {
     private FixedValue getFixed(int index) {
         FixedValue ret = null;
         
-        HashMap<Integer, Object> lstFixedObj = getAllFixedObj();
+        Map<Integer, Object> lstFixedObj = getAllFixedObj();
         if (lstFixedObj.size() > 0 && index <= lstFixedObj.size()) {
             ret = (FixedValue) lstFixedObj.get(index);
         }
@@ -51,14 +51,14 @@ public class FXVA extends PseudoCode {
         return ret;
     }
     
-    public HashMap<Integer, Object> getAllFixedObj() {
+    public Map<Integer, Object> getAllFixedObj() {
         return lstObject.get(FixedValue.class.getName());
     }
     
     private FixedValue getLastFixed() {
         FixedValue ret = null;
         
-        HashMap<Integer, Object> lstFixedObj = getAllFixedObj();
+        Map<Integer, Object> lstFixedObj = getAllFixedObj();
         if (lstFixedObj.size() > 0) {
             for (int i = lstFixedObj.size()-1; i >= 0; i--) {
                 FixedValue fixed = (FixedValue) lstFixedObj.get(i);

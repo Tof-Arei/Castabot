@@ -38,7 +38,7 @@ public class RULE extends PseudoCode {
     private Rules getRules(int index) {
         Rules ret = null;
         
-        HashMap<Integer, Object> lstRulesObj = getAllFixedObj();
+        Map<Integer, Object> lstRulesObj = getAllFixedObj();
         if (lstRulesObj.size() > 0 && index <= lstRulesObj.size()) {
             ret = (Rules) lstRulesObj.get(index);
         }
@@ -46,7 +46,7 @@ public class RULE extends PseudoCode {
         return ret;
     }
     
-    public HashMap<Integer, Object> getAllFixedObj() {
+    public Map<Integer, Object> getAllFixedObj() {
         return lstObject.get(Rules.class.getName());
     }
     
@@ -56,7 +56,8 @@ public class RULE extends PseudoCode {
     }
     
     private String tokens(String query) {
-        String ret = "[" + query + "]\r\n";
+        //String ret = "[" + query + "]\r\n";
+        String ret = "\r\n";
         String[] splitQuery = query.split("/");
         Rules rules = getRules(0);
         int argLimit = 1;
@@ -76,7 +77,7 @@ public class RULE extends PseudoCode {
             }
         });
         
-        HashMap<Token, Integer> hmTokens = new HashMap<>();
+        Map<Token, Integer> hmTokens = new HashMap<>();
         int tokenCount = 1;
         Token currentToken = lstToken.get(0);
         for (int i = 1; i < lstToken.size(); i++) {
@@ -100,8 +101,8 @@ public class RULE extends PseudoCode {
         return ret;
     }
     
-    private HashMap<Token, Integer> handleTokenLimits(HashMap<Token, Integer> hmTokens, int argLimit) {
-        HashMap<Token, Integer> ret = new HashMap<>(hmTokens);
+    private Map<Token, Integer> handleTokenLimits(Map<Token, Integer> hmTokens, int argLimit) {
+        Map<Token, Integer> ret = new HashMap<>(hmTokens);
         for (Map.Entry entry : ret.entrySet()) {
             Token token = (Token) entry.getKey();
             int nbToken = (int) entry.getValue();

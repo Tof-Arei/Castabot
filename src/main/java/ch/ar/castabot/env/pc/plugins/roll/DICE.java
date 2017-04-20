@@ -17,7 +17,7 @@ package ch.ar.castabot.env.pc.plugins.roll;
 
 import ch.ar.castabot.env.pc.PseudoCode;
 import ch.ar.castabot.plugins.roll.Dice;
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -58,7 +58,7 @@ public class DICE extends PseudoCode {
     private Dice getDice(int index) {
         Dice ret = null;
         
-        HashMap<Integer, Object> lstDiceObj = getAllDiceObj();
+        Map<Integer, Object> lstDiceObj = getAllDiceObj();
         if (lstDiceObj.size() > 0 && index <= lstDiceObj.size()) {
             ret = (Dice) lstDiceObj.get(index);
         }
@@ -66,14 +66,14 @@ public class DICE extends PseudoCode {
         return ret;
     }
     
-    public HashMap<Integer, Object> getAllDiceObj() {
+    public Map<Integer, Object> getAllDiceObj() {
         return lstObject.get(Dice.class.getName());
     }
     
     private Dice getLastDice(boolean bonus) {
         Dice ret = null;
         
-        HashMap<Integer, Object> lstDiceObj = getAllDiceObj();
+        Map<Integer, Object> lstDiceObj = getAllDiceObj();
         if (lstDiceObj.size() > 0) {
             for (int i = lstDiceObj.size()-1; i >= 0; i--) {
                 Dice dice = (Dice) lstDiceObj.get(i);

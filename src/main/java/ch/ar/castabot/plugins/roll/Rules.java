@@ -174,14 +174,14 @@ public class Rules {
         }
         
         // Do potential dice explosion and handle critical failure
-        String caption = "Lancer:";
+        String caption = rolltype.getDesc() + ": ";
         if (criticalSuccess) {
-            caption = "Réussite critique:";
+            caption += " (Réussite critique!) ";
             if (rolltype.canExplode()) {
                 explosion(pcRoll, rolltype, ret);
             }
         } else if (criticalFailure) {
-            caption = "Échec critique:";
+            caption += " (Échec critique!) ";
         }
         ret.setCaption(caption);
         

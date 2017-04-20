@@ -6,7 +6,7 @@
         "rolltypes": [
             {
                 "name": "default",
-                "desc": "Jet par défaut.",
+                "desc": "Jet normal",
                 "default": true,
                 "critical_failure": "{IF;{DICE;value;0};==;1;TRUE;FALSE}",
                 "critical_success": "{IF;{DICE;value;0};==;{DICE;max;0};TRUE;FALSE}",
@@ -48,7 +48,7 @@
         "rolltypes": [
             {
                 "name": "action",
-                "desc": "Jet d'action/dégâts.",
+                "desc": "Jet d'action/dégâts",
                 "default": true,
                 "critical_failure": "",
                 "critical_success": "",
@@ -62,7 +62,7 @@
             },
             {
                 "name": "hit",
-                "desc": "Jet de toucher.",
+                "desc": "Jet de toucher",
                 "default": false,
                 "critical_failure": "{AND;{DICE;value;normal};==;1;{DICE;value;bonus};==;1}",
                 "critical_success": "{OR;{DICE;value;normal};==;{DICE;max;normal};{DICE;value;bonus};==;{DICE;max;bonus}}",
@@ -76,7 +76,7 @@
             },
             {
                 "name": "token",
-                "desc": "Jet de tokens.",
+                "desc": "Jet de tokens",
                 "default": false,
                 "critical_failure": "",
                 "critical_success": "",

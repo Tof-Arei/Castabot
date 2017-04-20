@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,8 +30,7 @@ import java.util.logging.Logger;
  */
 public class PseudoCode {
     protected String formula;
-    //protected final HashMap<Integer, Object> lstObject = new HashMap<>();
-    protected HashMap<String, HashMap<Integer, Object>> lstObject = new HashMap<>();
+    protected Map<String, Map<Integer, Object>> lstObject = new HashMap<>();
     
     public PseudoCode(String formula) {
         this.formula = formula;
@@ -121,16 +121,16 @@ public class PseudoCode {
         this.formula = formula;
     }
     
-    public HashMap<String, HashMap<Integer, Object>> getLstObject() {
+    public Map<String, Map<Integer, Object>> getLstObject() {
         return lstObject;
     }
     
-    public void setObjects(HashMap<String, HashMap<Integer, Object>> lstObject) {
+    public void setObjects(Map<String, Map<Integer, Object>> lstObject) {
         this.lstObject = lstObject;
     }
     
     public void addObject(int index, Object object) {
-        HashMap<Integer, Object> subLstObject = lstObject.get(object.getClass().getName());
+        Map<Integer, Object> subLstObject = lstObject.get(object.getClass().getName());
         if (subLstObject != null) {
             subLstObject.put(index, object);
         } else {
