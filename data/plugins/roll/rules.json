@@ -1,6 +1,8 @@
 {
     "default": {
         "dices": [],
+        "help": "Règles default.\r\n Arguments disponibles: (a=action/dégâts)",
+        "tokens": {},
         "rolltypes": [
             {
                 "name": "default",
@@ -20,6 +22,29 @@
     },
     "savage": {
         "dices": ["Xd4", "Xd6", "Xd8", "Xd10", "Xd12", "Xd20"],
+        "help": "Règles savage.\r\n Arguments disponibles: (a=action/dégâts), h=toucher, t=tokens",
+        "tokens": {
+            "bleu": {
+                "desc": "Bleu: Relancer un jet.",
+                "values": [2, 3],
+                "limit": 99
+            },
+            "rouge": {
+                "desc": "Rouge: Relancer l'initiative.",
+                "values": [4, 5],
+                "limit": 99
+            },
+            "vert": {
+                "desc": "Vert: Ajouter +2 à un jet.",
+                "values": [6, 7],
+                "limit": 99
+            },
+            "noir": {
+                "desc": "Noir: \"Manipuler\" la chance.",
+                "values": [8],
+                "limit": 1
+            }
+        },
         "rolltypes": [
             {
                 "name": "action",
@@ -46,7 +71,7 @@
                 "explode_recursive": true,
                 "explode_action": "{IF;{DICE;value;normal};==;{DICE;max;normal};{IF;{DICE;value;bonus};==;{DICE;max;bonus};{DICE;reroll;normal;bonus};{DICE;reroll;normal}};{IF;{DICE;value;bonus};==;{DICE;max;bonus};{DICE;reroll;bonus};FALSE}}",
                 "arg": "h",
-                "format": "(?:1[dD][0-9]{1,2}(?:[\\+|\\-][0-9]{1,2}(?: [a-zA-Z]{1})?|(?: [a-zA-Z]{1}))?)",
+                "format": "(?:1[dD][0-9]{1,2}(?:[\\+|\\-][0-9]{1,2}(?: [hH]{1})?|(?: [hH]{1}))?)",
                 "total": "{IF;{DICE;all;normal};>;{DICE;all;bonus};{ADD;{DICE;all;normal};{FXVA;all}};{ADD;{DICE;all;bonus};{FXVA;all}}}"
             },
             {
@@ -60,8 +85,8 @@
                 "explode_recursive": false,
                 "explode_action": "",
                 "arg": "t",
-                "format": "",
-                "total": "{DICE;roll;2d4;2d4;2d4}"
+                "format": "^([0-9]|[1-2][0-9])( [0-9]| [1-2][0-9])?$",
+                "total": "{IF;{FXVA;value;1};!=;NULL;{RULE;tokens;{DICE;token;{FXVA;value;0};2d4;{FXVA;value;1}}};{RULE;tokens;{DICE;token;{FXVA;value;0};2d4;1}}}"
             }
         ]
     }

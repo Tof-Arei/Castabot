@@ -20,9 +20,9 @@ package ch.ar.castabot.env.pc;
  * @author Arei
  */
 public class Operation {
-    private final String cond1;
+    private String cond1;
     private final String operator;
-    private final String cond2;
+    private String cond2;
     
     public Operation(String cond1, String operator, String cond2) {
         this.cond1 = cond1;
@@ -30,7 +30,20 @@ public class Operation {
         this.cond2 = cond2;
     }
     
-    private boolean isValid() {
+    private void parseNull() {
+        if (cond1 == null) {
+            cond1 = "0";
+        } else if (cond1.equals("NULL")) {
+            cond1 = "0";
+        }
+        if (cond2 == null) {
+            cond2 = "0";
+        } else if (cond2.equals("NULL")) {
+            cond2 = "0";
+        }
+    } 
+    
+    private boolean isMathValid() {
         boolean ret = true;
         try {
             Integer.parseInt(cond1);
@@ -43,34 +56,34 @@ public class Operation {
     
     public boolean getLogicResult() {
         boolean ret = false;
-        if (isValid()) {
-            switch (operator) {
-                // Logic block
-                case "==":
-                    ret = Integer.parseInt(cond1) == Integer.parseInt(cond2);
-                    break;
-                case "!=":
-                    ret = Integer.parseInt(cond1) != Integer.parseInt(cond2);
-                    break;
-                case ">=":
-                    ret = Integer.parseInt(cond1) >= Integer.parseInt(cond2);
-                    break;
-                case ">":
-                    ret = Integer.parseInt(cond1) > Integer.parseInt(cond2);
-                    break;
-                case "<=":
-                    ret = Integer.parseInt(cond1) <= Integer.parseInt(cond2);
-                    break;
-                case "<":
-                    ret = Integer.parseInt(cond1) < Integer.parseInt(cond2);
-            }
+        parseNull();
+        switch (operator) {
+            // Logic block
+            case "==":
+                ret = Integer.parseInt(cond1) == Integer.parseInt(cond2);
+                break;
+            case "!=":
+                ret = Integer.parseInt(cond1) != Integer.parseInt(cond2);
+                break;
+            case ">=":
+                ret = Integer.parseInt(cond1) >= Integer.parseInt(cond2);
+                break;
+            case ">":
+                ret = Integer.parseInt(cond1) > Integer.parseInt(cond2);
+                break;
+            case "<=":
+                ret = Integer.parseInt(cond1) <= Integer.parseInt(cond2);
+                break;
+            case "<":
+                ret = Integer.parseInt(cond1) < Integer.parseInt(cond2);
         }
         return ret;
     }
     
     public double getMathResult() {
         double ret = 0;
-        if (isValid()) {
+        parseNull();
+        if (isMathValid()) {
             switch (operator) {
                 // Math block
                 case "+":

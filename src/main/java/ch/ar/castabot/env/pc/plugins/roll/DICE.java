@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ch.ar.castabot.env.pc.plugins;
+package ch.ar.castabot.env.pc.plugins.roll;
 
 import ch.ar.castabot.env.pc.PseudoCode;
 import ch.ar.castabot.plugins.roll.Dice;
@@ -128,10 +128,14 @@ public class DICE extends PseudoCode {
                 break;
             case "roll":
                 /*ret = "";
-                for (int i = 1; i < splitFormula.length; i++) {
-                    dice = (Dice) lstObject.get(Integer.parseInt(splitFormula[i]));
-                    dice.roll();
-                    ret += dice.getValue() + "/" + dice.getMax();
+                for (int i = 2; i < splitFormula.length; i++) {
+                    String[] splitDice = splitFormula[i].split("d");
+                    for (int j = 0; j < splitDice.length; j++) {
+                        Dice roll = new Dice(dice.getMax(), dice.isNegative());
+                        roll.setBonus(dice.isBonus());
+                        roll.roll();
+                        ret += roll.getValue() + "/" + roll.getMax() + "/" + roll.isBonus() + "-";
+                    }
                 }*/
                 break;
             case "reroll":
@@ -152,6 +156,28 @@ public class DICE extends PseudoCode {
                         reroll.setBonus(dice.isBonus());
                         reroll.roll();
                         ret += reroll.getValue() + "/" + reroll.getMax() + "/" + reroll.isBonus() + "-";
+                    }
+                }
+                break;
+            case "token":
+                ret = "";
+                int nbToken = Integer.parseInt(splitFormula[2]);
+                for (int i = 0; i < nbToken; i++) {
+                    int subTotal = 0;
+                    String[] tokenRawRoll = splitFormula[3].split("d");
+                    for (int j = 0; j < Integer.parseInt(tokenRawRoll[0]); j++) {
+                        Dice tokenDice = new Dice(Integer.parseInt(tokenRawRoll[1]), false);
+                        tokenDice.roll();
+                        subTotal += tokenDice.getValue();
+                    }
+                    
+                    
+                    ret += subTotal + "/";
+                }
+                ret = ret.substring(0, ret.length()-1);
+                if (splitFormula[4] != null) {
+                    if (!splitFormula[4].equals("NULL")) {
+                        ret += ":" + splitFormula[4];
                     }
                 }
                 break;

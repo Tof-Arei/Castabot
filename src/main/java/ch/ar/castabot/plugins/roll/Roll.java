@@ -55,13 +55,16 @@ public class Roll extends Plugin {
     // 4b. Bot finally outputs the roll result to the user
     private PluginResponse roll() throws PluginException {
         PluginResponse ret;
-        
-        String str = args[0].replaceAll("D", "d");
+        String str = "";
+        for (int i = 0; i < args.length;i++) {
+            str += args[i] + " ";
+        }
+        str = str.replaceAll("D", "d");
         ArrayList<FixedValue> lstFixed = new ArrayList<>();
         ArrayList<ArrayList<Dice>> lstDice = new ArrayList<>();
         
         // Extract argument if any
-        char[] strChars = str.toCharArray();
+        char[] strChars = str.trim().toCharArray();
         char arg = Character.MIN_VALUE;
         if (Character.isLetter(strChars[strChars.length-1])) {
             arg = (Character.isLetter(strChars[strChars.length-1])) ? strChars[strChars.length-1] : null;
@@ -71,8 +74,8 @@ public class Roll extends Plugin {
         // Exctract the raw dices
         ArrayList<String> lstRawDices = new ArrayList<>();
         String d = "+";
-        for (char ch : str.toCharArray()) {
-            if (ch == '+' || ch == '-') {
+        for (char ch : str.trim().toCharArray()) {
+            if (ch == '+' || ch == '-' || ch == ' ') {
                 lstRawDices.add(d);
                 d = "";
                 d += ch;

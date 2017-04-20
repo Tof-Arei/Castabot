@@ -98,14 +98,16 @@ public class Castabot {
     */
     public boolean isMessageWorthAnsweringTo(Message message) {
         boolean ret = false;
-        if (message.getAttachments().isEmpty()) {
-            JSONArray cmdChars = settings.getJSONArray("cmd_chars");
-            for (int i = 0; i < cmdChars.length(); i++) {
-                JSONArray cmdChar = cmdChars.getJSONArray(i);
-                if (message.getContent().substring(0, 1).equals(cmdChar.get(1))) {
-                    ret = true;
-                    break;
-                } 
+        if(!message.getChannel().getName().equals("general")) {
+            if (message.getAttachments().isEmpty()) {
+                JSONArray cmdChars = settings.getJSONArray("cmd_chars");
+                for (int i = 0; i < cmdChars.length(); i++) {
+                    JSONArray cmdChar = cmdChars.getJSONArray(i);
+                    if (message.getContent().substring(0, 1).equals(cmdChar.get(1))) {
+                        ret = true;
+                        break;
+                    } 
+                }
             }
         }
         
@@ -118,6 +120,7 @@ public class Castabot {
     public void parseCommand(Message message) {
         String strChar = message.getContent().substring(0, 1);
         String command = null;
+        String[] strArgs = message.getContent().substring(1).split(" ");
         String[] args = null;
         boolean isSecret = false;
         
@@ -146,10 +149,15 @@ public class Castabot {
                 isShort = true;
                 command = cmdShort.getString(0);
                 
-                args = new String[matShort.groupCount()];
+                args = new String[strArgs.length];
+                for (int j = 0; j < strArgs.length; j++) {
+                    args[j] = strArgs[j];
+                }
+                
+                /*args = new String[matShort.groupCount()];
                 for (int j = 0; j < matShort.groupCount(); j++) {
                     args[j] = matShort.group(j+1);
-                }
+                }*/
                 
                 break;
             }
@@ -157,14 +165,19 @@ public class Castabot {
         
         if (!isShort) {
             // Extract command and arguments
-            String[] arrCmd = message.getContent().split(" ");
+            args = new String[strArgs.length-1];
+            for (int j = 1; j < strArgs.length; j++) {
+                args[j] = strArgs[j];
+            }
+            
+            /*String[] arrCmd = message.getContent().split(" ");
             if (arrCmd.length > 0) {
                 command = arrCmd[0].substring(1);
             }
             if (arrCmd.length > 1) {
                 args = new String[arrCmd.length - 1];
                 System.arraycopy(arrCmd, 1, args, 0, args.length);
-            }
+            }*/
         } 
         
         ArrayList<PluginResponse> lstResponse = new ArrayList<>();

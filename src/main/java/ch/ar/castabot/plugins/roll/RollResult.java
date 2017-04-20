@@ -15,7 +15,6 @@
  */
 package ch.ar.castabot.plugins.roll;
 
-import ch.ar.castabot.env.pc.PseudoCode;
 import java.util.ArrayList;
 
 /**
@@ -24,7 +23,7 @@ import java.util.ArrayList;
  */
 public class RollResult {
     private String caption;
-    private int total = 0;
+    private String total = "0";
     private ArrayList<ArrayList<Dice>> lstDice = new ArrayList<>();
     private ArrayList<FixedValue> lstFixed = new ArrayList<>();
     private ArrayList<Dice> lstExplode = new ArrayList<>();
@@ -34,29 +33,31 @@ public class RollResult {
     }
     
     public void calculateGlobalTotal() {
+        int subTotal = 0;
         for (ArrayList<Dice> lstSubDice : lstDice) {
             for (Dice dice : lstSubDice) {
                 if (dice.isNegative()) {
-                    total -= dice.getValue();
+                    subTotal -= dice.getValue();
                 } else {
-                    total += dice.getValue();
+                    subTotal += dice.getValue();
                 }
             }
         }
         for (FixedValue fixed : lstFixed) {
             if (fixed.isNegative()) {
-                total -= fixed.getValue();
+                subTotal -= fixed.getValue();
             } else {
-                total += fixed.getValue();
+                subTotal += fixed.getValue();
             }
         }
         for (Dice dice : lstExplode) {
-            total += dice.getValue();
+            subTotal += dice.getValue();
         }
         
-        if (total <= 0) {
-            total = 1;
+        if (subTotal <= 0) {
+            subTotal = 1;
         }
+        total = String.valueOf(subTotal);
     }
 
     public String getCaption() {
@@ -67,14 +68,11 @@ public class RollResult {
         this.caption = caption;
     }
 
-    public int getTotal() {
+    public String getTotal() {
         return total;
     }
 
-    public void setTotal(int total) {
-        if (total <= 0) {
-            total = 1;
-        }
+    public void setTotal(String total) {
         this.total = total;
     }
     

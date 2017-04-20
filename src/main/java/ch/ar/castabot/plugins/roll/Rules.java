@@ -34,11 +34,14 @@ import org.json.JSONObject;
  */
 public class Rules {
     private final String name;
+    private String help;
+    private final ArrayList<Token> availableTokens = new ArrayList<>();
     private final ArrayList<Dice> availableDices = new ArrayList<>();
     private final ArrayList<Rolltype> lstRolltypes = new ArrayList<>();
 
     public Rules(String name) {
         this.name = name;
+        this.help = null;
         loadRules();
     }
     
@@ -47,6 +50,16 @@ public class Rules {
         try {
             rawRules = Files.readAllBytes(Paths.get("data/plugins/roll/rules.json"));
             JSONObject rulesConfig = new JSONObject(new String(rawRules)).getJSONObject(name);
+            help = rulesConfig.getString("help");
+            JSONObject rawTokens = rulesConfig.getJSONObject("tokens");
+            for (String key : rawTokens.keySet()) {
+                JSONObject rawToken = rawTokens.getJSONObject(key);
+                JSONArray rawValues = rawToken.getJSONArray("values");
+                Integer[] values = rawValues.toList().toArray(new Integer[rawValues.length()]);
+                Token token = new Token(key, rawToken.getString("desc"), values, rawToken.getInt("limit"));
+                //Token token = new Token(Integer.parseInt(key), rawToken.getString("desc"), rawToken.getInt("limit"));
+                availableTokens.add(token);
+            }
             JSONArray dices = rulesConfig.getJSONArray("dices");
             for (int i = 0; i < dices.length(); i++) {
                 String[] rawDice = dices.getString(i).split("d");
@@ -67,6 +80,7 @@ public class Rules {
     }
     
     public Rolltype getUsedRolltype(char arg) {
+        arg = Character.toLowerCase(arg);
         Rolltype ret = null;
         for (Rolltype rollType : lstRolltypes) {
             if (arg == Character.MIN_VALUE && rollType.isDefault()) {
@@ -130,6 +144,8 @@ public class Rules {
         
         // Prepare the PseudoCode interpreter
         PseudoCode pcRoll = new PseudoCode();
+        pcRoll.addObject(0, this);
+        
         int index = 0;
         for (ArrayList<Dice> lstSubDice : ret.getLstDice()) {
             for (Dice dice : lstSubDice) {
@@ -140,6 +156,7 @@ public class Rules {
         index = 0;
         for (FixedValue fixed : ret.getLstFixed()) {
             pcRoll.addObject(index, fixed);
+            index++;
         }
         
         // Check for critical success/failure
@@ -171,7 +188,7 @@ public class Rules {
         pcRoll.setFormula(rolltype.getTotal());
         String strTotal = pcRoll.evaluate();
         if (strTotal != null) {
-            ret.setTotal(Integer.parseInt(strTotal));
+            ret.setTotal(strTotal);
         } else {
             ret.calculateGlobalTotal();
         }
@@ -202,5 +219,36 @@ public class Rules {
     
     public String getName() {
         return name;
+    }
+
+    public String getHelp() {
+        return help;
+    }
+    
+    public Token getToken(int value) {
+        Token ret = null;
+        for (Token token : availableTokens) {
+            if (token.hasValue(value)) {
+                ret = token;
+                break;
+            }
+        }
+        return ret;
+    }
+    
+    public int getMinTokenValue() {
+        int ret = 99;
+        for (Token token : availableTokens) {
+            for (Integer val : token.getValues()) {
+                if (val < ret) {
+                    ret = val;
+                }
+            }
+        }
+        return ret;
+    }
+
+    public ArrayList<Token> getTokens() {
+        return availableTokens;
     }
 }

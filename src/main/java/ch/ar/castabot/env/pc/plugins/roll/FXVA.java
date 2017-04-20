@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ch.ar.castabot.env.pc.plugins;
+package ch.ar.castabot.env.pc.plugins.roll;
 
 import ch.ar.castabot.env.pc.PseudoCode;
 import ch.ar.castabot.plugins.roll.FixedValue;
