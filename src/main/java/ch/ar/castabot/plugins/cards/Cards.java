@@ -41,8 +41,8 @@ import org.json.JSONObject;
  * @author Arei
  */
 public class Cards extends Plugin {
-    private final ArrayList<Card> lstCardsIn = new ArrayList<>();
-    private final ArrayList<Card> lstCardsOut = new ArrayList<>();
+    private final List<Card> lstCardsIn = new ArrayList<>();
+    private final List<Card> lstCardsOut = new ArrayList<>();
     private String deck;
     
     public Cards(String[] args, TextChannel source, User user) throws IOException, Exception {
@@ -127,8 +127,8 @@ public class Cards extends Plugin {
         return ret;
     }
     
-    private ArrayList<PluginResponse> drawAll() throws PluginException, FileNotFoundException {
-        ArrayList<PluginResponse> ret = new ArrayList<>();
+    private List<PluginResponse> drawAll() throws PluginException, FileNotFoundException {
+        List<PluginResponse> ret = new ArrayList<>();
         
         List<Member> lstMember = new ArrayList(source.getMembers());
         
@@ -159,8 +159,8 @@ public class Cards extends Plugin {
     }
 
     @Override
-    public ArrayList<PluginResponse> run() throws PluginException {
-        ArrayList<PluginResponse> ret = new ArrayList<>();
+    public List<PluginResponse> run() throws PluginException {
+        List<PluginResponse> ret = new ArrayList<>();
         Card card = null;
         try {
             switch (args[0]) {

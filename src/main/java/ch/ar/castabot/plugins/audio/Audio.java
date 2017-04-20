@@ -20,6 +20,7 @@ import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
 import java.util.ArrayList;
+import java.util.List;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.TextChannel;
 
@@ -57,8 +58,8 @@ public class Audio extends Plugin {
     }
     
     @Override
-    public ArrayList<PluginResponse> run() throws PluginException {
-        ArrayList<PluginResponse> ret = new ArrayList<>();
+    public List<PluginResponse> run() throws PluginException {
+        List<PluginResponse> ret = new ArrayList<>();
         switch (args[0]) {
             case "play":
                 play();

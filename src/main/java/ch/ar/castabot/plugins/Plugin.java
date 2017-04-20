@@ -18,7 +18,7 @@ package ch.ar.castabot.plugins;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -49,5 +49,5 @@ public abstract class Plugin {
         }
     }
     
-    public abstract ArrayList<PluginResponse> run() throws PluginException;
+    public abstract List<PluginResponse> run() throws PluginException;
 }

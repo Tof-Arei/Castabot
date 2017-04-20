@@ -16,6 +16,7 @@
 package ch.ar.castabot.plugins.roll;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -24,9 +25,9 @@ import java.util.ArrayList;
 public class RollResult {
     private String caption;
     private String total = "0";
-    private ArrayList<ArrayList<Dice>> lstDice = new ArrayList<>();
-    private ArrayList<FixedValue> lstFixed = new ArrayList<>();
-    private ArrayList<Dice> lstExplode = new ArrayList<>();
+    private List<List<Dice>> lstDice = new ArrayList<>();
+    private List<FixedValue> lstFixed = new ArrayList<>();
+    private List<Dice> lstExplode = new ArrayList<>();
     
     public RollResult() {
         
@@ -34,7 +35,7 @@ public class RollResult {
     
     public void calculateGlobalTotal() {
         int subTotal = 0;
-        for (ArrayList<Dice> lstSubDice : lstDice) {
+        for (List<Dice> lstSubDice : lstDice) {
             for (Dice dice : lstSubDice) {
                 if (dice.isNegative()) {
                     subTotal -= dice.getValue();
@@ -76,21 +77,21 @@ public class RollResult {
         this.total = total;
     }
     
-    public ArrayList<ArrayList<Dice>> getLstDice() {
+    public List<List<Dice>> getLstDice() {
         return lstDice;
     }
     
     public void addDice(Dice dice) {
-        ArrayList<Dice> lstTmp = new ArrayList<>();
+        List<Dice> lstTmp = new ArrayList<>();
         lstTmp.add(dice);
         this.lstDice.add(lstTmp);
     }
     
-    public void addDices(ArrayList<ArrayList<Dice>> lstDice) {
+    public void addDices(List<List<Dice>> lstDice) {
         this.lstDice.addAll(lstDice);
     }
 
-    public ArrayList<FixedValue> getLstFixed() {
+    public List<FixedValue> getLstFixed() {
         return lstFixed;
     }
     
@@ -98,11 +99,11 @@ public class RollResult {
         lstFixed.add(fixedValue);
     }
     
-    public void addFixedValues(ArrayList<FixedValue> lstFixed) {
+    public void addFixedValues(List<FixedValue> lstFixed) {
         this.lstFixed.addAll(lstFixed);
     }
     
-    public ArrayList<Dice> getLstExplode() {
+    public List<Dice> getLstExplode() {
         return lstExplode;
     }
     
@@ -110,7 +111,7 @@ public class RollResult {
         lstExplode.add(dice);
     }
     
-    public void addExplodes(ArrayList<Dice> lstExplode) {
+    public void addExplodes(List<Dice> lstExplode) {
         this.lstExplode.addAll(lstExplode);
     }
 }

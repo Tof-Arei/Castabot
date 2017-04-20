@@ -21,6 +21,7 @@ import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.TextChannel;
 /**
@@ -60,8 +61,8 @@ public class Roll extends Plugin {
             str += args[i] + " ";
         }
         str = str.replaceAll("D", "d");
-        ArrayList<FixedValue> lstFixed = new ArrayList<>();
-        ArrayList<ArrayList<Dice>> lstDice = new ArrayList<>();
+        List<FixedValue> lstFixed = new ArrayList<>();
+        List<List<Dice>> lstDice = new ArrayList<>();
         
         // Extract argument if any
         char[] strChars = str.trim().toCharArray();
@@ -72,7 +73,7 @@ public class Roll extends Plugin {
         }
         
         // Exctract the raw dices
-        ArrayList<String> lstRawDices = new ArrayList<>();
+        List<String> lstRawDices = new ArrayList<>();
         String d = "+";
         for (char ch : str.trim().toCharArray()) {
             if (ch == '+' || ch == '-' || ch == ' ') {
@@ -89,7 +90,7 @@ public class Roll extends Plugin {
         for (String rawDice : lstRawDices) {
             String bound = rawDice.toCharArray()[0]+"";
             String[] tmpDice = rawDice.replace(bound, "").split("d");
-            ArrayList<Dice> lstSubDice = new ArrayList<>();
+            List<Dice> lstSubDice = new ArrayList<>();
             if (tmpDice.length > 1) {
                 for (int i = 0; i < Integer.parseInt(tmpDice[0]); i++) {
                     Dice dice = new Dice(Integer.parseInt(tmpDice[1]), (bound.equals("-")));
@@ -108,7 +109,7 @@ public class Roll extends Plugin {
         }
         
         // Do the rolls
-        for (ArrayList<Dice> lstSubDice : lstDice) {
+        for (List<Dice> lstSubDice : lstDice) {
             for (Dice dice : lstSubDice) {
                 dice.roll();
             }
@@ -119,11 +120,11 @@ public class Roll extends Plugin {
         String response = rollResult.getCaption();
         
         // Re-group same dices from original roll
-        ArrayList<ArrayList<Dice>> groupDice = new ArrayList<>();
+        List<List<Dice>> groupDice = new ArrayList<>();
         
         // Output original roll
         String originalRoll = "";
-        for (ArrayList<Dice> lstSubDice : rollResult.getLstDice()) {
+        for (List<Dice> lstSubDice : rollResult.getLstDice()) {
             int nbDice = lstSubDice.size();
             Dice tmpDice = lstSubDice.get(0);
             int maxDice = tmpDice.getMax();
@@ -158,61 +159,9 @@ public class Roll extends Plugin {
         return ret;
     }
     
-    /*private String roll() throws PluginException {
-        ArrayList<PluginResponse> ret = new ArrayList<>();
-        String str = args[0].replaceAll("D", "d");
-        ArrayList<String> lstDice = new ArrayList<>();
-        String d = "+";
-        for (char ch : str.toCharArray()) {
-            if (ch == '+' || ch == '-') {
-                lstDice.add(d);
-                d = "";
-                d += ch;
-            } else {
-                d += ch;
-            }
-        }
-        lstDice.add(d);
-        
-        str = "";
-        String retStr = "";
-        for (String rawDice : lstDice) {
-           String bound = rawDice.toCharArray()[0]+"";
-           String[] dice = rawDice.replace(bound, "").split("d");
-           if (dice.length > 1) {
-               retStr += "["+rawDice+"=";
-                for (int i = 0; i < Integer.parseInt(dice[0]); i++) {
-                    try {
-                        //int val = (new SplittableRandom()).nextInt(Integer.parseInt(dice[1])) + 1;
-                        int val = generateWebInteger(1, Integer.parseInt(dice[1]));
-                        str += bound+val;
-                        retStr += "("+val+")";
-                    } catch (IllegalArgumentException e) {
-                        throw new PluginException("DICE1", "["+args[0]+"] n'est pas un jet valide.");
-                    }
-                }
-                retStr += "]";
-           } else {
-               str += bound+dice[0];
-               retStr += "["+bound+dice[0]+"]";
-           }
-        }
-        
-        Evaluator eval = new Evaluator();
-        String total = "0";
-        try {
-            total = eval.evaluate(str);
-        } catch (EvaluationException ex) {
-            throw new PluginException("DICE1", "[" + args[0] + "] n'est pas un jet valide.");
-        }
-
-        DecimalFormat df = new DecimalFormat("###.#");
-        return "Lancer: {"+retStr+"} \r\n Total: ["+df.format(Double.parseDouble(total))+"]";
-    }*/
-    
     @Override
-    public ArrayList<PluginResponse> run() throws PluginException {
-        ArrayList<PluginResponse> ret = new ArrayList<>();
+    public List<PluginResponse> run() throws PluginException {
+        List<PluginResponse> ret = new ArrayList<>();
         switch (args[0]) {
             case "rules":
                 if (args.length > 1) {

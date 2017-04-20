@@ -18,7 +18,7 @@ package ch.ar.castabot.plugins.help;
 import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
-import java.util.ArrayList;
+import java.util.List;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.TextChannel;
 
@@ -32,7 +32,7 @@ public class Help extends Plugin {
     }
     
     @Override
-    public ArrayList<PluginResponse> run() throws PluginException {
+    public List<PluginResponse> run() throws PluginException {
         String ret = "Commandes disponibles: \r\n";
         ret += "- audio : Permet de jouer de la musique sur le canal audio General. \r\n";
         ret += "- cards : Permet d'utiliser un jeu de cartes virtuel. \r\n";

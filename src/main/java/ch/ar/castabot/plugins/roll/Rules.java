@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -35,9 +36,9 @@ import org.json.JSONObject;
 public class Rules {
     private final String name;
     private String help;
-    private final ArrayList<Token> availableTokens = new ArrayList<>();
-    private final ArrayList<Dice> availableDices = new ArrayList<>();
-    private final ArrayList<Rolltype> lstRolltypes = new ArrayList<>();
+    private final List<Token> availableTokens = new ArrayList<>();
+    private final List<Dice> availableDices = new ArrayList<>();
+    private final List<Rolltype> lstRolltypes = new ArrayList<>();
 
     public Rules(String name) {
         this.name = name;
@@ -94,7 +95,7 @@ public class Rules {
         return ret;
     }
     
-    public boolean isRollValid(String str, ArrayList<ArrayList<Dice>> lstDice, char arg) {
+    public boolean isRollValid(String str, List<List<Dice>> lstDice, char arg) {
         boolean ret = true;
         Rolltype rolltype = getUsedRolltype(arg);
         
@@ -106,7 +107,7 @@ public class Rules {
             }
         }
         
-        for (ArrayList<Dice> lstSubDice : lstDice) {
+        for (List<Dice> lstSubDice : lstDice) {
             for (Dice dice : lstSubDice) {
                 boolean foundDice = false;
                 for (Dice avDice : availableDices) {
@@ -125,14 +126,14 @@ public class Rules {
         return ret;
     }
     
-    public RollResult getRollResults(ArrayList<ArrayList<Dice>> lstDice, ArrayList<FixedValue> lstFixed, char arg) {
+    public RollResult getRollResults(List<List<Dice>> lstDice, List<FixedValue> lstFixed, char arg) {
         Rolltype rolltype = getUsedRolltype(arg);
         // Add bonus dice(s) to roll if available
         if (rolltype.getBonusDice().length() > 0) {
             Dice bonusDice = new Dice("(B) ", Integer.parseInt(rolltype.getBonusDice().split("d")[1]), false);
             bonusDice.setBonus(true);
             bonusDice.roll();
-            ArrayList<Dice> lstBonusDice = new ArrayList<>();
+            List<Dice> lstBonusDice = new ArrayList<>();
             lstBonusDice.add(bonusDice);
             lstDice.add(lstBonusDice);
         }
@@ -147,7 +148,7 @@ public class Rules {
         pcRoll.addObject(0, this);
         
         int index = 0;
-        for (ArrayList<Dice> lstSubDice : ret.getLstDice()) {
+        for (List<Dice> lstSubDice : ret.getLstDice()) {
             for (Dice dice : lstSubDice) {
                 pcRoll.addObject(index, dice);
                 index++;
@@ -248,7 +249,7 @@ public class Rules {
         return ret;
     }
 
-    public ArrayList<Token> getTokens() {
+    public List<Token> getTokens() {
         return availableTokens;
     }
 }

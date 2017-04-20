@@ -154,11 +154,6 @@ public class Castabot {
                     args[j] = strArgs[j];
                 }
                 
-                /*args = new String[matShort.groupCount()];
-                for (int j = 0; j < matShort.groupCount(); j++) {
-                    args[j] = matShort.group(j+1);
-                }*/
-                
                 break;
             }
         }
@@ -169,18 +164,9 @@ public class Castabot {
             for (int j = 1; j < strArgs.length; j++) {
                 args[j] = strArgs[j];
             }
-            
-            /*String[] arrCmd = message.getContent().split(" ");
-            if (arrCmd.length > 0) {
-                command = arrCmd[0].substring(1);
-            }
-            if (arrCmd.length > 1) {
-                args = new String[arrCmd.length - 1];
-                System.arraycopy(arrCmd, 1, args, 0, args.length);
-            }*/
         } 
         
-        ArrayList<PluginResponse> lstResponse = new ArrayList<>();
+        List<PluginResponse> lstResponse = new ArrayList<>();
         // Check if the command exists
         JSONObject permCommands = settings.getJSONObject("commands");
         if (permCommands.has(command)) {
@@ -334,8 +320,8 @@ public class Castabot {
     /*
     * Actual command execution.
     */
-    private ArrayList<PluginResponse> executeCommand(String command, String[] args, TextChannel source, User user) {
-        ArrayList<PluginResponse> ret = new ArrayList<>();
+    private List<PluginResponse> executeCommand(String command, String[] args, TextChannel source, User user) {
+        List<PluginResponse> ret = new ArrayList<>();
         // Heres comes the ugly bit
         try {
             if (args == null) {

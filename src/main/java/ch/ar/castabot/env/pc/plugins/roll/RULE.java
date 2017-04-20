@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -63,7 +64,7 @@ public class RULE extends PseudoCode {
             argLimit = Integer.parseInt(query.split(":")[1]);
             splitQuery = query.replace(":"+argLimit, "").split("/");
         }
-        ArrayList<Token> lstToken = new ArrayList<>();
+        List<Token> lstToken = new ArrayList<>();
         for (int i = 0; i < splitQuery.length; i++) {
             lstToken.add(rules.getToken(Integer.parseInt(splitQuery[i])));
         }
