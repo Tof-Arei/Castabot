@@ -50,9 +50,14 @@ public class RULE extends PseudoCode {
         return lstObject.get(Rules.class.getName());
     }
     
-    private String desc() {
+    private String help() {
         Rules rules = getRules(0);
         return rules.getHelp();
+    }
+    
+    public String name() {
+        Rules rules = getRules(0);
+        return rules.getName();
     }
     
     private String tokens(String query) {
@@ -131,8 +136,11 @@ public class RULE extends PseudoCode {
         String ret = "NULL";
         String[] splitFormula = formula.split(";");
         switch (splitFormula[1]) {
-            case "desc":
-                ret = desc();
+            case "help":
+                ret = help();
+                break;
+            case "name":
+                ret = name();
                 break;
             case "tokens":
                 ret = tokens(splitFormula[2]);
