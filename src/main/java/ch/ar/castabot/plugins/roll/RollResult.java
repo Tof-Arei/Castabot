@@ -70,6 +70,12 @@ public class RollResult {
     }
 
     public String getTotal() {
+        try {
+            if (Integer.parseInt(total) <= 0) {
+                return "1";
+            }
+        } catch (NumberFormatException ex) {}
+            
         return total;
     }
 

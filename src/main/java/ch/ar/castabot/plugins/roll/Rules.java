@@ -58,7 +58,6 @@ public class Rules {
                 JSONArray rawValues = rawToken.getJSONArray("values");
                 Integer[] values = rawValues.toList().toArray(new Integer[rawValues.length()]);
                 Token token = new Token(key, rawToken.getString("desc"), values, rawToken.getInt("limit"));
-                //Token token = new Token(Integer.parseInt(key), rawToken.getString("desc"), rawToken.getInt("limit"));
                 availableTokens.add(token);
             }
             JSONArray dices = rulesConfig.getJSONArray("dices");
@@ -179,12 +178,12 @@ public class Rules {
         // Do potential dice explosion and handle critical failure
         String caption = rolltype.getDesc() + ": ";
         if (criticalSuccess) {
-            caption += " (Réussite critique!) ";
+            caption += " (Réussite critique!)\r\n";
             if (rolltype.canExplode()) {
                 explosion(pcRoll, rolltype, ret);
             }
         } else if (criticalFailure) {
-            caption += " (Échec critique!) ";
+            caption += " (Échec critique!)\r\n";
         }
         ret.setCaption(caption);
         

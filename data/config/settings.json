@@ -6,27 +6,24 @@
     "commands": {
         "audio": "Jouer des fichiers audio sur le canal vocal. \r\n Arguments: play <url> | pause/resume | loop | stop \r\n Exemple: !audio play <youtube_id>",
         "cards": "Interagir avec le jeu de cartes virtuel. \r\n Arguments: deck <deck> | draw | shuffle \r\n Exemple: !cards draw",
-        "roll": "{Tirer un ou plusieurs dés virtuels.\r\n Règles [{RULE;name}]:\r\n {RULE;help}}",
+        "roll": "{Tirer un ou plusieurs dés virtuels.\r\n Arguments: roll <expr> | rules <rules>\r\n Règles [{RULE;name;0}]:\r\n {RULE;help;0}}",
         "help": "Informations sur les commandes.",
         "love": "Commande réservée à Kyuuji."
     },
-    "cmd_params": {
-
-    },
    "cmd_shorts": [
-        ["audio", "(play) (.+)"],
-        ["audio", "(^pause$)"],
-        ["audio", "(^resume$)"],
-        ["audio", "(^loop$)"],
-        ["audio", "(^skip$)"],
-        ["audio", "(^stop$)"],
-        ["cards", "(deck) (.+)"],
-        ["cards", "(^draw$)"],
-        ["cards", "(^drawall$)"],
-        ["cards", "(^shuffle$)"],
+        ["audio", "^(play) (.+)$"],
+        ["audio", "^(pause)$"],
+        ["audio", "^(resume)$"],
+        ["audio", "^(loop)$"],
+        ["audio", "^(skip)$"],
+        ["audio", "^(stop)$"],
+        ["cards", "^(deck) (.+)$"],
+        ["cards", "^(draw)$"],
+        ["cards", "^(drawall)$"],
+        ["cards", "^(shuffle)$"],
         ["roll", "((?:\\-?\\+?[0-9]{1,2}[dD][0-9]{1,3}( [a-zA-Z]{1})?|\\-?\\+?[0-9]{1,3}( [a-zA-Z]{1})?){1,})"],
-        ["roll", "(rules) (.+)"],
-        ["love", "(^love$)"]
+        ["roll", "^(rules) (.+)$"],
+        ["love", "^(love)$"]
     ],
     "permissions": {
         "global":{
@@ -55,7 +52,7 @@
                 },
                 "roll": {
                     "default": true,
-                    "init": true
+                    "rules": true
                 },
                 "help": true
             },
@@ -75,7 +72,7 @@
                 },
                 "roll": {
                     "default": true,
-                    "init": true
+                    "rules": true
                 },
                 "help": true
             },
@@ -95,7 +92,7 @@
                 },
                 "roll": {
                     "default": true,
-                    "init": false
+                    "rules": false
                 },
                 "help": true
             },
@@ -115,7 +112,7 @@
                 },
                 "roll": {
                     "default": true,
-                    "init": false
+                    "rules": false
                 },
                 "help": true
             }
