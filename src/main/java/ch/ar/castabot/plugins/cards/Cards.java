@@ -40,9 +40,24 @@ public class Cards extends Plugin {
     private List<PluginResponse> drawAll() throws PluginException {
         List<PluginResponse> ret = new ArrayList<>();
         List<Member> lstMember = new ArrayList<>();
+        String targetChannel = null;
+        if (args.length > 1) {
+            targetChannel = args[1];
+        }
+        
         for (VoiceChannel voiceChannel : source.getGuild().getVoiceChannels()) {
-            for (Member member : voiceChannel.getMembers()) {
-                lstMember.add(member);
+            boolean draw = true;
+            if (targetChannel != null) {
+                if (!targetChannel.equals(voiceChannel.getName())) {
+                    draw = false;
+                }
+            }
+            if (draw) {
+                for (Member member : voiceChannel.getMembers()) { 
+                    if (!member.getUser().isBot()) {
+                        lstMember.add(member);
+                    }
+                }
             }
         }
         
@@ -50,10 +65,8 @@ public class Cards extends Plugin {
         if (deck.getNbCardsLeft() >= lstMember.size()) {
             Collections.shuffle(lstMember);
             for (Member member : lstMember) {
-                if (!member.getUser().isBot() && member.getOnlineStatus() == OnlineStatus.ONLINE) {
-                    Card card = deck.draw();
-                    ret.add(new PluginResponse(card.print()+"\r\n"+CastabotClient.getCastabot().getConfig().getProperty("web_root")+"files/cards/default/"+card+".png", member.getUser()));
-                }
+                Card card = deck.draw();
+                ret.add(new PluginResponse(card.print()+"\r\n"+CastabotClient.getCastabot().getConfig().getProperty("web_root")+"files/cards/default/"+card+".png", member.getUser()));
             }
         } else {
             throw new PluginException("CARDS-4", "Plus assez de cartes pour tout les joueurs. Veuillez mélanger.");
