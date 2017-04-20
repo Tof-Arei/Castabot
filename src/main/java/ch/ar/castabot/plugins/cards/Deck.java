@@ -15,22 +15,13 @@
  */
 package ch.ar.castabot.plugins.cards;
 
-import ch.ar.castabot.CastabotClient;
 import ch.ar.castabot.plugins.PluginException;
-import ch.ar.castabot.plugins.PluginResponse;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.VoiceChannel;
 import org.json.JSONObject;
 
 /**
@@ -38,9 +29,9 @@ import org.json.JSONObject;
  * @author Arei
  */
 public class Deck {
-    private static final List<Card> lstCardsIn = new ArrayList<>();
-    private static final List<Card> lstCardsOut = new ArrayList<>();
-    private static String name;
+    private final List<Card> lstCardsIn = new ArrayList<>();
+    private final List<Card> lstCardsOut = new ArrayList<>();
+    private String name;
     
     public Deck(String name) throws PluginException {
         this.name = name;
@@ -95,30 +86,6 @@ public class Deck {
         return ret;
     }
     
-    public List<PluginResponse> drawAll(TextChannel source) throws PluginException {
-        List<PluginResponse> ret = new ArrayList<>();
-        List<Member> lstMember = new ArrayList<>();
-        for (VoiceChannel voiceChannel : source.getGuild().getVoiceChannels()) {
-            for (Member member : voiceChannel.getMembers()) {
-                lstMember.add(member);
-            }
-        }
-        
-        if (lstCardsIn.size() >= lstMember.size()) {
-            Collections.shuffle(lstMember);
-            for (Member member : lstMember) {
-                if (!member.getUser().isBot() && member.getOnlineStatus() == OnlineStatus.ONLINE) {
-                    Card card = draw();
-                    ret.add(new PluginResponse(card.print()+"\r\n"+CastabotClient.getCastabot().getConfig().getProperty("web_root")+"files/cards/default/"+card+".png", member.getUser()));
-                }
-            }
-        } else {
-            throw new PluginException("CARDS-4", "Plus assez de cartes pour tout les joueurs. Veuillez mélanger.");
-        }
-        
-        return ret;
-    }
-    
     public void shuffle() throws PluginException {
         if (lstCardsIn.size() > 0 || lstCardsOut.size() > 0) {
             lstCardsIn.addAll(lstCardsOut);
@@ -127,5 +94,9 @@ public class Deck {
         } else {
             throw new PluginException("CARDS-2", "Le deck est vide, veuillez le réinitialiser.");
         }
+    }
+    
+    public int getNbCardsLeft() {
+        return lstCardsIn.size();
     }
 }

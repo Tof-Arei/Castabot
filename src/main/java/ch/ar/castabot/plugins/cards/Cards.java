@@ -21,9 +21,13 @@ import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.VoiceChannel;
 /**
  *
  * @author Arei
@@ -31,6 +35,31 @@ import net.dv8tion.jda.core.entities.TextChannel;
 public class Cards extends Plugin {
     public Cards(String[] args, TextChannel source, User user) throws IOException, Exception {
         super(args, source, user);
+    }
+    
+    private List<PluginResponse> drawAll() throws PluginException {
+        List<PluginResponse> ret = new ArrayList<>();
+        List<Member> lstMember = new ArrayList<>();
+        for (VoiceChannel voiceChannel : source.getGuild().getVoiceChannels()) {
+            for (Member member : voiceChannel.getMembers()) {
+                lstMember.add(member);
+            }
+        }
+        
+        Deck deck = (Deck) CastabotClient.getCastabot().getPluginSettings().getValue("cards", "deck");
+        if (deck.getNbCardsLeft() >= lstMember.size()) {
+            Collections.shuffle(lstMember);
+            for (Member member : lstMember) {
+                if (!member.getUser().isBot() && member.getOnlineStatus() == OnlineStatus.ONLINE) {
+                    Card card = deck.draw();
+                    ret.add(new PluginResponse(card.print()+"\r\n"+CastabotClient.getCastabot().getConfig().getProperty("web_root")+"files/cards/default/"+card+".png", member.getUser()));
+                }
+            }
+        } else {
+            throw new PluginException("CARDS-4", "Plus assez de cartes pour tout les joueurs. Veuillez mélanger.");
+        }
+        
+        return ret;
     }
 
     @Override
@@ -47,7 +76,7 @@ public class Cards extends Plugin {
                 ret.add(new PluginResponse(card.print()+"\r\n"+CastabotClient.getCastabot().getConfig().getProperty("web_root")+"files/cards/default/"+card+".png", user));
                 break;
             case "drawall":
-                ret = deck.drawAll(source);
+                ret = drawAll();
                 break;
             case "shuffle" :
                 deck.shuffle();
