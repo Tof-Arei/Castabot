@@ -22,6 +22,7 @@ import ch.ar.castabot.env.pc.PseudoCode;
 import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
+import ch.ar.castabot.plugins.cards.Deck;
 import ch.ar.castabot.plugins.roll.Rules;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -59,7 +60,6 @@ import org.json.JSONObject;
 
 /**
  * @todo replace cards.json file Using PluginSettings object
- * @todo dice rules
  * @todo actual permissions (add permissions by group/user to global command permissions)
  * @author Arei
  */
@@ -341,7 +341,7 @@ public class Castabot {
             if (args.length > 0) {
                 if (args[0].equals("-h") || args[0].equals("--help")) {
                     JSONObject permCommands = settings.getJSONObject("commands");
-                    Rules rules = new Rules(CastabotClient.getCastabot().getPluginSettings().getValue("roll", "rules"));
+                    Rules rules = new Rules((String) CastabotClient.getCastabot().getPluginSettings().getValue("roll", "rules"));
                     PseudoCode pc = new PseudoCode(permCommands.getString(command));
                     pc.addObject(0, rules);
                     ret.add(new PluginResponse(pc.evaluate(), user));
@@ -495,35 +495,35 @@ public class Castabot {
     }
     
     public class PluginSettings {
-        private final Map<String, Map<String, String>> lstSetting = new HashMap<>();
+        private final Map<String, Map<String, Object>> lstSetting = new HashMap<>();
         
         public PluginSettings() {
             try {
                 initSettings();
-            } catch (ClassNotFoundException ex) {
+            } catch (ClassNotFoundException | PluginException ex) {
                 Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         
-        private void initSettings() throws ClassNotFoundException {
-            Map<String, String> cardsSetting = new HashMap<>();
-            cardsSetting.put("deck", "default");
+        private void initSettings() throws ClassNotFoundException, PluginException {
+            Map<String, Object> cardsSetting = new HashMap<>();
+            cardsSetting.put("deck", new Deck("default"));
             lstSetting.put("cards", cardsSetting);
             
-            Map<String, String> rollSetting = new HashMap<>();
-            rollSetting.put("rules", "savage");
+            Map<String, Object> rollSetting = new HashMap<>();
+            rollSetting.put("rules", "default");
             lstSetting.put("roll", rollSetting);
         }
         
-        public void addValue(String plugin, String setting, String value) {
+        public void addValue(String plugin, String setting, Object value) {
             lstSetting.get(plugin).put(setting, value);
         }
         
-        public void setValue(String plugin, String setting, String value) {
+        public void setValue(String plugin, String setting, Object value) {
             lstSetting.get(plugin).replace(setting, value);
         }
         
-        public String getValue(String plugin, String setting) {
+        public Object getValue(String plugin, String setting) {
             return lstSetting.get(plugin).get(setting);
         }
     }

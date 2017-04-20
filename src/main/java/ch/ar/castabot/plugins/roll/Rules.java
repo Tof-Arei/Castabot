@@ -35,6 +35,7 @@ import org.json.JSONObject;
  */
 public class Rules {
     private final String name;
+    private String activateAction;
     private String help;
     private final List<Token> availableTokens = new ArrayList<>();
     private final List<Dice> availableDices = new ArrayList<>();
@@ -42,7 +43,6 @@ public class Rules {
 
     public Rules(String name) {
         this.name = name;
-        this.help = null;
         loadRules();
     }
     
@@ -51,6 +51,7 @@ public class Rules {
         try {
             rawRules = Files.readAllBytes(Paths.get("data/plugins/roll/rules.json"));
             JSONObject rulesConfig = new JSONObject(new String(rawRules)).getJSONObject(name);
+            activateAction = rulesConfig.getString("activate_action");
             help = rulesConfig.getString("help");
             JSONObject rawTokens = rulesConfig.getJSONObject("tokens");
             for (String key : rawTokens.keySet()) {
@@ -222,6 +223,10 @@ public class Rules {
     
     public String getName() {
         return name;
+    }
+    
+    public String getActivateAction() {
+        return activateAction;
     }
 
     public String getHelp() {

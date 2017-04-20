@@ -16,6 +16,7 @@
 package ch.ar.castabot.plugins.roll;
 
 import ch.ar.castabot.CastabotClient;
+import ch.ar.castabot.env.pc.PseudoCode;
 import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
@@ -29,7 +30,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
  * @author Arei
  */
 public class Roll extends Plugin {
-    private Rules rules = new Rules(CastabotClient.getCastabot().getPluginSettings().getValue("roll", "rules"));
+    private Rules rules = new Rules((String) CastabotClient.getCastabot().getPluginSettings().getValue("roll", "rules"));
     
     
     public Roll(String[] args, TextChannel source, User user) {
@@ -168,10 +169,15 @@ public class Roll extends Plugin {
                 } else {
                     rules("default");
                 }
-                ret.add(new PluginResponse("Activation des règles de roll ["+rules.getName()+"].", user));
+                String retStr = "Activation des règles de roll ["+rules.getName()+"].";
+                PseudoCode pc = new PseudoCode(rules.getActivateAction());
+                String eval = pc.evaluate();
+                if (eval != null) {
+                    retStr += "\r\n" + eval;
+                }
+                ret.add(new PluginResponse(retStr, user));
                 break;
             default:
-                //ret.add(new PluginResponse(roll(), user));
                 ret.add(roll());
         }
         return ret;

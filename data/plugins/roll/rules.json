@@ -1,7 +1,8 @@
 {
     "default": {
+        "activate_action": "",
         "dices": [],
-        "help": "Arguments disponibles: (a=action/dégâts)",
+        "help": "Règles default.\r\n Arguments disponibles: (a=action/dégâts)",
         "tokens": {},
         "rolltypes": [
             {
@@ -21,6 +22,7 @@
         ]
     },
     "savage": {
+        "activate_action": "{CARD;shuffle}",
         "dices": ["Xd4", "Xd6", "Xd8", "Xd10", "Xd12", "Xd20"],
         "help": "Arguments disponibles: (a=action/dégâts), h=toucher, t=tokens",
         "tokens": {

@@ -48,10 +48,6 @@ public class PseudoCode {
         return evaluate(formula);
     }
     
-    // {IF;{dice_groups};>;1;{SUM;{dice_1:val};{dice_2:val}};{dice_1:val}}
-    // {IF;{dice_groups};>;1;{SUM;3;5};3}   {IF;{dice_groups};>;1;{SUM;3;null};3}}
-    // {IF;2;>;1;8;3}                       {IF;1;>;1;3;3}
-    // {8}                                  {3}
     private String evaluate(String formula) {
         String ret = null;
         
