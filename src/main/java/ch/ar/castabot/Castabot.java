@@ -18,9 +18,11 @@ package ch.ar.castabot;
 
 import ch.ar.castabot.env.audio.MusicManager;
 import ch.ar.castabot.env.audio.LoadResultHandler;
+import ch.ar.castabot.env.pc.PseudoCode;
 import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
+import ch.ar.castabot.plugins.roll.Rules;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
@@ -160,9 +162,10 @@ public class Castabot {
         
         if (!isShort) {
             // Extract command and arguments
+            command = strArgs[0];
             args = new String[strArgs.length-1];
             for (int j = 1; j < strArgs.length; j++) {
-                args[j] = strArgs[j];
+                args[j-1] = strArgs[j];
             }
         } 
         
@@ -338,7 +341,10 @@ public class Castabot {
             if (args.length > 0) {
                 if (args[0].equals("-h") || args[0].equals("--help")) {
                     JSONObject permCommands = settings.getJSONObject("commands");
-                    ret.add(new PluginResponse(permCommands.getString(command), user));
+                    Rules rules = new Rules(CastabotClient.getCastabot().getPluginSettings().getValue("roll", "rules"));
+                    PseudoCode pc = new PseudoCode(permCommands.getString(command));
+                    pc.addObject(0, rules);
+                    ret.add(new PluginResponse(pc.evaluate(), user));
                 }
             }
             if (ret.isEmpty()) {
@@ -500,9 +506,6 @@ public class Castabot {
         }
         
         private void initSettings() throws ClassNotFoundException {
-            /*for (Class clazz : Castabot.getClasses("ch.ar.castabot.plugins", PseudoCode.class.getClassLoader())) {
-                lstSetting.put(clazz.getName(), new HashMap<>());
-            }*/
             Map<String, String> cardsSetting = new HashMap<>();
             cardsSetting.put("deck", "default");
             lstSetting.put("cards", cardsSetting);

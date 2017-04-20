@@ -85,12 +85,16 @@ public class PseudoCode {
             if (ret == null) {
                 try {
                     Class<?> clazz = getModule("ch.ar.castabot.env.pc", splitFormula[0]);
-                    Class[] types = {String.class};
-                    Constructor<?> constructor = clazz.getConstructor(types);
-                    Object[] classArgs = {formula};
-                    PseudoCode pc = (PseudoCode) constructor.newInstance(classArgs);
-                    pc.setObjects(lstObject);
-                    ret = pc.calculate();
+                    if (clazz != null) {
+                        Class[] types = {String.class};
+                        Constructor<?> constructor = clazz.getConstructor(types);
+                        Object[] classArgs = {formula};
+                        PseudoCode pc = (PseudoCode) constructor.newInstance(classArgs);
+                        pc.setObjects(lstObject);
+                        ret = pc.calculate();
+                    } else {
+                        ret = formula;
+                    }
                 } catch (IOException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | ClassNotFoundException ex) {
                     Logger.getLogger(PseudoCode.class.getName()).log(Level.SEVERE, null, ex);
                 }

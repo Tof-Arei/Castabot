@@ -41,11 +41,6 @@ public class Roll extends Plugin {
         CastabotClient.getCastabot().getPluginSettings().setValue("roll", "rules", rules);
     }
     
-    // !1d8+1d6 (savage hit)
-    // !1d4+1d6-2 (savage hit)
-    // !2d6 (savage action)
-    // !2d4+1d8 (savage action)
-    
     // 1. Players rolls a set of dice.
     // 2. Bot parses the roll, according to the active rules and optional argument :
     //      - Are the dices authorized?

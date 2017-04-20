@@ -50,7 +50,7 @@ public class RULE extends PseudoCode {
         return lstObject.get(Rules.class.getName());
     }
     
-    private String help() {
+    private String desc() {
         Rules rules = getRules(0);
         return rules.getHelp();
     }
@@ -131,8 +131,8 @@ public class RULE extends PseudoCode {
         String ret = "NULL";
         String[] splitFormula = formula.split(";");
         switch (splitFormula[1]) {
-            case "help":
-                ret = help();
+            case "desc":
+                ret = desc();
                 break;
             case "tokens":
                 ret = tokens(splitFormula[2]);
