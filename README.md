@@ -12,3 +12,6 @@ https://github.com/DV8FromTheWorld/JDA
 
 lavaplayer<br/>
 https://github.com/sedmelluq/lavaplayer
+
+Reflections<br />
+https://github.com/ronmamo/reflections
