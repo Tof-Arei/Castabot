@@ -1,6 +1,6 @@
 {
     "default": {
-        "activate_action": "",
+        "activate_action": "{CARD;init;default}",
         "dices": [],
         "help": "Règles default.\r\n Arguments disponibles: (a=action/dégâts)",
         "tokens": {},
@@ -22,7 +22,7 @@
         ]
     },
     "savage": {
-        "activate_action": "{CARD;shuffle}",
+        "activate_action": "{CARD;init;savage}",
         "dices": ["Xd4", "Xd6", "Xd8", "Xd10", "Xd12", "Xd20"],
         "help": "Arguments disponibles: (d=dégâts), a=action, t=tokens",
         "tokens": {

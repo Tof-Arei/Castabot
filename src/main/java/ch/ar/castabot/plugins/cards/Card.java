@@ -15,6 +15,7 @@
  */
 package ch.ar.castabot.plugins.cards;
 
+import ch.ar.castabot.CastabotClient;
 import java.io.File;
 
 /**
@@ -45,10 +46,12 @@ public class Card {
     
     private final int color;
     private final int value;
+    private final String desc;
     
-    public Card(int color, int value) {
+    public Card(int color, int value, String desc) {
         this.color = color;
         this.value = value;
+        this.desc = desc;
     }
     
     public String print() {
@@ -87,11 +90,24 @@ public class Card {
                 ret += COLOR_DIAMOND_S;
                 break;
         }
+        if (!desc.equals("")) {
+            ret += "\r\n" + desc;
+        }
         return ret;
     }
     
     public File getFile() {
         return new File("data/plugins/cards/default/"+color+"-"+value+".png");
+    }
+    
+    public String getUrl() {
+        String webRoot = CastabotClient.getCastabot().getConfig().getProperty("web_root");
+        Deck deck = (Deck) CastabotClient.getCastabot().getPluginSettings().getValue("cards", "deck");
+        return webRoot + "files/cards/" + deck.getImgDeck() + "/" + this + ".png";
+    }
+    
+    public String getDesc() {
+        return desc;
     }
 
     public int getColor() {

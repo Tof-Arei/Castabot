@@ -29,10 +29,13 @@ import org.json.JSONObject;
  * @author Arei
  */
 public class Deck {
+    private String name;
+    private String activateAction;
+    private String imgDeck;
+     
     private final List<Card> lstCardsIn = new ArrayList<>();
     private final List<Card> lstCardsOut = new ArrayList<>();
-    private String name;
-    
+   
     public Deck(String name) throws PluginException {
         this.name = name;
         try {
@@ -44,30 +47,44 @@ public class Deck {
     
     private void init() throws PluginException, IOException {
         byte[] rawDecks = Files.readAllBytes(Paths.get("data/plugins/cards/decks.json"));
-        JSONObject dbDecks = new JSONObject(new String(rawDecks));
+        JSONObject objDeck = new JSONObject(new String(rawDecks));
         
-        if (dbDecks.has(name)) {
-            this.name = name;
-            fill(dbDecks.getJSONArray(name).toList());
+        if (objDeck.has(name)) {
+            fill(objDeck.getJSONObject(name));
             shuffle();
         } else {
             throw new PluginException("CARDS-1", "Le deck ["+name+"] n'éxiste pas.");
         }
     }
     
-    private void fill(List<Object> rawDeck) {
-        fill(rawDeck, false);
+    private void fill(JSONObject objDeck) {
+        fill(objDeck, false);
     }
     
-    private void fill(List<Object> rawDeck, boolean out) {
-        for (Object rawCard : rawDeck) {
-            String[] card = ((String) rawCard).split("-");
-            int color = Integer.parseInt(card[0]);
-            int value = Integer.parseInt(card[1]);
-            if (!out) {
-                lstCardsIn.add(new Card(color, value));
-            } else {
-                lstCardsOut.add(new Card(color, value));
+    private void fill(JSONObject objDeck, boolean out) {
+        activateAction = objDeck.getString("activate_action");
+        imgDeck = objDeck.getString("img_deck");
+        for (String format : objDeck.getString("format").split(";")) {
+            String[] splitFormat = format.split("-");
+            for (int i = 0; i < Integer.parseInt(splitFormat[1]); i++) {
+                String[] rawCard = new String[3];
+                rawCard[0] = splitFormat[0];
+                rawCard[1] = (rawCard[0].equals("0")) ? "0" : String.valueOf(i+1);
+                rawCard[2] = "";
+                
+                for (int j = 0; j < objDeck.getJSONArray("descs").length(); j++) {
+                    JSONObject objDesc = objDeck.getJSONArray("descs").getJSONObject(j);
+                    if (objDesc.has(rawCard[0]+"-"+rawCard[1])) {
+                        rawCard[2] = objDesc.getString(rawCard[0]+"-"+rawCard[1]);
+                    }
+                }
+                
+                Card card = new Card(Integer.parseInt(rawCard[0]), Integer.parseInt(rawCard[1]), rawCard[2]);
+                if (!out) {
+                    lstCardsIn.add(card);
+                } else {
+                    lstCardsOut.add(card);
+                }
             }
         }
     }
@@ -98,5 +115,17 @@ public class Deck {
     
     public int getNbCardsLeft() {
         return lstCardsIn.size();
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public String getActivateAction() {
+        return activateAction;
+    }
+    
+    public String getImgDeck() {
+        return imgDeck;
     }
 }

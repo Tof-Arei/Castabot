@@ -30,16 +30,8 @@ import net.dv8tion.jda.core.entities.TextChannel;
  * @author Arei
  */
 public class Roll extends Plugin {
-    private Rules rules = new Rules((String) CastabotClient.getCastabot().getPluginSettings().getValue("roll", "rules"));
-    
-    
     public Roll(String[] args, TextChannel source, User user) {
         super(args, source, user);
-    }
-    
-    private void rules(String rules) {
-        this.rules = new Rules(rules);
-        CastabotClient.getCastabot().getPluginSettings().setValue("roll", "rules", rules);
     }
     
     // 1. Players rolls a set of dice.
@@ -51,6 +43,7 @@ public class Roll extends Plugin {
     //      - Do rerolls if any, states criticals if any.
     // 4b. Bot finally outputs the roll result to the user
     private PluginResponse roll() throws PluginException {
+        Rules rules = (Rules) CastabotClient.getCastabot().getPluginSettings().getValue("roll", "rules");
         PluginResponse ret;
         String str = "";
         for (int i = 0; i < args.length;i++) {
@@ -159,23 +152,27 @@ public class Roll extends Plugin {
         return ret;
     }
     
+    private String rules(String rulesName) {
+        Rules rules = new Rules(rulesName);
+        CastabotClient.getCastabot().getPluginSettings().setValue("roll", "rules", rules);
+        String ret = "Activation des règles de roll ["+rules.getName()+"].";
+        
+        PseudoCode pc = new PseudoCode(rules.getActivateAction());
+        String eval = pc.evaluate();
+        if (eval != null) {
+            ret += "\r\n" + eval;
+        }
+        return ret;
+    }
+    
     @Override
     public List<PluginResponse> run() throws PluginException {
         List<PluginResponse> ret = new ArrayList<>();
         switch (args[0]) {
             case "rules":
                 if (args.length > 1) {
-                    rules(args[1]);
-                } else {
-                    rules("default");
+                    ret.add(new PluginResponse(rules(args[1]), user));
                 }
-                String retStr = "Activation des règles de roll ["+rules.getName()+"].";
-                PseudoCode pc = new PseudoCode(rules.getActivateAction());
-                String eval = pc.evaluate();
-                if (eval != null) {
-                    retStr += "\r\n" + eval;
-                }
-                ret.add(new PluginResponse(retStr, user));
                 break;
             default:
                 ret.add(roll());

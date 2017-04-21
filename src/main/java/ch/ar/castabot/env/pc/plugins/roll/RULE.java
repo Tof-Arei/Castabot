@@ -15,6 +15,7 @@
  */
 package ch.ar.castabot.env.pc.plugins.roll;
 
+import ch.ar.castabot.CastabotClient;
 import ch.ar.castabot.env.pc.PseudoCode;
 import ch.ar.castabot.plugins.roll.Rules;
 import ch.ar.castabot.plugins.roll.Token;
@@ -74,7 +75,7 @@ public class RULE extends PseudoCode {
         for (int i = 0; i < splitQuery.length; i++) {
             lstToken.add(rules.getToken(Integer.parseInt(splitQuery[i])));
         }
-        
+
         Collections.sort(lstToken, new Comparator<Token>() {
             @Override
             public int compare(Token t1, Token t2) {
@@ -131,11 +132,21 @@ public class RULE extends PseudoCode {
         return ret;
     }
     
+    private String rules(String rulesName) {
+        Rules rules = new Rules(rulesName);
+        CastabotClient.getCastabot().getPluginSettings().setValue("roll", "rules", rules);
+        String ret = "Activation des règles de roll ["+rules.getName()+"].";
+        return ret;
+    }
+    
     @Override
     public String calculate() {
         String ret = "NULL";
         String[] splitFormula = formula.split(";");
         switch (splitFormula[1]) {
+            case "rules":
+                ret = rules(splitFormula[2]);
+                break;
             case "help":
                 ret = help(Integer.parseInt(splitFormula[2]));
                 break;

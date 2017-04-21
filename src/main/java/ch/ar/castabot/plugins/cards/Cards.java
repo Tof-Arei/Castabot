@@ -16,6 +16,7 @@
 package ch.ar.castabot.plugins.cards;
 
 import ch.ar.castabot.CastabotClient;
+import ch.ar.castabot.env.pc.PseudoCode;
 import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
@@ -27,6 +28,7 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
+
 /**
  *
  * @author Arei
@@ -73,6 +75,19 @@ public class Cards extends Plugin {
         
         return ret;
     }
+    
+    private String init(String deckName) throws PluginException {
+        Deck deck = new Deck(deckName);
+        CastabotClient.getCastabot().getPluginSettings().setValue("cards", "deck", deck);
+        String ret = "Jeu de cartes initié avec le deck ["+deck.getName()+"] et mélangé.";
+        
+        PseudoCode pc = new PseudoCode(deck.getActivateAction());
+        String eval = pc.evaluate();
+        if (eval != null) {
+            ret += "\r\n" + eval;
+        }
+        return ret;
+    }
 
     @Override
     public List<PluginResponse> run() throws PluginException {
@@ -80,12 +95,13 @@ public class Cards extends Plugin {
         Deck deck = (Deck) CastabotClient.getCastabot().getPluginSettings().getValue("cards", "deck");
         switch (args[0]) {
             case "deck" :
-                CastabotClient.getCastabot().getPluginSettings().setValue("cards", "deck", new Deck(args[1]));
-                ret.add(new PluginResponse("Jeu de cartes initié avec le deck ["+deck+"] et mélangé.", user));
+                if (args.length > 1) {
+                    ret.add(new PluginResponse(init(args[1]), user));
+                }
                 break;
             case "draw" :
                 Card card = deck.draw();
-                ret.add(new PluginResponse(card.print()+"\r\n"+CastabotClient.getCastabot().getConfig().getProperty("web_root")+"files/cards/default/"+card+".png", user));
+                ret.add(new PluginResponse(card.print()+"\r\n"+card.getUrl(), user));
                 break;
             case "drawall":
                 ret = drawAll();

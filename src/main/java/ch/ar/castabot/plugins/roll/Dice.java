@@ -69,12 +69,6 @@ public class Dice extends RollElement {
         value = (ThreadLocalRandom.current()).nextInt(max) + 1;
         //value = generateWebInteger(1, max);
     }
-    
-    // For rules testing purpose! D:
-    /*@Override
-    public int getValue() {
-        return max;
-    }*/
 
     public int getMax() {
         return max;

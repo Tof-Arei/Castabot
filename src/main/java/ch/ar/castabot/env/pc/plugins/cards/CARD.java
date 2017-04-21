@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ch.ar.castabot.env.pc.math.cards;
+package ch.ar.castabot.env.pc.plugins.cards;
 
 import ch.ar.castabot.CastabotClient;
 import ch.ar.castabot.env.pc.PseudoCode;
@@ -30,6 +30,19 @@ import java.util.logging.Logger;
 public class CARD extends PseudoCode {
     public CARD(String formula) {
         super(formula);
+    }
+    
+    private String init(String deckName) {
+        String ret = "";
+        try {
+            Deck deck = new Deck(deckName);
+            deck.shuffle();
+            CastabotClient.getCastabot().getPluginSettings().setValue("cards", "deck", deck);
+            ret += "Jeu de cartes initié avec le deck ["+deck.getName()+"] et mélangé.";
+        } catch (PluginException ex) {
+            Logger.getLogger(CARD.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return ret;
     }
     
     private String shuffle() {
@@ -50,6 +63,9 @@ public class CARD extends PseudoCode {
         String[] splitFormula = formula.split(";");
         Card card = null;
         switch (splitFormula[1]) {
+            case "init":
+                ret = init(splitFormula[2]);
+                break;
             case "shuffle":
                 ret = shuffle();
                 break;

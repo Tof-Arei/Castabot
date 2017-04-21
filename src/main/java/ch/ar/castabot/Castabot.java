@@ -26,6 +26,7 @@ import ch.ar.castabot.env.permissions.UserPermission;
 import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
+import ch.ar.castabot.plugins.PluginSettings;
 import ch.ar.castabot.plugins.cards.Deck;
 import ch.ar.castabot.plugins.roll.Rules;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -38,24 +39,19 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.jar.JarEntry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -73,7 +69,6 @@ import org.json.JSONObject;
 public class Castabot {
     private static final Properties config = new Properties();
     private static JSONObject settings;
-    //private static JSONObject permissions;
     private static Permissions permissions;
     
     private AudioPlayerManager playerManager;
@@ -335,7 +330,7 @@ public class Castabot {
             if (args.length > 0) {
                 if (args[0].equals("-h") || args[0].equals("--help")) {
                     JSONObject permCommands = settings.getJSONObject("commands");
-                    Rules rules = new Rules((String) CastabotClient.getCastabot().getPluginSettings().getValue("roll", "rules"));
+                    Rules rules = (Rules) CastabotClient.getCastabot().getPluginSettings().getValue("roll", "rules");
                     PseudoCode pc = new PseudoCode(permCommands.getString(command));
                     pc.addObject(0, rules);
                     ret.add(new PluginResponse(pc.evaluate(), user));
@@ -435,39 +430,5 @@ public class Castabot {
     
     public PluginSettings getPluginSettings() {
         return pluginSetting;
-    }
-    
-    public class PluginSettings {
-        private final Map<String, Map<String, Object>> lstSetting = new HashMap<>();
-        
-        public PluginSettings() {
-            try {
-                initSettings();
-            } catch (ClassNotFoundException | PluginException ex) {
-                Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        
-        private void initSettings() throws ClassNotFoundException, PluginException {
-            Map<String, Object> cardsSetting = new HashMap<>();
-            cardsSetting.put("deck", new Deck("default"));
-            lstSetting.put("cards", cardsSetting);
-            
-            Map<String, Object> rollSetting = new HashMap<>();
-            rollSetting.put("rules", "default");
-            lstSetting.put("roll", rollSetting);
-        }
-        
-        public void addValue(String plugin, String setting, Object value) {
-            lstSetting.get(plugin).put(setting, value);
-        }
-        
-        public void setValue(String plugin, String setting, Object value) {
-            lstSetting.get(plugin).replace(setting, value);
-        }
-        
-        public Object getValue(String plugin, String setting) {
-            return lstSetting.get(plugin).get(setting);
-        }
     }
 }
