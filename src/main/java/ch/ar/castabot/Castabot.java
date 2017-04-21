@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.jar.JarEntry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -315,56 +316,6 @@ public class Castabot {
         return false;
     }
     
-    /*private boolean checkPermission(Guild guild, User user, String command, String[] args) {
-        boolean ret = false;
-        JSONObject objPermissions = getPermissions(guild.getMember(user));
-        if (objPermissions != null) {
-            if (objPermissions.has(command)) {
-                JSONObject objCommandPermission = objPermissions.getJSONObject(command);
-                if (objCommandPermission != null) {
-                    boolean argFound = false;
-                    for (String argKey : objCommandPermission.getJSONObject("args").keySet()) {
-                        if (args[0].equals(argKey)) {
-                            ret = objCommandPermission.getJSONObject("args").getBoolean(argKey);
-                            argFound = true;
-                            break;
-                        }
-                    }
-                    if (!argFound) {
-                        ret = objCommandPermission.getBoolean("default");
-                    }
-                }
-            }
-        }
-        return ret;
-    }*/
-    
-    /*private JSONObject getPermissions(Member member) {
-        // Look for user specific permissions
-        JSONObject objPermissions = permissions.getJSONObject("users");
-        if (objPermissions != null) {
-            if (objPermissions.has(member.getUser().getId())) {
-                return objPermissions.getJSONObject(member.getUser().getId());
-            }
-        }
-        
-        // Nothing found, look for role specific permissions (@everyone != Global permissions!)
-        objPermissions = permissions.getJSONObject("roles");
-        if (objPermissions != null) {
-            for (String roleKey : objPermissions.keySet()) {
-                JSONObject objRolePermissions = objPermissions.getJSONObject(roleKey);
-                for (Role role : member.getRoles()) {
-                    if (role.getName().equals(roleKey)) {
-                        return objRolePermissions;
-                    }
-                }
-            }
-        }
-        
-        // Still nothing found ? Return global permissions
-        return permissions.getJSONObject("global");
-    }*/
-    
     // Actual command execution
     private List<PluginResponse> executeCommand(String command, String[] args, TextChannel source, User user) {
         List<PluginResponse> ret = new ArrayList<>();
@@ -484,38 +435,6 @@ public class Castabot {
     
     public PluginSettings getPluginSettings() {
         return pluginSetting;
-    }
-    
-    public static List<Class<?>> getClasses(String packageName, ClassLoader loader) throws ClassNotFoundException {
-         List<Class<?>> ret = new ArrayList<>();
-         if (loader == null) {
-             loader = Thread.currentThread().getContextClassLoader();
-         }
-         String path = packageName.replace('.', '/');
-         try {
-            Enumeration<URL> res = loader.getResources(path);
-            while (res.hasMoreElements()) {
-                String dirPath = URLDecoder.decode(res.nextElement().getPath(), "UTF-8");
-                File dir = new File(dirPath);
-                for (File file : dir.listFiles()) {
-                    if (file.isDirectory()) 
-                        ret.addAll(getClasses(packageName + '.' + file.getName(), loader));
-                }
-            }
-        } catch (IOException ex) {} // No nested directories
-         
-        URL tmp = loader.getResource(path);
-        if (tmp == null) {
-            return ret;
-        }
-        File currDir = new File(tmp.getPath());
-        for (String classFile : currDir.list()) {
-            if (classFile.endsWith(".class")) {
-                Class<?> add = Class.forName(packageName + '.' + classFile.substring(0, classFile.length() - 6));
-                ret.add(add);
-            }
-        }
-        return ret;
     }
     
     public class PluginSettings {

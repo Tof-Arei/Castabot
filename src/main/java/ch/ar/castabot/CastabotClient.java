@@ -38,7 +38,7 @@ public class CastabotClient extends ListenerAdapter {
     public static void main(String[] args) {
         try {    
             castabot = new Castabot();
-            
+ 
             JDA jda = new JDABuilder(AccountType.BOT).setToken(castabot.getConfig().getProperty("bot_token")).buildBlocking();
             jda.addEventListener(new CastabotClient());
             

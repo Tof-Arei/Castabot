@@ -128,9 +128,9 @@
                         "default": true,
                         "args": {
                             "draw": true,
-                            "drawall": true,
-                            "shuffle": true,
-                            "deck": true
+                            "drawall": false,
+                            "shuffle": false,
+                            "deck": false
                         }
                     },
                     "roll": {

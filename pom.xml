@@ -44,6 +44,11 @@
     </repositories>
     <dependencies>
         <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.11</version>
+        </dependency>
+        <dependency>
             <groupId>net.dv8tion</groupId> 
             <artifactId>JDA</artifactId> 
             <version>3.0.0_165</version> 

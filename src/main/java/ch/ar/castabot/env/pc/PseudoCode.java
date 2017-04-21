@@ -20,9 +20,12 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.reflections.Reflections;
 
 /**
  *
@@ -102,8 +105,12 @@ public class PseudoCode {
     
     private Class getModule(String packName, String className) throws IOException, ClassNotFoundException {
         Class ret = null;
-
-        for (Class clazz : Castabot.getClasses(packName, PseudoCode.class.getClassLoader())) {
+        
+        Reflections reflections = new Reflections(packName);
+        Set<Class<? extends PseudoCode>> packClasses = reflections.getSubTypesOf(PseudoCode.class);
+        Iterator itClasses = packClasses.iterator();
+        while (itClasses.hasNext()) {
+            Class clazz = (Class) itClasses.next();
             if (clazz.getName().endsWith(className)) {
                 ret = clazz;
                 break;
