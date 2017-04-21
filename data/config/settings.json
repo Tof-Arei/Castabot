@@ -27,95 +27,162 @@
         ["love", "^(love)$"]
     ],
     "permissions": {
-        "global":{
-            "audio": true,
-            "cards": true,
-            "roll": true,
-            "help": true,
-            "love": true
-        }
-    },
-    "permissions-test": {
         "roles":{
             "Admin": {
-                "audio": {
-                    "play": true,
-                    "pause": true,
-                    "resume": true,
-                    "loop": true,
-                    "skip": true,
-                    "stop": true
-                },
-                "cards": {
-                    "draw": true,
-                    "shuffle": true,
-                    "deck": true
-                },
-                "roll": {
-                    "default": true,
-                    "rules": true
-                },
-                "help": true
+                "priority": 4,
+                "commands": {
+                    "admin": {
+                        "default": true,
+                        "args": {}
+                    },
+                    "audio": {
+                        "default": true,
+                        "args": {
+                            "play": true,
+                            "pause": true,
+                            "resume": true,
+                            "loop": true,
+                            "skip": true,
+                            "stop": true
+                        }
+                    },
+                    "cards": {
+                        "default": true,
+                        "args": {
+                            "draw": true,
+                            "drawall": true,
+                            "shuffle": true,
+                            "deck": true
+                        }
+                    },
+                    "roll": {
+                        "default": true,
+                        "args": {
+                            "rules": true
+                        }
+                    },
+                    "help": {
+                        "default": true,
+                        "args": {}
+                    }
+                }
             },
             "MJ": {
-                "audio": {
-                    "play": true,
-                    "pause": true,
-                    "resume": true,
-                    "loop": true,
-                    "skip": true,
-                    "stop": true
-                },
-                "cards": {
-                    "draw": true,
-                    "shuffle": true,
-                    "deck": true
-                },
-                "roll": {
-                    "default": true,
-                    "rules": true
-                },
-                "help": true
+                "priority": 3,
+                "commands": {
+                    "admin": {
+                        "default": false,
+                        "args": {}
+                    },
+                    "audio": {
+                        "default": true,
+                        "args": {
+                            "play": true,
+                            "pause": true,
+                            "resume": true,
+                            "loop": true,
+                            "skip": true,
+                            "stop": true
+                        }
+                    },
+                    "cards": {
+                        "default": true,
+                        "args": {
+                            "draw": true,
+                            "drawall": true,
+                            "shuffle": true,
+                            "deck": true
+                        }
+                    },
+                    "roll": {
+                        "default": true,
+                        "args": {
+                            "rules": true
+                        }
+                    },
+                    "help": {
+                        "default": true,
+                        "args": {}
+                    }
+                }
             },
             "PJ": {
-                "audio": {
-                    "play": true,
-                    "pause": true,
-                    "resume": true,
-                    "loop": true,
-                    "skip": true,
-                    "stop": true
-                },
-                "cards": {
-                    "draw": true,
-                    "shuffle": true,
-                    "deck": true
-                },
-                "roll": {
-                    "default": true,
-                    "rules": false
-                },
-                "help": true
+                "priority": 2,
+                "commands": {
+                    "admin": {
+                        "default": false,
+                        "args": {}
+                    },
+                    "audio": {
+                        "default": true,
+                        "args": {
+                            "play": true,
+                            "pause": true,
+                            "resume": true,
+                            "loop": true,
+                            "skip": true,
+                            "stop": true
+                        }
+                    },
+                    "cards": {
+                        "default": true,
+                        "args": {
+                            "draw": true,
+                            "drawall": true,
+                            "shuffle": true,
+                            "deck": true
+                        }
+                    },
+                    "roll": {
+                        "default": true,
+                        "args": {
+                            "rules": false
+                        }
+                    },
+                    "help": {
+                        "default": true,
+                        "args": {}
+                    }
+                }
             },
             "@everyone": {
-                "audio": {
-                    "play": false,
-                    "pause": false,
-                    "resume": false,
-                    "loop": false,
-                    "skip": false,
-                    "stop": false
-                },
-                "cards": {
-                    "draw": false,
-                    "shuffle": false,
-                    "deck": false
-                },
-                "roll": {
-                    "default": true,
-                    "rules": false
-                },
-                "help": true
+                "priority": 1,
+                "commands": {
+                    "admin": {
+                        "default": false,
+                        "args": {}
+                    },
+                    "audio": {
+                        "default": false,
+                        "args": {
+                            "play": false,
+                            "pause": false,
+                            "resume": false,
+                            "loop": false,
+                            "skip": false,
+                            "stop": false
+                        }
+                    },
+                    "cards": {
+                        "default": false,
+                        "args": {
+                            "draw": false,
+                            "drawall": false,
+                            "shuffle": false,
+                            "deck": false
+                        }
+                    },
+                    "roll": {
+                        "default": false,
+                        "args": {
+                            "rules": false
+                        }
+                    },
+                    "help": {
+                        "default": false,
+                        "args": {}
+                    }
+                }
             }
         },
         "users":{}

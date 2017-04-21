@@ -19,6 +19,10 @@ package ch.ar.castabot;
 import ch.ar.castabot.env.audio.MusicManager;
 import ch.ar.castabot.env.audio.LoadResultHandler;
 import ch.ar.castabot.env.pc.PseudoCode;
+import ch.ar.castabot.env.permissions.CommandPermission;
+import ch.ar.castabot.env.permissions.Permissions;
+import ch.ar.castabot.env.permissions.RolePermission;
+import ch.ar.castabot.env.permissions.UserPermission;
 import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
@@ -50,7 +54,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
@@ -66,7 +72,8 @@ import org.json.JSONObject;
 public class Castabot {
     private static final Properties config = new Properties();
     private static JSONObject settings;
-    private static JSONObject permissions;
+    //private static JSONObject permissions;
+    private static Permissions permissions;
     
     private AudioPlayerManager playerManager;
     private Map<Long, MusicManager> musicManagers;
@@ -81,7 +88,8 @@ public class Castabot {
             System.out.println("Préchauffage de la machine à café.");
             byte[] rawPerms = Files.readAllBytes(Paths.get("data/config/settings.json"));
             settings = new JSONObject(new String(rawPerms));
-            permissions = settings.getJSONObject("permissions");
+            //permissions = settings.getJSONObject("permissions");
+            initPermissions();
             
             System.out.println("Peignage de la moustache.");
             musicManagers = new HashMap<>();
@@ -94,10 +102,33 @@ public class Castabot {
             Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    private void initPermissions() {
+        JSONObject objPermissions = settings.getJSONObject("permissions");
+        
+        List<UserPermission> lstPermission = new ArrayList<>();
+        if (objPermissions.has("roles")) {
+            JSONObject objRolePermissions = objPermissions.getJSONObject("roles");
+            for (String roleKey : objRolePermissions.keySet()) {
+                JSONObject objRolePermission = objRolePermissions.getJSONObject(roleKey);
+                RolePermission rolePermission = new RolePermission(roleKey, objRolePermission);
+                lstPermission.add(rolePermission);
+            }
+        }
+        
+        if (objPermissions.has("users")) {
+            JSONObject objUserPermissions = objPermissions.getJSONObject("users");
+            for (String userKey : objUserPermissions.keySet()) {
+                JSONObject objUserPermission = objUserPermissions.getJSONObject(userKey);
+                UserPermission userPermission = new UserPermission(userKey, objUserPermission);
+                lstPermission.add(userPermission);
+            }
+        }
+        
+        permissions = new Permissions(lstPermission);
+    }
 
-    /*
-    * Check if the message is worth answering to (ie. message is a command)
-    */
+    // Check if the message is worth answering to (ie. message is a command)
     public boolean isMessageWorthAnsweringTo(Message message) {
         boolean ret = false;
         if(!message.getChannel().getName().equals("general")) {
@@ -116,9 +147,7 @@ public class Castabot {
         return ret;
     }
     
-    /*
-    * Parse the message, extract the command and arguments or return an error
-    */
+    // Parse the message, extract the command and arguments or return an error
     public void parseCommand(Message message) {
         String strChar = message.getContent().substring(0, 1);
         String command = null;
@@ -174,10 +203,10 @@ public class Castabot {
         JSONObject permCommands = settings.getJSONObject("commands");
         if (permCommands.has(command)) {
             // Check if the user is allowed to use the command
-            if (checkPermission(message.getAuthor(), command, args)) {
+            if (checkPermission(message.getGuild(), message.getAuthor(), command, args)) {
                 lstResponse = executeCommand(command, args, message.getTextChannel(), message.getAuthor());
             } else {
-                sendPrivateMessage(message.getAuthor(), "<@"+message.getAuthor().getId()+"> Vous ne pouvez pas utiliser la commande ["+command+"].");
+                //sendPrivateMessage(message.getAuthor(), "<@"+message.getAuthor().getId()+"> Vous ne pouvez pas utiliser la commande ["+command+"].");
                 return;
             }
         } else {
@@ -252,77 +281,91 @@ public class Castabot {
         }
     }
     
-    /*
-    * Check the user/group permissions before allowing command execution
-    */
-    private boolean checkPermission(User user, String command, String[] args) {
-        boolean ret = false;
-        // Check global permissions implement group/user permissions
-        JSONObject permGlobal = permissions.getJSONObject("global");
-        if (permGlobal.has(command)) {
-            ret = permGlobal.getBoolean(command);
-        }
-        return ret;
-    }
-    
-    /*private boolean checkPermission(Message message, String command, String[] args) {
-        // Check groupPermissions
-        boolean ret = checkGroupPermission(message, command, args);
-        // Check individual permissions (Overrides group permissions)
-        JSONObject userPermission = getUserPermission(message.getAuthor(), command, args);
-        if (userPermission != null) {
-            ret = checkCommandPermission(userPermission, command, args);
-        }
-        return ret;
-    }
-    
-    private boolean checkGroupPermission(Message message, String command, String[] args) { 
-        boolean ret = false;  
-        JSONObject rolesObj = permissions.getJSONObject("roles");
-        Member member = new MemberImpl(message.getGuild(), message.getAuthor());
-        boolean[] rolePermissions = new boolean[member.getRoles().size()];
-        for (Role role : member.getRoles()) {
-            if (rolesObj.has(role.getName())) {
-                JSONObject permRole = rolesObj.getJSONObject(role.getName());
-                rolePermissions[role.getPosition()] = checkCommandPermission(permRole, command, args);
-            } else {
-                rolePermissions[role.getPosition()] = false;
-            }
-        }
-        for (int i = 0; i < rolePermissions.length; i++) {
-            if (rolePermissions[i]) {
-                ret = true;
+    private boolean checkPermission(Guild guild, User user, String command, String[] args) {
+        // Check for user specific permissions
+        CommandPermission retCommandPermission = null;
+        for (UserPermission userPermission : permissions.getLstSpecificPermission(UserPermission.TYPE_USER)) {
+            if (userPermission.getTarget().equals(user.getId())) {
+                retCommandPermission = userPermission.getCommandPermission(command);
                 break;
             }
         }
+        if (retCommandPermission != null) {
+            return retCommandPermission.getArgPermission(args[0]);
+        }
         
-        return ret;
-    }
-    
-    private JSONObject getUserPermission(User user, String command, String[] args) {
-        JSONObject ret = null;
-        JSONObject usersObj = permissions.getJSONObject("users");
-        if (usersObj.has(user.getId())) {
-            JSONObject userObj = usersObj.getJSONObject(user.getId());
-            if (userObj.has(command)) {
-                ret = userObj.getJSONObject(command);
+        // Nothing found, check for role specific permissions
+        int priority = 0;
+        for (Role role : guild.getMember(user).getRoles()) {
+            RolePermission rolePermission = (RolePermission) permissions.getPermission(UserPermission.TYPE_ROLE, role.getName());
+            if (rolePermission != null) {
+                if (role.getName().equals(rolePermission.getTarget())) {
+                    if (rolePermission.getPriority() > priority) {
+                        priority = rolePermission.getPriority();
+                        retCommandPermission = rolePermission.getCommandPermission(command);
+                    }
+                }
             }
         }
-        return ret;
+        if (retCommandPermission != null) {
+            return retCommandPermission.getArgPermission(args[0]);
+        }
+        
+        // Still nothing found, then it must be false
+        return false;
     }
     
-    private boolean checkCommandPermission(JSONObject source, String command, String[] args) {
+    /*private boolean checkPermission(Guild guild, User user, String command, String[] args) {
         boolean ret = false;
-        if (source.has(command)) {
-            JSONObject permCommand = source.getJSONObject(command);
-            ret = permCommand.getBoolean(args[0]);
+        JSONObject objPermissions = getPermissions(guild.getMember(user));
+        if (objPermissions != null) {
+            if (objPermissions.has(command)) {
+                JSONObject objCommandPermission = objPermissions.getJSONObject(command);
+                if (objCommandPermission != null) {
+                    boolean argFound = false;
+                    for (String argKey : objCommandPermission.getJSONObject("args").keySet()) {
+                        if (args[0].equals(argKey)) {
+                            ret = objCommandPermission.getJSONObject("args").getBoolean(argKey);
+                            argFound = true;
+                            break;
+                        }
+                    }
+                    if (!argFound) {
+                        ret = objCommandPermission.getBoolean("default");
+                    }
+                }
+            }
         }
         return ret;
     }*/
     
-    /*
-    * Actual command execution.
-    */
+    /*private JSONObject getPermissions(Member member) {
+        // Look for user specific permissions
+        JSONObject objPermissions = permissions.getJSONObject("users");
+        if (objPermissions != null) {
+            if (objPermissions.has(member.getUser().getId())) {
+                return objPermissions.getJSONObject(member.getUser().getId());
+            }
+        }
+        
+        // Nothing found, look for role specific permissions (@everyone != Global permissions!)
+        objPermissions = permissions.getJSONObject("roles");
+        if (objPermissions != null) {
+            for (String roleKey : objPermissions.keySet()) {
+                JSONObject objRolePermissions = objPermissions.getJSONObject(roleKey);
+                for (Role role : member.getRoles()) {
+                    if (role.getName().equals(roleKey)) {
+                        return objRolePermissions;
+                    }
+                }
+            }
+        }
+        
+        // Still nothing found ? Return global permissions
+        return permissions.getJSONObject("global");
+    }*/
+    
+    // Actual command execution
     private List<PluginResponse> executeCommand(String command, String[] args, TextChannel source, User user) {
         List<PluginResponse> ret = new ArrayList<>();
         // Heres comes the ugly bit
@@ -427,9 +470,6 @@ public class Castabot {
         }
     }
     
-    /*
-    * Getters and setters
-    */
     public Properties getConfig() {
         return config;
     }
@@ -447,46 +487,30 @@ public class Castabot {
     }
     
     public static List<Class<?>> getClasses(String packageName, ClassLoader loader) throws ClassNotFoundException {
-         // Create the list that will hold the testable classes
          List<Class<?>> ret = new ArrayList<>();
-         // If we don't have a class loader, get one.
          if (loader == null) {
              loader = Thread.currentThread().getContextClassLoader();
          }
-         // Convert the package path to file path
          String path = packageName.replace('.', '/');
-         // Try to get all of nested directories.
          try {
-            // Get all of the resources for the given path
             Enumeration<URL> res = loader.getResources(path);
-            // While we have directories to look at, recursively
-            // get all their classes.
             while (res.hasMoreElements()) {
-                // Get the file path the the directory
                 String dirPath = URLDecoder.decode(res.nextElement().getPath(), "UTF-8");
-                // Make a file handler for easy managing
                 File dir = new File(dirPath);
-                // Check every file in the directory, if it's a
-                // directory, recursively add its viable files
                 for (File file : dir.listFiles()) {
                     if (file.isDirectory()) 
                         ret.addAll(getClasses(packageName + '.' + file.getName(), loader));
                 }
             }
-        } catch (IOException e) {
-            // We didn' find any nested directories;
-        }
-        // We need access to our directory, so we can pull
-        // all the classes.
+        } catch (IOException ex) {} // No nested directories
+         
         URL tmp = loader.getResource(path);
-        if (tmp == null)
+        if (tmp == null) {
             return ret;
+        }
         File currDir = new File(tmp.getPath());
-        // Now we iterate through all of the classes we find
         for (String classFile : currDir.list()) {
-            // Ensure that we only find class files; can't load gif's!
             if (classFile.endsWith(".class")) {
-                // Attempt to load the class
                 Class<?> add = Class.forName(packageName + '.' + classFile.substring(0, classFile.length() - 6));
                 ret.add(add);
             }
