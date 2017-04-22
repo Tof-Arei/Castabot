@@ -16,8 +16,6 @@
  */
 package ch.ar.castabot;
 
-import ch.ar.castabot.env.audio.PlayerManager;
-import ch.ar.castabot.env.pc.PseudoCode;
 import ch.ar.castabot.env.permissions.Permissions;
 import ch.ar.castabot.plugins.PluginSettings;
 import java.io.FileInputStream;
@@ -25,14 +23,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Properties;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONObject;
-import org.reflections.Reflections;
 
 /**
  * @author Arei
