@@ -34,12 +34,10 @@ public class PseudoCode {
     protected String formula;
     protected Map<String, Map<Integer, Object>> lstObject = new HashMap<>();
     
-    private Set<Class<? extends PseudoCode>> lstModules;
+    private static Set<Class<? extends PseudoCode>> lstModules;
     
     public PseudoCode(String formula) {
         this.formula = formula;
-        Reflections reflections = new Reflections("ch.ar.castabot.env.pc");
-        lstModules = reflections.getSubTypesOf(PseudoCode.class);
     }
     
     public PseudoCode() {
@@ -106,9 +104,13 @@ public class PseudoCode {
         return ret;
     }
     
-    private Class getModule(String className) throws IOException, ClassNotFoundException {
+    private static Class getModule(String className) throws IOException, ClassNotFoundException {
         Class ret = null;
         
+        if (lstModules == null) {
+            Reflections reflections = new Reflections("ch.ar.castabot.env.pc");
+            lstModules = reflections.getSubTypesOf(PseudoCode.class);
+        }
         Iterator itClasses = lstModules.iterator();
         while (itClasses.hasNext()) {
             Class clazz = (Class) itClasses.next();

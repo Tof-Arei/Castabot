@@ -159,7 +159,6 @@ public class CastabotClient extends ListenerAdapter {
             if (isMessageWorthAnsweringTo(message)) {
                 try {
                     handleCommand(message);
-                    System.gc();
                 } catch (PermissionException ex) {
                     Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -171,7 +170,6 @@ public class CastabotClient extends ListenerAdapter {
             if (isMessageWorthAnsweringTo(message)) {
                 try {
                     handleCommand(message);
-                    System.gc();
                 } catch (PermissionException ex) {
                     Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
                 }
