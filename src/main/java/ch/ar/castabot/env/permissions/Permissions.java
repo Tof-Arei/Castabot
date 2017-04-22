@@ -17,16 +17,37 @@ package ch.ar.castabot.env.permissions;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.json.JSONObject;
 
 /**
  *
  * @author Arei
  */
 public class Permissions {
-    private final List<UserPermission> lstPermission;
+    private final List<UserPermission> lstPermission = new ArrayList<>();
     
-    public Permissions(List<UserPermission> lstUserPermission) {
-        this.lstPermission = lstUserPermission;
+    public Permissions(JSONObject objPermissions) {
+        initPermissions(objPermissions);
+    }
+    
+    private void initPermissions(JSONObject objPermissions) {
+        if (objPermissions.has("roles")) {
+            JSONObject objRolePermissions = objPermissions.getJSONObject("roles");
+            for (String roleKey : objRolePermissions.keySet()) {
+                JSONObject objRolePermission = objRolePermissions.getJSONObject(roleKey);
+                RolePermission rolePermission = new RolePermission(roleKey, objRolePermission);
+                lstPermission.add(rolePermission);
+            }
+        }
+        
+        if (objPermissions.has("users")) {
+            JSONObject objUserPermissions = objPermissions.getJSONObject("users");
+            for (String userKey : objUserPermissions.keySet()) {
+                JSONObject objUserPermission = objUserPermissions.getJSONObject(userKey);
+                UserPermission userPermission = new UserPermission(userKey, objUserPermission);
+                lstPermission.add(userPermission);
+            }
+        }
     }
     
     public UserPermission getPermission(int type, String key) {

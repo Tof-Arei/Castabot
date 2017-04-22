@@ -34,8 +34,12 @@ public class PseudoCode {
     protected String formula;
     protected Map<String, Map<Integer, Object>> lstObject = new HashMap<>();
     
+    private Set<Class<? extends PseudoCode>> lstModules;
+    
     public PseudoCode(String formula) {
         this.formula = formula;
+        Reflections reflections = new Reflections("ch.ar.castabot.env.pc");
+        lstModules = reflections.getSubTypesOf(PseudoCode.class);
     }
     
     public PseudoCode() {
@@ -82,7 +86,7 @@ public class PseudoCode {
 
             if (ret == null) {
                 try {
-                    Class<?> clazz = getModule("ch.ar.castabot.env.pc", splitFormula[0]);
+                    Class<?> clazz = getModule(splitFormula[0]);
                     if (clazz != null) {
                         Class[] types = {String.class};
                         Constructor<?> constructor = clazz.getConstructor(types);
@@ -102,12 +106,10 @@ public class PseudoCode {
         return ret;
     }
     
-    private Class getModule(String packName, String className) throws IOException, ClassNotFoundException {
+    private Class getModule(String className) throws IOException, ClassNotFoundException {
         Class ret = null;
         
-        Reflections reflections = new Reflections(packName);
-        Set<Class<? extends PseudoCode>> packClasses = reflections.getSubTypesOf(PseudoCode.class);
-        Iterator itClasses = packClasses.iterator();
+        Iterator itClasses = lstModules.iterator();
         while (itClasses.hasNext()) {
             Class clazz = (Class) itClasses.next();
             if (clazz.getName().endsWith(className)) {

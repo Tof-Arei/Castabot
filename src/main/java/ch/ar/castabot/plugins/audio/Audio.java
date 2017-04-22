@@ -16,6 +16,7 @@
 package ch.ar.castabot.plugins.audio;
 
 import ch.ar.castabot.CastabotClient;
+import ch.ar.castabot.env.audio.PlayerManager;
 import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
@@ -28,33 +29,35 @@ import net.dv8tion.jda.core.entities.TextChannel;
  *
  * @author Arei
  */
-public class Audio extends Plugin {    
+public class Audio extends Plugin {
+    private PlayerManager playerManager = (PlayerManager) CastabotClient.getCastabot().getPluginSettings().getValue("audio", "playerManager");
+    
     public Audio(String[] args, TextChannel source, User user) {
         super(args, source, user);
     }
     
     private void play() {
-        CastabotClient.getCastabot().loadAndPlay(source, args[1]);
+        playerManager.loadAndPlay(source, args[1]);
     }
     
     private void pause() {
-        CastabotClient.getCastabot().pause(source);
+        playerManager.pause(source);
     }
     
     private void resume() {
-        CastabotClient.getCastabot().resume(source);
+        playerManager.resume(source);
     }
     
     private void loop() {
-        CastabotClient.getCastabot().loop(source);
+        playerManager.loop(source);
     }
     
     private void skip() {
-        CastabotClient.getCastabot().skipTrack(source);
+        playerManager.skipTrack(source);
     }
     
     private void stop() {
-        CastabotClient.getCastabot().stop(source);
+        playerManager.stop(source);
     }
     
     @Override

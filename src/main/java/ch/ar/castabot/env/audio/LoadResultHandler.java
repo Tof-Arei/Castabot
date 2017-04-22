@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
  * @author Arei
  */
 public class LoadResultHandler implements AudioLoadResultHandler {
+    private final PlayerManager playerManager = (PlayerManager) CastabotClient.getCastabot().getPluginSettings().getValue("audio", "playerManager");
     private final TextChannel channel;
     private final MusicManager musicManager;
     private final String trackUrl;
@@ -40,7 +41,7 @@ public class LoadResultHandler implements AudioLoadResultHandler {
     @Override
     public void trackLoaded(AudioTrack track) {
         channel.sendMessage("Lecture de la piste audio: " + track.getInfo().title).queue();
-        CastabotClient.getCastabot().play(channel.getGuild(), musicManager, track);
+        playerManager.play(channel.getGuild(), musicManager, track);
     }
 
     @Override
@@ -52,7 +53,7 @@ public class LoadResultHandler implements AudioLoadResultHandler {
         }
 
         channel.sendMessage("Ajout à la file: " + firstTrack.getInfo().title + " (Premier morceau de la playliste: " + playlist.getName() + ")").queue();
-        CastabotClient.getCastabot().play(channel.getGuild(), musicManager, firstTrack);
+        playerManager.play(channel.getGuild(), musicManager, firstTrack);
     }
 
     @Override
