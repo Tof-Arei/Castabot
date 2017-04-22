@@ -36,54 +36,29 @@ public class Audio extends Plugin {
         super(args, source, user);
     }
     
-    private void play() {
-        playerManager.loadAndPlay(source, args[1]);
-    }
-    
-    private void pause() {
-        playerManager.pause(source);
-    }
-    
-    private void resume() {
-        playerManager.resume(source);
-    }
-    
-    private void loop() {
-        playerManager.loop(source);
-    }
-    
-    private void skip() {
-        playerManager.skipTrack(source);
-    }
-    
-    private void stop() {
-        playerManager.stop(source);
-    }
-    
     @Override
     public List<PluginResponse> run() throws PluginException {
         List<PluginResponse> ret = new ArrayList<>();
         switch (args[0]) {
             case "play":
-                play();
+                playerManager.loadAndPlay(source, args[1]);
                 break;
             case "pause":
-                pause();
+                ret.add(new PluginResponse(playerManager.pause(source), user));
                 break;
             case "resume":
-                resume();
+                ret.add(new PluginResponse(playerManager.resume(source), user));
                 break;
             case "loop":
-                loop();
+                ret.add(new PluginResponse(playerManager.loop(source), user));
                 break;
             case "skip":
-                skip();
+                ret.add(new PluginResponse(playerManager.skip(source), user));
                 break;
             case "stop":
-                stop();
+                ret.add(new PluginResponse(playerManager.stop(source), user));
                 break;
         }
-        ret.add(new PluginResponse("Commande audio: [" + args[0] + "]", user));
         return ret;
     }
 }

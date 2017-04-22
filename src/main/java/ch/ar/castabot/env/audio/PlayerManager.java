@@ -16,11 +16,9 @@
 package ch.ar.castabot.env.audio;
 
 import ch.ar.castabot.CastabotClient;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import java.util.Map;
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
@@ -30,56 +28,60 @@ import net.dv8tion.jda.core.managers.AudioManager;
  * @author Arei
  */
 public class PlayerManager extends DefaultAudioPlayerManager {
-    private synchronized MusicManager getGuildAudioPlayer(Guild guild) {
-        long guildId = Long.parseLong(guild.getId());
-        Map<Long, MusicManager> musicManagers = (Map<Long, MusicManager>) CastabotClient.getCastabot().getPluginSettings().getValue("audio", "musicManagers");
-        AudioPlayerManager playerManager = (AudioPlayerManager) CastabotClient.getCastabot().getPluginSettings().getValue("audio", "playerManager");
-        MusicManager musicManager = musicManagers.get(guildId);
-        
-        if (musicManager == null) {
-            musicManager = new MusicManager(playerManager);
-            musicManagers.put(guildId, musicManager);
-        }
-        guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
-
-        return musicManager;
-    }
-    
     public void loadAndPlay(TextChannel channel, String trackUrl) {
-        MusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
-        loadItemOrdered(musicManager, trackUrl, new LoadResultHandler(channel, musicManager, trackUrl));
+        MusicManager musicManager = CastabotClient.getGuildAudioPlayer(channel.getGuild());
+        LoadResultHandler lrHandler = new LoadResultHandler(channel, musicManager, trackUrl);
+        loadItemOrdered(musicManager, trackUrl, lrHandler);
     }
     
-    public void play(Guild guild, MusicManager musicManager, AudioTrack track) {
-        connectToFirstVoiceChannel(guild.getAudioManager());
-        musicManager.scheduler.queue(track);
+    public String playlistLoaded(TextChannel channel, AudioPlaylist playlist) {
+        AudioTrack firstTrack = playlist.getSelectedTrack();
+        if (firstTrack == null) {
+            firstTrack = playlist.getTracks().get(0);
+        }
+
+        return "Ajout à la file: " + firstTrack.getInfo().title + " (Premier morceau de la playliste: " + playlist.getName() + ")";
+    }
+    
+    public String play(TextChannel channel, MusicManager musicManager, AudioTrack track) {
+        connectToFirstVoiceChannel(channel.getGuild().getAudioManager());
+        musicManager.getScheduler().queue(track);
+        return "Chargement de la piste: " + track.getInfo().title;
     }
 
-    public void pause(TextChannel channel) {
-        MusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
-        musicManager.player.setPaused(true);
+    public String pause(TextChannel channel) {
+        MusicManager musicManager = CastabotClient.getGuildAudioPlayer(channel.getGuild());
+        musicManager.getPlayer().setPaused(true);
+        return "Piste suspendue.";
     }
     
-    public void resume(TextChannel channel) {
-        MusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
-        musicManager.player.setPaused(false);
+    public String resume(TextChannel channel) {
+        MusicManager musicManager = CastabotClient.getGuildAudioPlayer(channel.getGuild());
+        musicManager.getPlayer().setPaused(false);
+        return "Piste rétablie.";
     }
     
-    public void loop(TextChannel channel) {
-        MusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
-        musicManager.scheduler.loopTrack();
+    public String loop(TextChannel channel) {
+        MusicManager musicManager = CastabotClient.getGuildAudioPlayer(channel.getGuild());
+        musicManager.getScheduler().loopTrack();
+        return "Piste mise en boucle.";
     }
     
-    public void skipTrack(TextChannel channel) {
-        MusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
-        musicManager.scheduler.nextTrack();
-        
-        channel.sendMessage("Passage à la piste suivante.").queue();
+    public String skip(TextChannel channel) {
+        MusicManager musicManager = CastabotClient.getGuildAudioPlayer(channel.getGuild());
+        musicManager.getScheduler().nextTrack();
+        AudioTrack track = musicManager.getPlayer().getPlayingTrack();
+        if (track != null) {
+            return "Passage à la piste suivante: " + track.getInfo().title;
+        } else {
+            return "Plus de pistes en mémoire.";
+        }
     }
     
-    public void stop(TextChannel channel) {
-        skipTrack(channel);
+    public String stop(TextChannel channel) {
+        skip(channel);
         disconnectFromVoiceChannel(channel.getGuild().getAudioManager());
+        return "Arrêt du lecteur.";
     }
     
     private static void connectToFirstVoiceChannel(AudioManager audioManager) {

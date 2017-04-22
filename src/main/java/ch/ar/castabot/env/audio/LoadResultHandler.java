@@ -31,7 +31,7 @@ public class LoadResultHandler implements AudioLoadResultHandler {
     private final TextChannel channel;
     private final MusicManager musicManager;
     private final String trackUrl;
-    
+
     public LoadResultHandler(TextChannel channel, MusicManager musicManager, String trackUrl) {
         this.channel = channel;
         this.musicManager = musicManager;
@@ -40,20 +40,12 @@ public class LoadResultHandler implements AudioLoadResultHandler {
     
     @Override
     public void trackLoaded(AudioTrack track) {
-        channel.sendMessage("Lecture de la piste audio: " + track.getInfo().title).queue();
-        playerManager.play(channel.getGuild(), musicManager, track);
+        channel.sendMessage(playerManager.play(channel, musicManager, track)).queue();
     }
 
     @Override
     public void playlistLoaded(AudioPlaylist playlist) {
-        AudioTrack firstTrack = playlist.getSelectedTrack();
-
-        if (firstTrack == null) {
-            firstTrack = playlist.getTracks().get(0);
-        }
-
-        channel.sendMessage("Ajout à la file: " + firstTrack.getInfo().title + " (Premier morceau de la playliste: " + playlist.getName() + ")").queue();
-        playerManager.play(channel.getGuild(), musicManager, firstTrack);
+        playerManager.playlistLoaded(channel, playlist);
     }
 
     @Override

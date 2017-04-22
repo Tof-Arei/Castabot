@@ -16,13 +16,19 @@
  */
 package ch.ar.castabot;
 
+import ch.ar.castabot.env.audio.PlayerManager;
 import ch.ar.castabot.env.permissions.Permissions;
+import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginSettings;
+import ch.ar.castabot.plugins.cards.Deck;
+import ch.ar.castabot.plugins.roll.Rules;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,11 +54,28 @@ public class Castabot {
             permissions = new Permissions(settings.getJSONObject("permissions"));
             
             System.out.println("Peignage de la moustache.");
+            initSettings();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
+        } catch (IOException | PluginException ex) {
             Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    private void initSettings() throws PluginException {
+        Map<String, Object> audioSettings = new HashMap<>();
+        audioSettings.put("musicManagers", new HashMap<>());
+        PlayerManager playerManager = new PlayerManager();
+        audioSettings.put("playerManager", playerManager);
+        pluginSettings.addSetting("audio", audioSettings);
+        
+        Map<String, Object> cardsSettings = new HashMap<>();
+        cardsSettings.put("deck", new Deck("default"));
+        pluginSettings.addSetting("cards", cardsSettings);
+
+        Map<String, Object> rollSettings = new HashMap<>();
+        rollSettings.put("rules", new Rules("default"));
+        pluginSettings.addSetting("roll", rollSettings);
     }
     
     public Properties getConfig() {

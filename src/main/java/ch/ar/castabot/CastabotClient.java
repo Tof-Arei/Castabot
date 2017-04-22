@@ -15,12 +15,15 @@
  */
 package ch.ar.castabot;
 
+import ch.ar.castabot.env.audio.MusicManager;
 import ch.ar.castabot.env.audio.PlayerManager;
 import ch.ar.castabot.plugins.Command;
 import ch.ar.castabot.plugins.PluginResponse;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.security.auth.login.LoginException;
@@ -29,6 +32,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -146,6 +150,21 @@ public class CastabotClient extends ListenerAdapter {
                 Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+    
+    public synchronized static MusicManager getGuildAudioPlayer(Guild guild) {
+        long guildId = Long.parseLong(guild.getId());
+        Map<Long, MusicManager> musicManagers = (Map<Long, MusicManager>) castabot.getPluginSettings().getValue("audio", "musicManagers");
+        AudioPlayerManager playerManager = (AudioPlayerManager) castabot.getPluginSettings().getValue("audio", "playerManager");
+        MusicManager musicManager = musicManagers.get(guildId);
+        
+        if (musicManager == null) {
+            musicManager = new MusicManager(playerManager);
+            musicManagers.put(guildId, musicManager);
+        }
+        guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
+
+        return musicManager;
     }
     
     @Override

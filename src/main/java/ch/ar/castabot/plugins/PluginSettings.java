@@ -15,14 +15,8 @@
  */
 package ch.ar.castabot.plugins;
 
-import ch.ar.castabot.Castabot;
-import ch.ar.castabot.env.audio.PlayerManager;
-import ch.ar.castabot.plugins.cards.Deck;
-import ch.ar.castabot.plugins.roll.Rules;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -30,29 +24,9 @@ import java.util.logging.Logger;
  */
 public class PluginSettings {
     private final Map<String, Map<String, Object>> lstSetting = new HashMap<>();
-
-    public PluginSettings() {
-        try {
-            initSettings();
-        } catch (ClassNotFoundException | PluginException ex) {
-            Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    private void initSettings() throws ClassNotFoundException, PluginException {
-        Map<String, Object> audioSettings = new HashMap<>();
-        audioSettings.put("musicManagers", new HashMap<>());
-        PlayerManager playerManager = new PlayerManager();
-        audioSettings.put("playerManager", playerManager);
-        lstSetting.put("audio", audioSettings);
-        
-        Map<String, Object> cardsSettings = new HashMap<>();
-        cardsSettings.put("deck", new Deck("default"));
-        lstSetting.put("cards", cardsSettings);
-
-        Map<String, Object> rollSettings = new HashMap<>();
-        rollSettings.put("rules", new Rules("default"));
-        lstSetting.put("roll", rollSettings);
+    
+    public void addSetting(String key, Map<String, Object> value) {
+        lstSetting.put(key, value);
     }
 
     public void addValue(String plugin, String setting, Object value) {

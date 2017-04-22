@@ -23,8 +23,8 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
  * @author Arei
  */
 public class MusicManager {
-    public final AudioPlayer player;
-    public final TrackScheduler scheduler;
+    private final AudioPlayer player;
+    private final TrackScheduler scheduler;
 
     public MusicManager(AudioPlayerManager manager) {
         player = manager.createPlayer();
@@ -34,5 +34,13 @@ public class MusicManager {
 
     public AudioPlayerSendHandler getSendHandler() {
         return new AudioPlayerSendHandler(player);
+    }
+
+    public AudioPlayer getPlayer() {
+        return player;
+    }
+
+    public TrackScheduler getScheduler() {
+        return scheduler;
     }
 }
