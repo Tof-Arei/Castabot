@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -111,9 +110,7 @@ public class PseudoCode {
             Reflections reflections = new Reflections("ch.ar.castabot.env.pc");
             lstModules = reflections.getSubTypesOf(PseudoCode.class);
         }
-        Iterator itClasses = lstModules.iterator();
-        while (itClasses.hasNext()) {
-            Class clazz = (Class) itClasses.next();
+        for (Class clazz : lstModules) {
             if (clazz.getName().endsWith(className)) {
                 ret = clazz;
                 break;
