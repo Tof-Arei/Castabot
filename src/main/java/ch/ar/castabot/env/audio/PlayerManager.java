@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 christophe.
+ * Copyright 2017 Arei.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import net.dv8tion.jda.core.managers.AudioManager;
 
 /**
  *
- * @author christophe
+ * @author Arei
  */
 public class PlayerManager extends DefaultAudioPlayerManager {
     private synchronized MusicManager getGuildAudioPlayer(Guild guild) {
@@ -78,6 +78,7 @@ public class PlayerManager extends DefaultAudioPlayerManager {
     }
     
     public void stop(TextChannel channel) {
+        skipTrack(channel);
         disconnectFromVoiceChannel(channel.getGuild().getAudioManager());
     }
     
