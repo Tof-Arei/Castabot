@@ -27,7 +27,6 @@ import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
 import ch.ar.castabot.plugins.PluginSettings;
-import ch.ar.castabot.plugins.cards.Deck;
 import ch.ar.castabot.plugins.roll.Rules;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -62,19 +61,16 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * @todo replace cards.json file Using PluginSettings object
- * @todo actual permissions (add permissions by group/user to global command permissions)
  * @author Arei
  */
 public class Castabot {
-    private static final Properties config = new Properties();
-    private static JSONObject settings;
-    private static Permissions permissions;
+    private final Properties config = new Properties();
+    private JSONObject settings;
+    private Permissions permissions;
+    private PluginSettings pluginSetting = new PluginSettings();
     
     private AudioPlayerManager playerManager;
     private Map<Long, MusicManager> musicManagers;
-    
-    private PluginSettings pluginSetting = new PluginSettings();
 
     public Castabot() {
          try {
@@ -84,7 +80,6 @@ public class Castabot {
             System.out.println("Préchauffage de la machine à café.");
             byte[] rawPerms = Files.readAllBytes(Paths.get("data/config/settings.json"));
             settings = new JSONObject(new String(rawPerms));
-            //permissions = settings.getJSONObject("permissions");
             initPermissions();
             
             System.out.println("Peignage de la moustache.");
