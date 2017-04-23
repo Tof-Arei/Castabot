@@ -47,9 +47,8 @@ public class Rules {
     }
     
     private void loadRules() {
-        byte[] rawRules;
         try {
-            rawRules = Files.readAllBytes(Paths.get("data/plugins/roll/rules.json"));
+            byte[] rawRules = Files.readAllBytes(Paths.get("data/plugins/roll/rules.json"));
             JSONObject rulesConfig = new JSONObject(new String(rawRules)).getJSONObject(name);
             activateAction = rulesConfig.getString("activate_action");
             help = rulesConfig.getString("help");

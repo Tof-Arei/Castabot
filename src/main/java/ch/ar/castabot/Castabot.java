@@ -35,6 +35,8 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 
 /**
+ * @todo more settings.json refactoring
+ * @todo make help command react with permissions
  * @author Arei
  */
 public class Castabot {
@@ -49,9 +51,10 @@ public class Castabot {
             System.out.println("Démarrage du Castabot™ v"+config.getProperty("bot_version"));
             
             System.out.println("Préchauffage de la machine à café.");
-            byte[] rawPerms = Files.readAllBytes(Paths.get("data/config/settings.json"));
-            settings = new JSONObject(new String(rawPerms));
-            permissions = new Permissions(settings.getJSONObject("permissions"));
+            byte[] rawFile = Files.readAllBytes(Paths.get("data/config/settings.json"));
+            settings = new JSONObject(new String(rawFile));
+            rawFile = Files.readAllBytes(Paths.get("data/config/permissions.json"));
+            permissions = new Permissions(new JSONObject(new String(rawFile)));
             
             System.out.println("Peignage de la moustache.");
             initSettings();
@@ -65,8 +68,7 @@ public class Castabot {
     private void initSettings() throws PluginException {
         Map<String, Object> audioSettings = new HashMap<>();
         audioSettings.put("musicManagers", new HashMap<>());
-        PlayerManager playerManager = new PlayerManager();
-        audioSettings.put("playerManager", playerManager);
+        audioSettings.put("playerManager", new PlayerManager());
         pluginSettings.addSetting("audio", audioSettings);
         
         Map<String, Object> cardsSettings = new HashMap<>();

@@ -46,7 +46,7 @@ public class Roll extends Plugin {
         Rules rules = (Rules) CastabotClient.getCastabot().getPluginSettings().getValue("roll", "rules");
         PluginResponse ret;
         String str = "";
-        for (int i = 0; i < args.length;i++) {
+        for (int i = 1; i < args.length;i++) {
             str += args[i] + " ";
         }
         str = str.replaceAll("D", "d");
@@ -112,9 +112,6 @@ public class Roll extends Plugin {
         RollResult rollResult = rules.getRollResults(lstDice, lstFixed, arg);
         String response = rollResult.getCaption();
         
-        // Re-group same dices from original roll
-        List<List<Dice>> groupDice = new ArrayList<>();
-        
         // Output original roll
         String originalRoll = "";
         for (List<Dice> lstSubDice : rollResult.getLstDice()) {
@@ -174,7 +171,7 @@ public class Roll extends Plugin {
                     ret.add(new PluginResponse(rules(args[1]), user));
                 }
                 break;
-            default:
+            case "roll":
                 ret.add(roll());
         }
         return ret;

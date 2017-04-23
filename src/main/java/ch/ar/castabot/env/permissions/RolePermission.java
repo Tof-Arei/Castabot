@@ -15,6 +15,8 @@
  */
 package ch.ar.castabot.env.permissions;
 
+import ch.ar.castabot.CastabotClient;
+import java.util.List;
 import org.json.JSONObject;
 
 /**
@@ -22,15 +24,25 @@ import org.json.JSONObject;
  * @author Arei
  */
 public class RolePermission extends UserPermission {
-    private int priority = 0;
+    private final int priority;
+    private final String xtends;
     
-    public RolePermission(String target, JSONObject objPermission) {
-        super(target, objPermission);
+    public RolePermission(String target, JSONObject rolesPermission, JSONObject objRolePermission) {
+        super(target, objRolePermission);
         this.type = TYPE_ROLE;
-        priority = objPermission.getInt("priority");
+        priority = objRolePermission.getInt("priority");
+        xtends = objRolePermission.getString("extends");
+        
+        if (rolesPermission.has(xtends)) {
+            addPermission(new RolePermission(xtends, rolesPermission, rolesPermission.getJSONObject(xtends)));
+        }
     }
     
     public int getPriority() {
         return priority;
+    }
+    
+    public String getExtends() {
+        return xtends;
     }
 }

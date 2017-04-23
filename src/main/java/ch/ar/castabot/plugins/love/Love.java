@@ -31,25 +31,13 @@ public class Love extends Plugin {
     public Love(String[] args, TextChannel source, User user) {
         super(args, source, user);
     }
-    
-    private boolean isKyuuji() {
-        return user.getId().equals("251426460873654272");
-    }
-    
-    private String love() throws PluginException {
-        if (isKyuuji()) {
-            return "Kyuukyuu!!! ❤ ❤ ❤";
-        } else {
-            throw new PluginException("LV0", "Désolé, mais je n'ai d'yeux que pour Kyuuji!");
-        }
-    }
 
     @Override
     public List<PluginResponse> run() throws PluginException {
         List<PluginResponse> ret = new ArrayList<>();
         switch (args[0]) {
             case "love":
-                ret.add(new PluginResponse(love(), user));
+                ret.add(new PluginResponse("Kyuukyuu!!! ❤ ❤ ❤", user));
                 break;
         }
         return ret;

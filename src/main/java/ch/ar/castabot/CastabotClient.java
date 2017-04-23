@@ -40,6 +40,7 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  *
@@ -176,22 +177,14 @@ public class CastabotClient extends ListenerAdapter {
             System.out.printf("[PM] %s: %s\n", event.getAuthor().getName(), event.getMessage().getContent());
             // Handle commands and stuff
             if (isMessageWorthAnsweringTo(message)) {
-                try {
-                    handleCommand(message);
-                } catch (PermissionException ex) {
-                    Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                handleCommand(message);
             }
         } else {
             // Print channel messages
             System.out.printf("[%s][%s] %s: %s\n", event.getGuild().getName(), event.getTextChannel().getName(), event.getMember().getEffectiveName(), event.getMessage().getContent());
             // Handle commands and stuff
             if (isMessageWorthAnsweringTo(message)) {
-                try {
-                    handleCommand(message);
-                } catch (PermissionException ex) {
-                    Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                handleCommand(message);
             }
         }
     }

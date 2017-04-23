@@ -15,8 +15,8 @@
  */
 package ch.ar.castabot.env.permissions;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import org.json.JSONObject;
 
 /**
@@ -28,8 +28,8 @@ public class UserPermission {
     public static final int TYPE_USER = 2;
     
     protected int type;
-    protected final String target;
-    protected final List<CommandPermission> lstCommandPermission = new ArrayList<>();
+    protected String target;
+    protected final Map<String, CommandPermission> hmCommandPermission = new HashMap<>();
     
     public UserPermission(String target, JSONObject objUserPermission) {
         this.type = TYPE_USER;
@@ -37,19 +37,25 @@ public class UserPermission {
         for (String commandKey : objUserPermission.getJSONObject("commands").keySet()) {
             JSONObject objCommandPermission = objUserPermission.getJSONObject("commands").getJSONObject(commandKey);
             CommandPermission commandPermission = new CommandPermission(commandKey, objCommandPermission);
-            lstCommandPermission.add(commandPermission);
+            hmCommandPermission.put(commandKey, commandPermission);
+        }
+    }
+    
+    protected void addPermission(UserPermission userPermission) {
+        for (String commandKey : userPermission.getCommandPermissions().keySet()) {
+            if (getCommandPermission(commandKey) == null) {
+                hmCommandPermission.put(commandKey, userPermission.getCommandPermission(commandKey));
+            }
+            getCommandPermission(commandKey).addArgs(userPermission.getCommandPermission(commandKey).getArgs());
         }
     }
     
     public CommandPermission getCommandPermission(String command) {
-        CommandPermission ret = null;
-        for (CommandPermission commandPermission : lstCommandPermission) {
-            if (commandPermission.getCommand().equals(command)) {
-                ret = commandPermission;
-                break;
-            }
-        }
-        return ret;
+        return hmCommandPermission.get(command);
+    }
+    
+    public Map<String, CommandPermission> getCommandPermissions() {
+        return hmCommandPermission;
     }
     
     public int getType() {
@@ -58,9 +64,5 @@ public class UserPermission {
 
     public String getTarget() {
         return target;
-    }
-
-    public List<CommandPermission> getLstCommandPermission() {
-        return lstCommandPermission;
     }
 }

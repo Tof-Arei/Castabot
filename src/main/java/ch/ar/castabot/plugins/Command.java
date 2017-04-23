@@ -18,8 +18,6 @@ package ch.ar.castabot.plugins;
 import ch.ar.castabot.Castabot;
 import ch.ar.castabot.CastabotClient;
 import ch.ar.castabot.env.pc.PseudoCode;
-import ch.ar.castabot.env.permissions.CommandPermission;
-import ch.ar.castabot.env.permissions.RolePermission;
 import ch.ar.castabot.env.permissions.UserPermission;
 import ch.ar.castabot.plugins.roll.Rules;
 import java.lang.reflect.Constructor;
@@ -32,7 +30,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.json.JSONArray;
@@ -79,23 +76,44 @@ public class Command {
         
         // Check if the command is a short
         boolean isShort = false;
-        JSONArray cmdShorts = settings.getJSONArray("cmd_shorts");
-        for (int i = 0; i < cmdShorts.length(); i++) {
-            JSONArray cmdShort = cmdShorts.getJSONArray(i);
-            String shortCommand = message.getContent().substring(1);
-            Pattern patShort = Pattern.compile(cmdShort.getString(1));
-            Matcher matShort = patShort.matcher(shortCommand);
-            
-            if (matShort.find()) {
-                isShort = true;
-                command = cmdShort.getString(0);
-                
-                args = new String[strArgs.length];
-                for (int j = 0; j < strArgs.length; j++) {
-                    args[j] = strArgs[j];
+        JSONObject cmdShorts = settings.getJSONObject("cmd_shorts");
+        for (String shortKey : cmdShorts.keySet()) {
+            JSONObject objShort = cmdShorts.getJSONObject(shortKey);
+            for (String argKey : objShort.keySet()) {
+                JSONArray arrArg = objShort.getJSONArray(argKey);
+                for (int i = 0; i < arrArg.length(); i++) {
+                    String cmdShort = arrArg.getString(i);
+                    String shortCommand = message.getContent().substring(1);
+                    Pattern patShort = Pattern.compile(cmdShort);
+                    Matcher matShort = patShort.matcher(shortCommand);
+                    
+                    // If command is a short, extract command and arguments
+                    if (matShort.find()) {
+                        isShort = true;
+                        command = shortKey;
+                        // Was the argument specified in the short command?
+                        boolean argFound = false;
+                        for (String arg : strArgs) {
+                            if (arg.equals(argKey)) {
+                                argFound = true;
+                                break;
+                            }
+                        }
+                        int start = 0;
+                        if (argFound) {
+                            args = new String[strArgs.length];
+                        } else {
+                            args = new String[strArgs.length+1];
+                            args[0] = argKey;
+                            start = 1;
+                        }
+                        for (int j = 0; j < strArgs.length; j++) {
+                            args[j+start] = strArgs[j];
+                        }
+
+                        break;
+                    }
                 }
-                
-                break;
             }
         }
         
@@ -148,7 +166,7 @@ public class Command {
             if (ret.isEmpty()) {
                 ret = instance.run();
                 if (ret == null) {
-                    throw new PluginException("PLG-?", "Erreur durant l'exécution de la commande ["+command+"].");
+                    throw new PluginException("PLUG-?", "Erreur durant l'exécution de la commande ["+command+"].");
                 }
             }
         } catch (PluginException e) {
@@ -161,37 +179,8 @@ public class Command {
     }
     
     private boolean checkPermissions() {
-        // Check for user specific permissions
-        CommandPermission retCommandPermission = null;
-        for (UserPermission userPermission : CastabotClient.getCastabot().getPermissions().getLstSpecificPermission(UserPermission.TYPE_USER)) {
-            if (userPermission.getTarget().equals(user.getId())) {
-                retCommandPermission = userPermission.getCommandPermission(command);
-                break;
-            }
-        }
-        if (retCommandPermission != null) {
-            return retCommandPermission.getArgPermission(args[0]);
-        }
-        
-        // Nothing found, check for role specific permissions
-        int priority = 0;
-        for (Role role : guild.getMember(user).getRoles()) {
-            RolePermission rolePermission = (RolePermission) CastabotClient.getCastabot().getPermissions().getPermission(UserPermission.TYPE_ROLE, role.getName());
-            if (rolePermission != null) {
-                if (role.getName().equals(rolePermission.getTarget())) {
-                    if (rolePermission.getPriority() > priority) {
-                        priority = rolePermission.getPriority();
-                        retCommandPermission = rolePermission.getCommandPermission(command);
-                    }
-                }
-            }
-        }
-        if (retCommandPermission != null) {
-            return retCommandPermission.getArgPermission(args[0]);
-        }
-        
-        // Still nothing found, then it must be false
-        return false;
+        UserPermission userPermission = CastabotClient.getCastabot().getPermissions().getUserPermissions(guild.getMember(user));
+        return userPermission.getCommandPermission(command).getArgPermission(args[0]);
     }
 
     public String getCommand() {

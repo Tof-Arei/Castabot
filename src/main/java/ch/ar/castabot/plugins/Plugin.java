@@ -40,9 +40,8 @@ public abstract class Plugin {
         this.source = source;
         this.user = user;
         
-        byte[] rawPermissions;
         try {
-            rawPermissions = Files.readAllBytes(Paths.get("data/config/settings.json"));
+            byte[] rawPermissions = Files.readAllBytes(Paths.get("data/config/settings.json"));
             settings = new JSONObject(new String(rawPermissions));
         } catch (IOException ex) {
             Logger.getLogger(Plugin.class.getName()).log(Level.SEVERE, null, ex);

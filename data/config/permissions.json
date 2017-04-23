@@ -1,0 +1,111 @@
+{
+    "roles": {
+        "Admin": {
+            "priority": 4,
+            "extends": "MJ",
+            "commands": {
+                "admin": {
+                    "args": {}
+                }
+            }
+        },
+        "MJ": {
+            "priority": 3,
+            "extends": "PJ",
+            "commands": {
+                "cards": {
+                    "args": {
+                        "drawall": true,
+                        "shuffle": true,
+                        "deck": true
+                    }
+                },
+                "roll": {
+                    "args": {
+                        "rules": true
+                    }
+                }
+            }
+        },
+        "PJ": {
+            "priority": 2,
+            "extends": "@everyone",
+            "commands": {
+                "audio": {
+                    "args": {
+                        "play": true,
+                        "pause": true,
+                        "resume": true,
+                        "loop": true,
+                        "skip": true,
+                        "stop": true
+                    }
+                },
+                "cards": {
+                    "args": {
+                        "draw": true
+                    }
+                },
+                "roll": {
+                    "args": {
+                        "default": true
+                    }
+                },
+                "help": {
+                    "args": {}
+                }
+            }
+        },
+        "@everyone": {
+            "priority": 1,
+            "extends": "",
+            "commands": {
+                "admin": {
+                    "args": {}
+                },
+                "audio": {
+                    "args": {
+                        "play": false,
+                        "pause": false,
+                        "resume": false,
+                        "loop": false,
+                        "skip": false,
+                        "stop": false
+                    }
+                },
+                "cards": {
+                    "args": {
+                        "draw": false,
+                        "drawall": false,
+                        "shuffle": false,
+                        "deck": false
+                    }
+                },
+                "roll": {
+                    "args": {
+                        "default": false,
+                        "rules": false
+                    }
+                },
+                "help": {
+                    "args": {}
+                },
+                "love": {
+                    "args": {}
+                }
+            }
+        }
+    },
+    "users": {
+        "251426460873654272": {
+            "name": "Kyuuji",
+            "commands": {
+                "love": {
+                    "args": {
+                        "love": true
+                    }
+                }
+            }
+        }
+    }
+}

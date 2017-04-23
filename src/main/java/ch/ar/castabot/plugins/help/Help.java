@@ -18,6 +18,7 @@ package ch.ar.castabot.plugins.help;
 import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
+import java.util.ArrayList;
 import java.util.List;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -33,14 +34,17 @@ public class Help extends Plugin {
     
     @Override
     public List<PluginResponse> run() throws PluginException {
-        String ret = "Commandes disponibles: \r\n";
-        ret += "- audio : Permet de jouer de la musique sur le canal audio General. \r\n";
-        ret += "- cards : Permet d'utiliser un jeu de cartes virtuel. \r\n";
-        ret += "- roll : Permet d'utiliser des dés virtuels. \r\n";
-        ret += "- help : affice la liste des commandes.  \r\n";
-        ret += "Nb: Utiliser une commande avec l'argument -h (ou --help) permet d'afficher les informations sur la commande. \r\n";
-        ret += "Utiliser le caractère & (ou lancer la commande via message privé) permet d'effectuer un lancement de commande secret. \r\n";
+        List<PluginResponse> ret = new ArrayList<>();
         
-        throw new PluginException("HELP", ret);
+        String retStr = "Commandes disponibles: \r\n";
+        retStr += "- audio : Permet de jouer de la musique sur le canal audio General. \r\n";
+        retStr += "- cards : Permet d'utiliser un jeu de cartes virtuel. \r\n";
+        retStr += "- roll : Permet d'utiliser des dés virtuels. \r\n";
+        retStr += "- help : affice la liste des commandes.  \r\n";
+        retStr += "Nb: Utiliser une commande avec l'argument -h (ou --help) permet d'afficher les informations sur la commande. \r\n";
+        retStr += "Utiliser le caractère & (ou lancer la commande via message privé) permet d'effectuer un lancement de commande secret. \r\n";
+        ret.add(new PluginResponse(retStr, user));
+        
+        return ret;
     }
 }

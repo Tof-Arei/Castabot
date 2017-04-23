@@ -17,6 +17,8 @@ package ch.ar.castabot.env.permissions;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Role;
 import org.json.JSONObject;
 
 /**
@@ -30,12 +32,37 @@ public class Permissions {
         initPermissions(objPermissions);
     }
     
+    public UserPermission getUserPermissions(Member member) {
+        // Get @everyone permissions
+        RolePermission baseRolePermission = (RolePermission) getPermission(UserPermission.TYPE_ROLE, "@everyone");
+        // Look for role specific permissions
+        for (Role role : member.getRoles()) {
+            for (RolePermission rPermission : (List<RolePermission>) getSpecificPermissions(UserPermission.TYPE_ROLE)) {
+                if (rPermission.getTarget().equals(role.getName())) {
+                    if (rPermission.getPriority() > baseRolePermission.getPriority()) {
+                        baseRolePermission = rPermission;
+                    }
+                }
+            }
+        }
+
+        // Look for user speicific permissions
+        for (UserPermission userPermission : getSpecificPermissions(UserPermission.TYPE_USER)) {
+            if (userPermission.getTarget().equals(member.getUser().getId())) {
+                baseRolePermission.addPermission(userPermission);
+                break;
+            }
+        }
+        
+        return baseRolePermission;
+    }
+    
     private void initPermissions(JSONObject objPermissions) {
         if (objPermissions.has("roles")) {
             JSONObject objRolePermissions = objPermissions.getJSONObject("roles");
             for (String roleKey : objRolePermissions.keySet()) {
                 JSONObject objRolePermission = objRolePermissions.getJSONObject(roleKey);
-                RolePermission rolePermission = new RolePermission(roleKey, objRolePermission);
+                RolePermission rolePermission = new RolePermission(roleKey, objPermissions.getJSONObject("roles"), objRolePermission);
                 lstPermission.add(rolePermission);
             }
         }
@@ -61,7 +88,7 @@ public class Permissions {
         return ret;
     }
     
-    public List<? extends UserPermission> getLstSpecificPermission(int type) {
+    public List<? extends UserPermission> getSpecificPermissions(int type) {
         List<UserPermission> ret = new ArrayList<>();
         for (UserPermission permission : lstPermission) {
             if (permission.getType() == type) {
@@ -71,7 +98,7 @@ public class Permissions {
         return ret;
     }
 
-    public List<UserPermission> getLstPermission() {
+    public List<UserPermission> getPermissions() {
         return lstPermission;
     }
 }

@@ -25,23 +25,32 @@ import org.json.JSONObject;
  */
 public class CommandPermission {
     private final String command;
-    private final boolean dflt;
     private final Map<String, Boolean> hmArg = new HashMap<>();
     
     public CommandPermission(String command, JSONObject objCommandPermission) {
         this.command = command;
-        this.dflt = objCommandPermission.getBoolean("default");
         for (String argKey : objCommandPermission.getJSONObject("args").keySet()) {
             boolean objArgPermission = objCommandPermission.getJSONObject("args").getBoolean(argKey);
             hmArg.put(argKey, objArgPermission);
         }
     }
     
+    public void addArgs(Map<String, Boolean> newArg) {
+       for (String argKey : newArg.keySet()) {
+           if (hmArg.get(argKey) == null) {
+               hmArg.put(argKey, newArg.get(argKey));
+           }
+       }
+    }
+    
     public boolean getArgPermission(String arg) {
         if (hmArg.get(arg) != null) {
             return hmArg.get(arg);
         } else {
-            return dflt;
+            if (hmArg.get("default") != null) {
+                return hmArg.get("default");
+            }
+            return false;
         }
     }
 
@@ -49,11 +58,7 @@ public class CommandPermission {
         return command;
     }
 
-    public boolean isDflt() {
-        return dflt;
-    }
-
-    public Map<String, Boolean> getHmArg() {
+    public Map<String, Boolean> getArgs() {
         return hmArg;
     }
 }
