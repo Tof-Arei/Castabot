@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.TextChannel;
 
@@ -48,7 +50,6 @@ public class Roll extends Plugin {
     // 4b. Bot finally outputs the roll result to the user
     private PluginResponse roll() throws PluginException {
         Rules rules = (Rules) CastabotClient.getCastabot().getPluginSettings(source.getGuild()).getValue("roll", "rules");
-        PluginResponse ret;
         String str = "";
         for (int i = 1; i < args.length;i++) {
             str += args[i] + " ";
@@ -63,7 +64,6 @@ public class Roll extends Plugin {
         if (Character.isLetter(strChars[strChars.length-1])) {
             arg = (Character.isLetter(strChars[strChars.length-1])) ? strChars[strChars.length-1] : null;
             str = str.substring(0, str.length()-1).trim();
-            //str = str.replace(arg, Character.MIN_VALUE).trim();
         }
         
         // Exctract the raw dices
@@ -149,9 +149,13 @@ public class Roll extends Plugin {
         response += "Total: {"+rollResult.getTotal()+"}";
         
         // Send response to user
-        ret = new PluginResponse(response, user);
-        
-        return ret;
+        EmbedBuilder embBuild = new EmbedBuilder();
+        embBuild.addField(new MessageEmbed.Field(rollResult.getCaption(), originalRoll, true));
+        if (!explosion.equals("")) {
+            embBuild.addField(new MessageEmbed.Field("Explosion", explosion, false));
+        }
+        embBuild.addField(new MessageEmbed.Field("Total", rollResult.getTotal(), false));
+        return new PluginResponse(embBuild.build(), user);
     }
     
     private String rules(String rulesName) {

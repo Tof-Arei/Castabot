@@ -29,22 +29,22 @@
             "bleu": {
                 "desc": "Bleu: Relancer un jet.",
                 "values": [2, 3],
-                "limit": "{MUL;{MISC;players};2}"
+                "limit": "{MUL;{MISC;players;PJ};2}"
             },
             "rouge": {
                 "desc": "Rouge: Relancer l'initiative.",
                 "values": [4, 5],
-                "limit": "{MUL;{MISC;players};2}"
+                "limit": "{MUL;{MISC;players;PJ};2}"
             },
             "vert": {
                 "desc": "Vert: Ajouter +2 à un jet.",
                 "values": [6, 7],
-                "limit": "{MUL;{MISC;players};3}"
+                "limit": "{MUL;{MISC;players;PJ};3}"
             },
             "noir": {
                 "desc": "Noir: \"Manipuler\" la chance.",
                 "values": [8],
-                "limit": "{MISC;players}"
+                "limit": "{MISC;players;PJ}"
             }
         },
         "rolltypes": [

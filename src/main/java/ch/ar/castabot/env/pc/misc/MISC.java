@@ -28,9 +28,9 @@ public class MISC extends PseudoCode {
         super(formula);
     }
     
-    private int players() {
+    private int players(String roleName) {
         Guild guild = (Guild) getObject("Guild", 0);
-        return CastabotClient.getAvailablePlayers(guild);
+        return CastabotClient.getAvailablePlayers(guild, roleName);
     }
     
     @Override
@@ -39,7 +39,7 @@ public class MISC extends PseudoCode {
         String[] splitFormula = formula.split(";");
         switch (splitFormula[1]) {
             case "players":
-                ret = String.valueOf(players());
+                ret = String.valueOf(players(splitFormula[2]));
                 break;
         }
         return ret;

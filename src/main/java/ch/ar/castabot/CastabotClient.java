@@ -36,6 +36,7 @@ import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.ReadyEvent;
@@ -89,39 +90,43 @@ public class CastabotClient extends ListenerAdapter {
     private void handleCommand(Message message) {
         Command command = new Command(message.getGuild(), message.getAuthor(), message);
         for (PluginResponse response : command.execute()) {
-            if (command.isSecret() || message.getPrivateChannel() != null) {
+            if (command.isSecret()) {
                 if (response.getFile() != null) {
                     Message msg= null;
                     if (response.getText() != null) {
                         MessageBuilder msgBuild = new MessageBuilder();
                         msgBuild.append("<@"+response.getTarget().getId()+"> "+response.getText());
+                        msgBuild.setEmbed(response.getEmbed());
                         msg = msgBuild.build();
                     }
                     sendPrivateFile(response.getTarget(), response.getFile(), msg);
                 } else {
-                    sendPrivateMessage(response.getTarget(), "<@"+response.getTarget().getId()+"> "+response.getText());
+                    MessageBuilder msgBuild = new MessageBuilder();
+                    msgBuild.append("<@"+response.getTarget().getId()+"> "+response.getText());
+                    msgBuild.setEmbed(response.getEmbed());
+                    sendPrivateMessage(response.getTarget(), msgBuild.build());
                 }
             } else {
                 if (response.getFile() != null) {
-                    Message msg= null;
-                    if (response.getText() != null) {
-                        MessageBuilder msgBuild = new MessageBuilder();
-                        msgBuild.append("<@"+response.getTarget().getId()+"> "+response.getText());
-                        msg = msgBuild.build();
-                    }
+                    MessageBuilder msgBuild = new MessageBuilder();
+                    msgBuild.append("<@"+response.getTarget().getId()+"> "+response.getText());
+                    msgBuild.setEmbed(response.getEmbed());
                     try {
-                        message.getChannel().sendFile(response.getFile(), msg).queue();
+                        message.getChannel().sendFile(response.getFile(), msgBuild.build()).queue();
                     } catch (IOException ex) {
                         Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } else {
-                    message.getChannel().sendMessage("<@"+response.getTarget().getId()+"> "+response.getText()).queue();
+                    MessageBuilder msgBuild = new MessageBuilder();
+                    msgBuild.append("<@"+response.getTarget().getId()+"> "+response.getText());
+                    msgBuild.setEmbed(response.getEmbed());
+                    message.getChannel().sendMessage(msgBuild.build()).queue();
                 }
             }
         }
     }
     
-    private void sendPrivateMessage(User target, final String message) {
+    private void sendPrivateMessage(User target, final Message message) {
         if (!target.hasPrivateChannel()) {
             target.openPrivateChannel().queue(
                 success -> {
@@ -153,13 +158,25 @@ public class CastabotClient extends ListenerAdapter {
         }
     }
     
-    public static int getAvailablePlayers(Guild guild) {
+    public static int getAvailablePlayers(Guild guild, String roleName) {
         int ret = 0;
+        boolean hasMj = false;
         for (VoiceChannel voiceChannel : guild.getVoiceChannels()) {
             for (Member member : voiceChannel.getMembers()) {
-                if (!member.getUser().isBot()) {
+                if (!member.getUser().isBot() && hasRole(member, roleName)) {
                     ret++;
                 }
+            }
+        }
+        return ret;
+    }
+    
+    private static boolean hasRole(Member member, String roleName) {
+        boolean ret = false;
+        for (Role iRole : member.getRoles()) {
+            if (roleName.equals(iRole.getName())) {
+                ret = true;
+                break;
             }
         }
         return ret;
