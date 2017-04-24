@@ -160,7 +160,6 @@ public class CastabotClient extends ListenerAdapter {
     
     public static int getAvailablePlayers(Guild guild, String roleName) {
         int ret = 0;
-        boolean hasMj = false;
         for (VoiceChannel voiceChannel : guild.getVoiceChannels()) {
             for (Member member : voiceChannel.getMembers()) {
                 if (!member.getUser().isBot() && hasRole(member, roleName)) {

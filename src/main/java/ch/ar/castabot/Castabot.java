@@ -37,6 +37,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import org.json.JSONObject;
 
 /**
+ * @todo even more refactoring : message/privateMessage handling/sending
  * @todo even more settings.json refactoring (merge command with command_shorts)
  * @todo make help command react with permissions
  * @author Arei
