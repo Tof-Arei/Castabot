@@ -22,9 +22,13 @@ import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.TextChannel;
+
 /**
  *
  * @author Arei
@@ -43,13 +47,13 @@ public class Roll extends Plugin {
     //      - Do rerolls if any, states criticals if any.
     // 4b. Bot finally outputs the roll result to the user
     private PluginResponse roll() throws PluginException {
-        Rules rules = (Rules) CastabotClient.getCastabot().getPluginSettings().getValue("roll", "rules");
+        Rules rules = (Rules) CastabotClient.getCastabot().getPluginSettings(source.getGuild()).getValue("roll", "rules");
         PluginResponse ret;
         String str = "";
         for (int i = 1; i < args.length;i++) {
             str += args[i] + " ";
         }
-        str = str.replaceAll("D", "d");
+        str = str.replaceAll("D", "d").trim();
         List<FixedValue> lstFixed = new ArrayList<>();
         List<List<Dice>> lstDice = new ArrayList<>();
         
@@ -58,7 +62,8 @@ public class Roll extends Plugin {
         char arg = Character.MIN_VALUE;
         if (Character.isLetter(strChars[strChars.length-1])) {
             arg = (Character.isLetter(strChars[strChars.length-1])) ? strChars[strChars.length-1] : null;
-            str = str.replace(arg, Character.MIN_VALUE).trim();
+            str = str.substring(0, str.length()-1).trim();
+            //str = str.replace(arg, Character.MIN_VALUE).trim();
         }
         
         // Exctract the raw dices
@@ -151,10 +156,11 @@ public class Roll extends Plugin {
     
     private String rules(String rulesName) {
         Rules rules = new Rules(rulesName);
-        CastabotClient.getCastabot().getPluginSettings().setValue("roll", "rules", rules);
+        CastabotClient.getCastabot().getPluginSettings(source.getGuild()).setValue("roll", "rules", rules);
         String ret = "Activation des règles de roll ["+rules.getName()+"].";
         
         PseudoCode pc = new PseudoCode(rules.getActivateAction());
+        pc.addObject("Guild", source.getGuild());
         String eval = pc.evaluate();
         if (eval != null) {
             ret += "\r\n" + eval;
@@ -162,10 +168,69 @@ public class Roll extends Plugin {
         return ret;
     }
     
+    private String fill() {
+        Rules rules = (Rules) CastabotClient.getCastabot().getPluginSettings(source.getGuild()).getValue("roll", "rules");
+        PseudoCode pc = new PseudoCode();
+        pc.addObject("Guild", source.getGuild());
+        
+        TokenPouch tokenPouch = new TokenPouch();
+        List<Token> lstToken = new ArrayList<>();
+        for (Token token : rules.getAvailableTokens()) {
+            addToken(lstToken, tokenPouch, token, rules, pc);
+        }
+        
+        CastabotClient.getCastabot().getPluginSettings(source.getGuild()).setValue("roll", "tokenPouch", tokenPouch);
+        return "Poche à token remplies selon les règles: [" + rules.getName() + "].\r\n Tokens générés: [" + tokenPouch.countTokens() + "].";
+    }
+    
+    private void addToken(List<Token> lstToken, TokenPouch tokenPouch, Token token, Rules rules, PseudoCode pc) {
+        pc.setFormula(token.getLimit());
+        int max = Integer.parseInt(pc.evaluate());
+        for (int i = 0; i < max; i++) {
+            if (tokenPouch.hasToken(token)) {
+                if (tokenPouch.countToken(token) < max) {
+                    tokenPouch.addToken(token);
+                } else {
+                    int val = (ThreadLocalRandom.current()).nextInt(rules.getAvailableTokens().size()) + 0;
+                    addToken(lstToken, tokenPouch, rules.getAvailableTokens().get(val), rules, pc);
+                }
+            } else {
+                tokenPouch.addToken(token);
+            }
+        }
+    }
+    
+    private String token(int nb) {
+        String ret = "";
+        TokenPouch tokenPouch = (TokenPouch) CastabotClient.getCastabot().getPluginSettings(source.getGuild()).getValue("roll", "tokenPouch");
+        if (nb <= tokenPouch.countTokens()) {
+            Map<Token, Integer> hmToken = new HashMap<>();
+            for (int i = 0; i < nb; i++) {
+                Token token = tokenPouch.getRandomToken();
+                if (hmToken.get(token) != null) {
+                    int count = hmToken.get(token);
+                    hmToken.put(token, count+1);
+                } else {
+                    hmToken.put(token, 1);
+                }
+            }
+            for (Token token : hmToken.keySet()) {
+                ret += "(" + hmToken.get(token) + ")" + token.getDesc() + "\r\n";
+            }
+        } else {
+            ret = "Plus assez de tokens dans le sac.\r\n [" + tokenPouch.countTokens() + "] tokens restant.";
+        }
+        
+        return ret;
+    }
+    
     @Override
     public List<PluginResponse> run() throws PluginException {
         List<PluginResponse> ret = new ArrayList<>();
         switch (args[0]) {
+            case "fill":
+                ret.add(new PluginResponse(fill(), user));
+                break;
             case "rules":
                 if (args.length > 1) {
                     ret.add(new PluginResponse(rules(args[1]), user));
@@ -173,6 +238,14 @@ public class Roll extends Plugin {
                 break;
             case "roll":
                 ret.add(roll());
+                break;
+            case "token":
+                if (args.length > 1) {
+                    ret.add(new PluginResponse(token(Integer.parseInt(args[1])), user));
+                } else {
+                    ret.add(new PluginResponse(token(1), user));
+                }
+                break;
         }
         return ret;
     }

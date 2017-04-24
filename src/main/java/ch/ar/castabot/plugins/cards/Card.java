@@ -44,11 +44,14 @@ public class Card {
     public static final int COLOR_DIAMOND = 4;
     public static final String COLOR_DIAMOND_S = "Carreau";
     
+    private final Deck deck;
+    
     private final int color;
     private final int value;
     private final String desc;
     
-    public Card(int color, int value, String desc) {
+    public Card(Deck deck, int color, int value, String desc) {
+        this.deck = deck;
         this.color = color;
         this.value = value;
         this.desc = desc;
@@ -97,12 +100,11 @@ public class Card {
     }
     
     public File getFile() {
-        return new File("data/plugins/cards/default/"+color+"-"+value+".png");
+        return new File("data/plugins/cards/" + deck.getImgDeck() + "/" + this + ".png");
     }
     
     public String getUrl() {
         String webRoot = CastabotClient.getCastabot().getConfig().getProperty("web_root");
-        Deck deck = (Deck) CastabotClient.getCastabot().getPluginSettings().getValue("cards", "deck");
         return webRoot + "files/cards/" + deck.getImgDeck() + "/" + this + ".png";
     }
     

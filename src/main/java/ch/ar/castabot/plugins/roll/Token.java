@@ -19,13 +19,13 @@ package ch.ar.castabot.plugins.roll;
  *
  * @author Arei
  */
-public class Token {
+public class Token implements Comparable<Token> {
     private final String name;
     private final String desc;
     private final Integer[] values;
-    private final int limit;
+    private final String limit;
     
-    public Token(String name, String desc, Integer[] values, int limit) {
+    public Token(String name, String desc, Integer[] values, String limit) {
         this.name = name;
         this.desc = desc;
         this.values = values;
@@ -43,6 +43,11 @@ public class Token {
         return ret;
     }
     
+    @Override
+    public int compareTo(Token token) {
+        return name.compareTo(token.getName());
+    }
+    
     public String getName() {
         return name;
     }
@@ -55,7 +60,7 @@ public class Token {
         return desc;
     }
 
-    public int getLimit() {
+    public String getLimit() {
         return limit;
     }
 }

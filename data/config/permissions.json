@@ -22,6 +22,7 @@
                 },
                 "roll": {
                     "args": {
+                        "fill": true,
                         "rules": true
                     }
                 }
@@ -48,7 +49,8 @@
                 },
                 "roll": {
                     "args": {
-                        "default": true
+                        "roll": true,
+                        "token": true
                     }
                 },
                 "help": {
@@ -83,8 +85,10 @@
                 },
                 "roll": {
                     "args": {
+                        "fill": false,
                         "default": false,
-                        "rules": false
+                        "rules": false,
+                        "token": false
                     }
                 },
                 "help": {

@@ -30,7 +30,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
  * @author Arei
  */
 public class Audio extends Plugin {
-    private PlayerManager playerManager = (PlayerManager) CastabotClient.getCastabot().getPluginSettings().getValue("audio", "playerManager");
+    private PlayerManager playerManager = (PlayerManager) CastabotClient.getCastabot().getPluginSettings(source.getGuild()).getValue("audio", "playerManager");
     
     public Audio(String[] args, TextChannel source, User user) {
         super(args, source, user);

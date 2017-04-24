@@ -15,6 +15,7 @@
  */
 package ch.ar.castabot.plugins.roll;
 
+import ch.ar.castabot.CastabotClient;
 import ch.ar.castabot.env.pc.PseudoCode;
 import ch.ar.castabot.plugins.Plugin;
 import java.io.IOException;
@@ -37,7 +38,9 @@ public class Rules {
     private final String name;
     private String activateAction;
     private String help;
+    private final TokenPouch tokenPouch = new TokenPouch();
     private final List<Token> availableTokens = new ArrayList<>();
+    
     private final List<Dice> availableDices = new ArrayList<>();
     private final List<Rolltype> lstRolltypes = new ArrayList<>();
 
@@ -57,7 +60,7 @@ public class Rules {
                 JSONObject rawToken = rawTokens.getJSONObject(key);
                 JSONArray rawValues = rawToken.getJSONArray("values");
                 Integer[] values = rawValues.toList().toArray(new Integer[rawValues.length()]);
-                Token token = new Token(key, rawToken.getString("desc"), values, rawToken.getInt("limit"));
+                Token token = new Token(key, rawToken.getString("desc"), values, rawToken.getString("limit"));
                 availableTokens.add(token);
             }
             JSONArray dices = rulesConfig.getJSONArray("dices");
@@ -147,19 +150,15 @@ public class Rules {
         
         // Prepare the PseudoCode interpreter
         PseudoCode pcRoll = new PseudoCode();
-        pcRoll.addObject(0, this);
+        pcRoll.addObject(Rules.class.getName(), this);
         
-        int index = 0;
         for (List<Dice> lstSubDice : ret.getLstDice()) {
             for (Dice dice : lstSubDice) {
-                pcRoll.addObject(index, dice);
-                index++;
+                pcRoll.addObject(Dice.class.getName(), dice);
             }
         }
-        index = 0;
         for (FixedValue fixed : ret.getLstFixed()) {
-            pcRoll.addObject(index, fixed);
-            index++;
+            pcRoll.addObject(FixedValue.class.getName(), fixed);
         }
         
         // Check for critical success/failure
@@ -200,7 +199,6 @@ public class Rules {
     }
     
     private void explosion(PseudoCode pcRoll, Rolltype rolltype, RollResult ret) {
-        int nbDice = pcRoll.getLstObject().get(Dice.class.getName()).size();
         pcRoll.setFormula(rolltype.getExplodeAction());
         String[] explodeResult = pcRoll.evaluate().split("-");
         for (int i = 0; i < explodeResult.length; i++) {
@@ -209,8 +207,7 @@ public class Rules {
             explodeDice.setBonus(Boolean.parseBoolean(singleResult[2]));
             explodeDice.setValue(Integer.parseInt(singleResult[0]));
             ret.addExplode(explodeDice);
-            pcRoll.addObject(nbDice, explodeDice);
-            nbDice++;
+            pcRoll.addObject(Dice.class.getName(), explodeDice);
         }
         if (rolltype.isExplosionRecursive()) {
             pcRoll.setFormula(rolltype.getCriticalSuccess());
@@ -232,15 +229,12 @@ public class Rules {
         return help;
     }
     
-    public Token getToken(int value) {
-        Token ret = null;
-        for (Token token : availableTokens) {
-            if (token.hasValue(value)) {
-                ret = token;
-                break;
-            }
-        }
-        return ret;
+    public List<Token> getAvailableTokens(){
+        return availableTokens;
+    }
+    
+    public TokenPouch getTokenPouch() {
+        return tokenPouch;
     }
     
     public int getMinTokenValue() {

@@ -18,6 +18,7 @@ package ch.ar.castabot;
 import ch.ar.castabot.env.audio.MusicManager;
 import ch.ar.castabot.env.audio.PlayerManager;
 import ch.ar.castabot.plugins.Command;
+import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
@@ -33,20 +34,25 @@ import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.events.ReadyEvent;
+import net.dv8tion.jda.core.events.guild.GuildBanEvent;
+import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  *
  * @author Arei
  */
 public class CastabotClient extends ListenerAdapter {
+    private static JDA jda;
     private static Castabot castabot;
     
     private CastabotClient() {}
@@ -54,13 +60,7 @@ public class CastabotClient extends ListenerAdapter {
     public static void main(String[] args) {
         try {    
             castabot = new Castabot();
- 
-            JDA jda = new JDABuilder(AccountType.BOT).setToken(castabot.getConfig().getProperty("bot_token")).buildBlocking();
-            jda.addEventListener(new CastabotClient());
-            
-            PlayerManager playerManager = (PlayerManager) castabot.getPluginSettings().getValue("audio", "playerManager");
-            AudioSourceManagers.registerRemoteSources(playerManager);
-            AudioSourceManagers.registerLocalSource(playerManager);
+            jda = new JDABuilder(AccountType.BOT).setToken(castabot.getConfig().getProperty("bot_token")).addEventListener(new CastabotClient()).buildBlocking();
             System.out.println("Castabot™ prêt!");
         } catch (LoginException | IllegalArgumentException | InterruptedException | RateLimitedException ex) {
             Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
@@ -153,10 +153,28 @@ public class CastabotClient extends ListenerAdapter {
         }
     }
     
+    public static int getAvailablePlayers(Guild guild) {
+        int ret = 0;
+        for (VoiceChannel voiceChannel : guild.getVoiceChannels()) {
+            for (Member member : voiceChannel.getMembers()) {
+                if (!member.getUser().isBot()) {
+                    ret++;
+                }
+            }
+        }
+        return ret;
+    }
+    
+    public synchronized static void registerAudioManager(Guild guild) {
+        PlayerManager playerManager = (PlayerManager) castabot.getPluginSettings(guild).getValue("audio", "playerManager");
+        AudioSourceManagers.registerRemoteSources(playerManager);
+        AudioSourceManagers.registerLocalSource(playerManager);
+    }
+    
     public synchronized static MusicManager getGuildAudioPlayer(Guild guild) {
         long guildId = Long.parseLong(guild.getId());
-        Map<Long, MusicManager> musicManagers = (Map<Long, MusicManager>) castabot.getPluginSettings().getValue("audio", "musicManagers");
-        AudioPlayerManager playerManager = (AudioPlayerManager) castabot.getPluginSettings().getValue("audio", "playerManager");
+        Map<Long, MusicManager> musicManagers = (Map<Long, MusicManager>) castabot.getPluginSettings(guild).getValue("audio", "musicManagers");
+        AudioPlayerManager playerManager = (AudioPlayerManager) castabot.getPluginSettings(guild).getValue("audio", "playerManager");
         MusicManager musicManager = musicManagers.get(guildId);
         
         if (musicManager == null) {
@@ -166,6 +184,36 @@ public class CastabotClient extends ListenerAdapter {
         guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
 
         return musicManager;
+    }
+    
+    @Override
+    public void onReady(ReadyEvent event) {
+        for (Guild guild : event.getJDA().getGuilds()) {
+            try {
+                castabot.initSettings(guild);
+            } catch (PluginException ex) {
+                Logger.getLogger(CastabotClient.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    @Override
+    public void onGuildJoin(GuildJoinEvent event) {
+        try {
+            castabot.initSettings(event.getGuild());
+        } catch (PluginException ex) {
+            Logger.getLogger(CastabotClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    @Override
+    public void onGuildLeave(GuildLeaveEvent event) {
+        castabot.deleteSettings(event.getGuild());
+    }
+    
+    @Override
+    public void onGuildBan(GuildBanEvent event) {
+        castabot.deleteSettings(event.getGuild());
     }
     
     @Override
@@ -187,6 +235,10 @@ public class CastabotClient extends ListenerAdapter {
                 handleCommand(message);
             }
         }
+    }
+
+    public static JDA getJda() {
+        return jda;
     }
     
     public static Castabot getCastabot() {

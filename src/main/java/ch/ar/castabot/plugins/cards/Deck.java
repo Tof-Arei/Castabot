@@ -79,7 +79,7 @@ public class Deck {
                     }
                 }
                 
-                Card card = new Card(Integer.parseInt(rawCard[0]), Integer.parseInt(rawCard[1]), rawCard[2]);
+                Card card = new Card(this, Integer.parseInt(rawCard[0]), Integer.parseInt(rawCard[1]), rawCard[2]);
                 if (!out) {
                     lstCardsIn.add(card);
                 } else {

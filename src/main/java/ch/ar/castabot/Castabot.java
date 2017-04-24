@@ -22,6 +22,7 @@ import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginSettings;
 import ch.ar.castabot.plugins.cards.Deck;
 import ch.ar.castabot.plugins.roll.Rules;
+import ch.ar.castabot.plugins.roll.TokenPouch;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -32,10 +33,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.dv8tion.jda.core.entities.Guild;
 import org.json.JSONObject;
 
 /**
- * @todo more settings.json refactoring
+ * @todo even more settings.json refactoring (merge command with command_shorts)
  * @todo make help command react with permissions
  * @author Arei
  */
@@ -43,7 +45,7 @@ public class Castabot {
     private final Properties config = new Properties();
     private JSONObject settings;
     private Permissions permissions;
-    private PluginSettings pluginSettings = new PluginSettings();
+    private Map<Guild, PluginSettings> hmGuildSettings = new HashMap<>();
 
     public Castabot() {
          try {
@@ -57,15 +59,15 @@ public class Castabot {
             permissions = new Permissions(new JSONObject(new String(rawFile)));
             
             System.out.println("Peignage de la moustache.");
-            initSettings();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException | PluginException ex) {
+        } catch (IOException ex) {
             Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    private void initSettings() throws PluginException {
+    public void initSettings(Guild guild) throws PluginException {
+        PluginSettings pluginSettings = new PluginSettings();
         Map<String, Object> audioSettings = new HashMap<>();
         audioSettings.put("musicManagers", new HashMap<>());
         audioSettings.put("playerManager", new PlayerManager());
@@ -74,10 +76,18 @@ public class Castabot {
         Map<String, Object> cardsSettings = new HashMap<>();
         cardsSettings.put("deck", new Deck("default"));
         pluginSettings.addSetting("cards", cardsSettings);
-
+        
         Map<String, Object> rollSettings = new HashMap<>();
         rollSettings.put("rules", new Rules("default"));
+        rollSettings.put("tokenPouch", new TokenPouch());
         pluginSettings.addSetting("roll", rollSettings);
+        
+        hmGuildSettings.put(guild, pluginSettings);
+        CastabotClient.registerAudioManager(guild);
+    }
+    
+    public void deleteSettings(Guild guild) {
+        hmGuildSettings.remove(guild);
     }
     
     public Properties getConfig() {
@@ -92,7 +102,18 @@ public class Castabot {
         return permissions;
     }
     
-    public PluginSettings getPluginSettings() {
-        return pluginSettings;
+    public PluginSettings getPluginSettings(Guild guild) {
+        return hmGuildSettings.get(guild);
+    }
+    
+    public PluginSettings getPluginSettings(String guildName) {
+        PluginSettings ret = null;
+        for (Guild guild : hmGuildSettings.keySet()) {
+            if (guild.getName().equals(guildName)) {
+                ret = getPluginSettings(guild);
+                break;
+            }
+        }
+        return ret;
     }
 }

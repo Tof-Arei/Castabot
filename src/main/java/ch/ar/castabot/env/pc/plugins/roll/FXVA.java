@@ -17,7 +17,7 @@ package ch.ar.castabot.env.pc.plugins.roll;
 
 import ch.ar.castabot.env.pc.PseudoCode;
 import ch.ar.castabot.plugins.roll.FixedValue;
-import java.util.Map;
+import java.util.List;
 
 /**
  *
@@ -27,12 +27,11 @@ public class FXVA extends PseudoCode {
     public FXVA(String formula) {
         super(formula);
     }
-    
     private int all(){
         int ret = 0;
-        if (getAllFixedObj() != null) {
-            for (int i = 0; i < getAllFixedObj().size(); i++) {
-                FixedValue fixed = (FixedValue) getAllFixedObj().get(i);
+        List<FixedValue> lstFixed = (List<FixedValue>) getAllObjects(FixedValue.class.getName());
+        if (lstFixed != null) {
+            for (FixedValue fixed : lstFixed) {
                 String bound = (fixed.isNegative()) ? "-" : "+";
                 ret += Integer.parseInt(bound+fixed.getValue());
             }
@@ -41,33 +40,7 @@ public class FXVA extends PseudoCode {
     }
     
     private FixedValue getFixed(int index) {
-        FixedValue ret = null;
-        
-        Map<Integer, Object> lstFixedObj = getAllFixedObj();
-        if (lstFixedObj.size() > 0 && index <= lstFixedObj.size()) {
-            ret = (FixedValue) lstFixedObj.get(index);
-        }
-        
-        return ret;
-    }
-    
-    public Map<Integer, Object> getAllFixedObj() {
-        return lstObject.get(FixedValue.class.getName());
-    }
-    
-    private FixedValue getLastFixed() {
-        FixedValue ret = null;
-        
-        Map<Integer, Object> lstFixedObj = getAllFixedObj();
-        if (lstFixedObj.size() > 0) {
-            for (int i = lstFixedObj.size()-1; i >= 0; i--) {
-                FixedValue fixed = (FixedValue) lstFixedObj.get(i);
-                ret = fixed;
-                break;
-            }
-        }
-        
-        return ret;
+        return (FixedValue) getObject(FixedValue.class.getName(), index);
     }
     
     @Override

@@ -157,9 +157,9 @@ public class Command {
             if (args.length > 0) {
                 if (args[0].equals("-h") || args[0].equals("--help")) {
                     JSONObject permCommands = settings.getJSONObject("commands");
-                    Rules rules = (Rules) CastabotClient.getCastabot().getPluginSettings().getValue("roll", "rules");
+                    Rules rules = (Rules) CastabotClient.getCastabot().getPluginSettings(guild).getValue("roll", "rules");
                     PseudoCode pc = new PseudoCode(permCommands.getString(command));
-                    pc.addObject(0, rules);
+                    pc.addObject(Rules.class.getName(), rules);
                     ret.add(new PluginResponse(pc.evaluate(), user));
                 }
             }

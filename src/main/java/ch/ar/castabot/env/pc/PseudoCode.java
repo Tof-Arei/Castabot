@@ -15,10 +15,13 @@
  */
 package ch.ar.castabot.env.pc;
 
+import ch.ar.castabot.plugins.roll.FixedValue;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -31,7 +34,7 @@ import org.reflections.Reflections;
  */
 public class PseudoCode {
     protected String formula;
-    protected Map<String, Map<Integer, Object>> lstObject = new HashMap<>();
+    protected Map<String, List<Object>> hmObject = new HashMap<>();
     
     private static Set<Class<? extends PseudoCode>> lstModules;
     
@@ -89,7 +92,7 @@ public class PseudoCode {
                         Constructor<?> constructor = clazz.getConstructor(types);
                         Object[] classArgs = {formula};
                         PseudoCode pc = (PseudoCode) constructor.newInstance(classArgs);
-                        pc.setObjects(lstObject);
+                        pc.setObjects(hmObject);
                         ret = pc.calculate();
                     } else {
                         ret = formula;
@@ -111,7 +114,7 @@ public class PseudoCode {
             lstModules = reflections.getSubTypesOf(PseudoCode.class);
         }
         for (Class clazz : lstModules) {
-            if (clazz.getName().endsWith(className)) {
+            if (clazz.getName().endsWith("." + className)) {
                 ret = clazz;
                 break;
             }
@@ -128,22 +131,38 @@ public class PseudoCode {
         this.formula = formula;
     }
     
-    public Map<String, Map<Integer, Object>> getLstObject() {
-        return lstObject;
+    protected Map<String, List<Object>> getObjects() {
+        return hmObject;
     }
     
-    public void setObjects(Map<String, Map<Integer, Object>> lstObject) {
-        this.lstObject = lstObject;
+    protected Object getObject(String key, int index) {
+        return getAllObjects(key).get(index);
     }
     
-    public void addObject(int index, Object object) {
-        Map<Integer, Object> subLstObject = lstObject.get(object.getClass().getName());
-        if (subLstObject != null) {
-            subLstObject.put(index, object);
+    protected Object getLastObject(String key) {
+        Object ret = null;
+        List<? extends Object> lstObject = getAllObjects(key);
+        if (lstObject.size() > 0) {
+            ret = lstObject.get(lstObject.size()-1);
+        }
+        return ret;
+    }
+    
+    public List<? extends Object> getAllObjects(String key) {
+        return (List<? extends Object>)(Object) hmObject.get(key);
+    }
+    
+    public void setObjects(Map<String, List<Object>> lstObject) {
+        this.hmObject = lstObject;
+    }
+    
+    public void addObject(String key, Object object) {
+        if (hmObject.get(key) != null) {
+            hmObject.get(key).add(object);
         } else {
-            subLstObject = new HashMap<>();
-            subLstObject.put(index, object);
-            lstObject.put(object.getClass().getName(), subLstObject);
+            List<Object> lstObject = new ArrayList<>();
+            lstObject.add(object);
+            hmObject.put(key, lstObject);
         }
     }
 }

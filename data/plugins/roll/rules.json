@@ -15,7 +15,7 @@
                 "explode": false,
                 "explode_recursive": false,
                 "explode_action": "",
-                "arg": "a",
+                "arg": "d",
                 "format": "",
                 "total": ""
             }
@@ -29,29 +29,29 @@
             "bleu": {
                 "desc": "Bleu: Relancer un jet.",
                 "values": [2, 3],
-                "limit": 99
+                "limit": "{MUL;{MISC;players};2}"
             },
             "rouge": {
                 "desc": "Rouge: Relancer l'initiative.",
                 "values": [4, 5],
-                "limit": 99
+                "limit": "{MUL;{MISC;players};2}"
             },
             "vert": {
                 "desc": "Vert: Ajouter +2 à un jet.",
                 "values": [6, 7],
-                "limit": 99
+                "limit": "{MUL;{MISC;players};3}"
             },
             "noir": {
                 "desc": "Noir: \"Manipuler\" la chance.",
                 "values": [8],
-                "limit": 1
+                "limit": "{MISC;players}"
             }
         },
         "rolltypes": [
             {
                 "name": "damage",
                 "desc": "Jet de dégâts",
-                "default": true,
+                "default": false,
                 "critical_failure": "",
                 "critical_success": "",
                 "bonus_dice": "",
@@ -63,32 +63,18 @@
                 "total": ""
             },
             {
-                "name": "action",
-                "desc": "Jet d'action",
-                "default": false,
+                "name": "test",
+                "desc": "Jet de test",
+                "default": true,
                 "critical_failure": "{AND;{DICE;value;normal};==;1;{DICE;value;bonus};==;1}",
                 "critical_success": "{OR;{DICE;value;normal};==;{DICE;max;normal};{DICE;value;bonus};==;{DICE;max;bonus}}",
                 "bonus_dice": "1d6",
                 "explode": true,
                 "explode_recursive": true,
                 "explode_action": "{IF;{DICE;value;normal};==;{DICE;max;normal};{IF;{DICE;value;bonus};==;{DICE;max;bonus};{DICE;reroll;normal;bonus};{DICE;reroll;normal}};{IF;{DICE;value;bonus};==;{DICE;max;bonus};{DICE;reroll;bonus};FALSE}}",
-                "arg": "a",
-                "format": "(?:1[dD][0-9]{1,2}(?:[\\+|\\-][0-9]{1,2}(?: [hH]{1})?|(?: [hH]{1}))?)",
-                "total": "{IF;{DICE;all;normal};>;{DICE;all;bonus};{ADD;{DICE;all;normal};{FXVA;all}};{ADD;{DICE;all;bonus};{FXVA;all}}}"
-            },
-            {
-                "name": "token",
-                "desc": "Jet de tokens",
-                "default": false,
-                "critical_failure": "",
-                "critical_success": "",
-                "bonus_dice": "",
-                "explode": false,
-                "explode_recursive": false,
-                "explode_action": "",
                 "arg": "t",
-                "format": "^([0-9]|[1-2][0-9])( [0-9]| [1-2][0-9])?$",
-                "total": "{IF;{FXVA;value;1};!=;NULL;{RULE;tokens;{DICE;token;{FXVA;value;0};2d4;{FXVA;value;1}}};{RULE;tokens;{DICE;token;{FXVA;value;0};2d4;1}}}"
+                "format": "(?:1[dD][0-9]{1,2}(?:[\\+|\\-][0-9]{1,2}(?: [tT]{1})?|(?: [tT]{1}))?)",
+                "total": "{IF;{DICE;all;normal};>;{DICE;all;bonus};{ADD;{DICE;all;normal};{FXVA;all}};{ADD;{DICE;all;bonus};{FXVA;all}}}"
             }
         ]
     }

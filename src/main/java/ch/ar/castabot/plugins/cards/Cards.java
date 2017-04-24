@@ -62,7 +62,7 @@ public class Cards extends Plugin {
             }
         }
         
-        Deck deck = (Deck) CastabotClient.getCastabot().getPluginSettings().getValue("cards", "deck");
+        Deck deck = (Deck) CastabotClient.getCastabot().getPluginSettings(source.getGuild()).getValue("cards", "deck");
         if (deck.getNbCardsLeft() >= lstMember.size()) {
             Collections.shuffle(lstMember);
             for (Member member : lstMember) {
@@ -78,7 +78,7 @@ public class Cards extends Plugin {
     
     private String init(String deckName) throws PluginException {
         Deck deck = new Deck(deckName);
-        CastabotClient.getCastabot().getPluginSettings().setValue("cards", "deck", deck);
+        CastabotClient.getCastabot().getPluginSettings(source.getGuild()).setValue("cards", "deck", deck);
         String ret = "Jeu de cartes initié avec le deck ["+deck.getName()+"] et mélangé.";
         
         PseudoCode pc = new PseudoCode(deck.getActivateAction());
@@ -92,7 +92,7 @@ public class Cards extends Plugin {
     @Override
     public List<PluginResponse> run() throws PluginException {
         List<PluginResponse> ret = new ArrayList<>();
-        Deck deck = (Deck) CastabotClient.getCastabot().getPluginSettings().getValue("cards", "deck");
+        Deck deck = (Deck) CastabotClient.getCastabot().getPluginSettings(source.getGuild()).getValue("cards", "deck");
         switch (args[0]) {
             case "deck" :
                 if (args.length > 1) {

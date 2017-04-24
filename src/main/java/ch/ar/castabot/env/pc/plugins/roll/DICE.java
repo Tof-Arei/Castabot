@@ -17,7 +17,7 @@ package ch.ar.castabot.env.pc.plugins.roll;
 
 import ch.ar.castabot.env.pc.PseudoCode;
 import ch.ar.castabot.plugins.roll.Dice;
-import java.util.Map;
+import java.util.List;
 
 /**
  *
@@ -31,19 +31,20 @@ public class DICE extends PseudoCode {
     private int all(String type) {
         int ret = 0;
         
-        if (getAllDiceObj() != null) {
+        List<Dice> lstDice = (List<Dice>) getAllObjects(Dice.class.getName());
+        if (lstDice != null) {
             switch (type) {
                 case "normal":
-                    for (int i = 0; i < getAllDiceObj().size(); i++) {
-                        Dice dice = (Dice) getAllDiceObj().get(i);
+                    for (int i = 0; i < lstDice.size(); i++) {
+                        Dice dice = (Dice) lstDice.get(i);
                         if (!dice.isBonus()) {
                             ret += dice.getValue();
                         }
                     }
                     break;
                 case "bonus":
-                    for (int i = 0; i < getAllDiceObj().size(); i++) {
-                        Dice dice = (Dice) getAllDiceObj().get(i);
+                    for (int i = 0; i < lstDice.size(); i++) {
+                        Dice dice = (Dice) lstDice.get(i);
                         if (dice.isBonus()) {
                             ret += dice.getValue();
                         }
@@ -56,34 +57,19 @@ public class DICE extends PseudoCode {
     }
     
     private Dice getDice(int index) {
-        Dice ret = null;
-        
-        Map<Integer, Object> lstDiceObj = getAllDiceObj();
-        if (lstDiceObj.size() > 0 && index <= lstDiceObj.size()) {
-            ret = (Dice) lstDiceObj.get(index);
-        }
-        
-        return ret;
-    }
-    
-    public Map<Integer, Object> getAllDiceObj() {
-        return lstObject.get(Dice.class.getName());
+        return (Dice) getObject(Dice.class.getName(), index);
     }
     
     private Dice getLastDice(boolean bonus) {
         Dice ret = null;
-        
-        Map<Integer, Object> lstDiceObj = getAllDiceObj();
-        if (lstDiceObj.size() > 0) {
-            for (int i = lstDiceObj.size()-1; i >= 0; i--) {
-                Dice dice = (Dice) lstDiceObj.get(i);
-                if (dice.isBonus() == bonus) {
-                    ret = dice;
-                    break;
-                }
+        List<Dice> lstDice = (List<Dice>) getAllObjects(Dice.class.getName());
+        for (int i = lstDice.size()-1; i >= 0; i--) {
+            Dice dice = lstDice.get(i);
+            if (dice.isBonus() == bonus) {
+                ret = dice;
+                break;
             }
         }
-        
         return ret;
     }
     

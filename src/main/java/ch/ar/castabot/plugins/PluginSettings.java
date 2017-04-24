@@ -23,21 +23,22 @@ import java.util.Map;
  * @author Arei
  */
 public class PluginSettings {
-    private final Map<String, Map<String, Object>> lstSetting = new HashMap<>();
+    private final Map<String, Map<String, Object>> hmSettings = new HashMap<>();
     
     public void addSetting(String key, Map<String, Object> value) {
-        lstSetting.put(key, value);
+        hmSettings.put(key, value);
     }
 
     public void addValue(String plugin, String setting, Object value) {
-        lstSetting.get(plugin).put(setting, value);
+        hmSettings.get(plugin).put(setting, value);
     }
 
     public void setValue(String plugin, String setting, Object value) {
-        lstSetting.get(plugin).replace(setting, value);
+        //lstSetting.get(plugin).replace(setting, value);
+        hmSettings.get(plugin).put(setting, value);
     }
 
     public Object getValue(String plugin, String setting) {
-        return lstSetting.get(plugin).get(setting);
+        return hmSettings.get(plugin).get(setting);
     }
 }
