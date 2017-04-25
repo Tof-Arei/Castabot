@@ -40,13 +40,18 @@ import org.json.JSONObject;
  * @author Arei
  */
 public class Command {
+    public static final int TYPE_NORMAL = 0;
+    public static final int TYPE_SECRET = 1;
+    public static final int TYPE_BOTH = 2;
+    
     private final Guild guild;
     private final User user;
     private final Message message;
     
     private String command = null;
+    private String desc = null;
     private String[] args = null;
-    private boolean secret = false;
+    private int type = -1;
     
     private final JSONObject settings = CastabotClient.getCastabot().getSettings();
     
@@ -57,32 +62,35 @@ public class Command {
         parseCommand();
     }
     
+    public boolean isWorthAnswer() {
+        JSONObject rawCommands = settings.getJSONObject("command_settings").getJSONObject("commands");
+        return type >= 0 && rawCommands.has(command);
+    }
+    
     // Parse the message, extract the command and arguments
     private void parseCommand() {
         String strChar = message.getContent().substring(0, 1);
         String[] strArgs = message.getContent().substring(1).split(" ");
+        JSONObject rawCommandSettings = settings.getJSONObject("command_settings");
         
-        // Check if the command is secret
-        JSONArray cmdChars = settings.getJSONArray("cmd_chars");
-        for (int i = 0; i < cmdChars.length(); i++) {
-            JSONArray cmdChar = cmdChars.getJSONArray(i);
-            if (strChar.equals(cmdChar.getString(1))) {
-                if (cmdChar.getString(0).equals("secret")) {
-                    secret = true;
-                    break;
-                }
+        // Check the commande type
+        JSONObject cmdChars = rawCommandSettings.getJSONObject("chars");
+        for (String charKey : cmdChars.keySet()) {
+            if (strChar.equals(charKey)) {
+                type = Integer.parseInt(cmdChars.getString(charKey));
             }
         }
         
         // Check if the command is a short
         boolean isShort = false;
-        JSONObject cmdShorts = settings.getJSONObject("cmd_shorts");
-        for (String shortKey : cmdShorts.keySet()) {
-            JSONObject objShort = cmdShorts.getJSONObject(shortKey);
-            for (String argKey : objShort.keySet()) {
-                JSONArray arrArg = objShort.getJSONArray(argKey);
-                for (int i = 0; i < arrArg.length(); i++) {
-                    String cmdShort = arrArg.getString(i);
+        JSONObject rawCommands = rawCommandSettings.getJSONObject("commands");
+        for (String commandKey : rawCommands.keySet()) {
+            JSONObject rawCommand = rawCommands.getJSONObject(commandKey);
+            JSONObject rawShorts = rawCommand.getJSONObject("shorts");
+            for (String argKey : rawShorts.keySet()) {
+                JSONArray arrShorts = rawShorts.getJSONArray(argKey);
+                for (int i = 0; i < arrShorts.length(); i++) {
+                    String cmdShort = arrShorts.getString(i);
                     String shortCommand = message.getContent().substring(1);
                     Pattern patShort = Pattern.compile(cmdShort);
                     Matcher matShort = patShort.matcher(shortCommand);
@@ -90,7 +98,7 @@ public class Command {
                     // If command is a short, extract command and arguments
                     if (matShort.find()) {
                         isShort = true;
-                        command = shortKey;
+                        command = commandKey;
                         // Was the argument specified in the short command?
                         boolean argFound = false;
                         for (String arg : strArgs) {
@@ -129,12 +137,9 @@ public class Command {
     
     public List<PluginResponse> execute() {
         List<PluginResponse> ret = new ArrayList<>();
-        // Check if the command exists
-        JSONObject permCommands = settings.getJSONObject("commands");
-        if (permCommands.has(command)) {
-            if (checkPermissions()) {
-                ret = executePlugin();
-            }
+        // Check permissions and execute command
+        if (checkPermissions()) {
+            ret = executePlugin();
         }
         return ret;
     }
@@ -156,11 +161,13 @@ public class Command {
             
             if (args.length > 0) {
                 if (args[0].equals("-h") || args[0].equals("--help")) {
-                    JSONObject permCommands = settings.getJSONObject("commands");
-                    Rules rules = (Rules) CastabotClient.getCastabot().getPluginSettings(guild).getValue("roll", "rules");
-                    PseudoCode pc = new PseudoCode(permCommands.getString(command));
-                    pc.addObject(Rules.class.getName(), rules);
-                    ret.add(new PluginResponse(pc.evaluate(), user));
+                    JSONObject rawCommands = settings.getJSONObject("command_settings").getJSONObject("commands");
+                    if (rawCommands.has(command)) {
+                        Rules rules = (Rules) CastabotClient.getCastabot().getPluginSettings(guild).getValue("roll", "rules");
+                        PseudoCode pc = new PseudoCode(rawCommands.getJSONObject(command).getString("desc"));
+                        pc.addObject(Rules.class.getName(), rules);
+                        ret.add(new PluginResponse(pc.evaluate(), user));
+                    }
                 }
             }
             if (ret.isEmpty()) {
@@ -191,7 +198,7 @@ public class Command {
         return args;
     }
     
-    public boolean isSecret() {
-        return secret;
+    public int getType() {
+        return type;
     }
 }

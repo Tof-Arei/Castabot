@@ -27,15 +27,15 @@ import net.dv8tion.jda.core.entities.TextChannel;
  * @author Arei
  */
 public class LoadResultHandler implements AudioLoadResultHandler {
-    private PlayerManager playerManager;
+    private final PlayerManager playerManager;
     private final TextChannel channel;
     private final MusicManager musicManager;
     private final String trackUrl;
 
-    public LoadResultHandler(TextChannel channel, MusicManager musicManager, String trackUrl) {
+    public LoadResultHandler(TextChannel channel, String trackUrl) {
         this.playerManager = (PlayerManager) CastabotClient.getCastabot().getPluginSettings(channel.getGuild()).getValue("audio", "playerManager");
         this.channel = channel;
-        this.musicManager = musicManager;
+        this.musicManager = (MusicManager) CastabotClient.getCastabot().getPluginSettings(channel.getGuild()).getValue("audio", "musicManager");
         this.trackUrl = trackUrl;
     }
     

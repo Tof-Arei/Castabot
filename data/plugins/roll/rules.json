@@ -2,7 +2,7 @@
     "default": {
         "activate_action": "{CARD;init;default}",
         "dices": [],
-        "help": "Règles default.\r\n Arguments disponibles: (a=action/dégâts)",
+        "help": "Arguments disponibles: (a=action/dégâts)",
         "tokens": {},
         "rolltypes": [
             {

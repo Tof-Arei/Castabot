@@ -26,14 +26,14 @@ public class Card {
     // Mmmmmmmmhhh, Java <3
     public static final int VALUE_JOKER = 0;
     public static final String VALUE_JOKER_S = "Joker";
-    public static final int VALUE_ACE = 1;
-    public static final String VALUE_ACE_S = "As";
     public static final int VALUE_JACK = 11;
     public static final String VALUE_JACK_S = "Valet";
     public static final int VALUE_QUEEN = 12;
     public static final String VALUE_QUEEN_S = "Dame";
     public static final int VALUE_KING = 13;
     public static final String VALUE_KING_S = "Roi";
+    public static final int VALUE_ACE = 14;
+    public static final String VALUE_ACE_S = "As";
     
     public static final int COLOR_SPADE = 1;
     public static final String COLOR_SPADE_S = "Pique";
@@ -48,13 +48,12 @@ public class Card {
     
     private final int color;
     private final int value;
-    private final String desc;
+    private String desc;
     
-    public Card(Deck deck, int color, int value, String desc) {
+    public Card(Deck deck, int color, int value) {
         this.deck = deck;
         this.color = color;
         this.value = value;
-        this.desc = desc;
     }
     
     public String print() {
@@ -93,7 +92,7 @@ public class Card {
                 ret += COLOR_DIAMOND_S;
                 break;
         }
-        if (!desc.equals("")) {
+        if (desc != null) {
             ret += "\r\n" + desc;
         }
         return ret;
@@ -110,6 +109,10 @@ public class Card {
     
     public String getDesc() {
         return desc;
+    }
+    
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 
     public int getColor() {

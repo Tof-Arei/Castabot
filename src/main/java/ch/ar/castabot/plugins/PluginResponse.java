@@ -49,8 +49,12 @@ public class PluginResponse {
         this.target = target;
     }
 
+    public String printText() {
+        return (text == null) ? "" : "\r\n" + text;
+    }
+    
     public String getText() {
-        return (text == null) ? "" : text;
+        return text;
     }
     
     public MessageEmbed getEmbed() {

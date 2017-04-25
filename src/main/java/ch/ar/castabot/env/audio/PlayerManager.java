@@ -30,7 +30,7 @@ import net.dv8tion.jda.core.managers.AudioManager;
 public class PlayerManager extends DefaultAudioPlayerManager {
     public void loadAndPlay(TextChannel channel, String trackUrl) {
         MusicManager musicManager = CastabotClient.getGuildAudioPlayer(channel.getGuild());
-        LoadResultHandler lrHandler = new LoadResultHandler(channel, musicManager, trackUrl);
+        LoadResultHandler lrHandler = new LoadResultHandler(channel, trackUrl);
         loadItemOrdered(musicManager, trackUrl, lrHandler);
     }
     
@@ -80,6 +80,10 @@ public class PlayerManager extends DefaultAudioPlayerManager {
     
     public String stop(TextChannel channel) {
         skip(channel);
+        MusicManager musicManager = CastabotClient.getGuildAudioPlayer(channel.getGuild());
+        //musicManager.getPlayer().destroy();
+        //PlayerManager playerManager = (PlayerManager) CastabotClient.getCastabot().getPluginSettings(channel.getGuild()).getValue("audio", "playerManager");
+        //CastabotClient.getCastabot().getPluginSettings(channel.getGuild()).setValue("audio", "musicManager", new MusicManager(playerManager));
         disconnectFromVoiceChannel(channel.getGuild().getAudioManager());
         return "Arrêt du lecteur.";
     }

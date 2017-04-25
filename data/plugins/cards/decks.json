@@ -2,13 +2,15 @@
     "default": {
         "activate_action": "{RULE;rules;default}",
         "img_deck": "default",
-        "format": "1-13;2-13;3-13;4-13;0-2",
+        "cards": "1-2:14;2-2:14;3-2:14;4-2:14",
+        "joker": "0-0;2",
         "descs": []
     },
     "savage": {
         "activate_action": "{RULE;rules;savage}",
         "img_deck": "default",
-        "format": "1-13;2-13;3-13;4-13;0-2",
+        "cards": "1-2:14;2-2:14;3-2:14;4-2:14",
+        "joker": "0-0;2",
         "descs": [
             {"0-0": "+2 sur tous les jets!"}
         ]

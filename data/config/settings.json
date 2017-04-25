@@ -1,38 +1,46 @@
 {
-    "cmd_chars": [
-        ["normal", "!"],
-        ["secret", "&"]
-    ],
-    "commands": {
-        "audio": "Jouer des fichiers audio sur le canal vocal. \r\n Arguments: play <url> | pause/resume | loop | stop \r\n Exemple: !audio play <youtube_id>",
-        "cards": "Interagir avec le jeu de cartes virtuel. \r\n Arguments: deck <deck> | draw | shuffle \r\n Exemple: !cards draw",
-        "roll": "{Tirer un ou plusieurs dés virtuels.\r\n Arguments: roll <expr> | rules <rules>\r\n Règles [{RULE;name;0}]:\r\n {RULE;help;0}}",
-        "help": "Informations sur les commandes.",
-        "love": "Commande réservée à Kyuuji."
-    },
-   "cmd_shorts": {
-        "audio": {
-            "play": ["^(play) (.+)$"],
-            "pause": ["^(pause)$"],
-            "resume": ["^(resume)$"],
-            "loop": ["^(loop)$"],
-            "skip": ["^(skip)$"],
-            "stop": ["^(stop)$"]
+    "command_settings": {
+        "chars": {
+            "!": "0",
+            "&": "1",
+            "%": "2"
         },
-        "cards": {
-            "deck": ["^(deck)$"],
-            "draw": ["^(draw)$"],
-            "drawall": ["^(drawall)$", "^(drawall) (.+)$"],
-            "shuffle": ["^(shuffle)$"]
-        },
-        "roll": {
-            "fill": ["^(fill)$"],
-            "roll": ["((?:\\-?\\+?[0-9]{1,2}[dD][0-9]{1,3}( [a-zA-Z]{1})?|\\-?\\+?[0-9]{1,3}( [a-zA-Z]{1})?){1,})"],
-            "rules": ["^(rules) (.+)$"],
-            "token": ["^(token)$", "^(token) (.+)$"]
-        },
-        "love": {
-            "love": ["^(love)$"]
+        "commands": {
+            "audio": {
+                "desc": "Jouer des fichiers audio sur le canal vocal. \r\n Arguments: play <url> | pause/resume | loop | stop \r\n Exemple: !audio play <youtube_id>",
+                "shorts" : {
+                    "play": ["^(play) (.+)$"],
+                    "pause": ["^(pause)$"],
+                    "resume": ["^(resume)$"],
+                    "loop": ["^(loop)$"],
+                    "skip": ["^(skip)$"],
+                    "stop": ["^(stop)$"]
+                }
+            },
+            "cards": {
+                "desc": "Interagir avec le jeu de cartes virtuel. \r\n Arguments: deck <deck> | draw | shuffle \r\n Exemple: !cards draw",
+                "shorts": {
+                    "deck": ["^(deck)$"],
+                    "draw": ["^(draw)$"],
+                    "drawall": ["^(drawall)$", "^(drawall) (.+)$"],
+                    "shuffle": ["^(shuffle)$"]
+                }
+            },
+            "roll": {
+                "desc": "{Tirer un ou plusieurs dés virtuels.\r\n Arguments: roll <expr> | rules <rules>\r\n Règles [{RULE;name;0}]:\r\n {RULE;help;0}}",
+                "shorts": {
+                    "fill": ["^(fill)$"],
+                    "roll": ["((?:\\-?\\+?[0-9]{1,2}[dD][0-9]{1,3}( [a-zA-Z]{1})?|\\-?\\+?[0-9]{1,3}( [a-zA-Z]{1})?){1,})"],
+                    "rules": ["^(rules) (.+)$"],
+                    "token": ["^(token)$", "^(token) (.+)$"]
+                }
+            },
+            "love": {
+                "desc": "Commande réservée à Kyuuji.",
+                "shorts": {
+                    "love": ["^(love)$"]
+                }
+            }
         }
     }
 }

@@ -24,10 +24,12 @@ import java.util.List;
  */
 public class RollResult {
     private String caption;
+    private boolean criticalFailure = false;
+    private boolean criticalSuccess = false;
     private String total = "0";
-    private List<List<Dice>> lstDice = new ArrayList<>();
-    private List<FixedValue> lstFixed = new ArrayList<>();
-    private List<Dice> lstExplode = new ArrayList<>();
+    private final List<List<Dice>> lstDice = new ArrayList<>();
+    private final List<FixedValue> lstFixed = new ArrayList<>();
+    private final List<Dice> lstExplode = new ArrayList<>();
     
     public RollResult() {
         
@@ -119,5 +121,21 @@ public class RollResult {
     
     public void addExplodes(List<Dice> lstExplode) {
         this.lstExplode.addAll(lstExplode);
+    }
+
+    public boolean isCriticalFailure() {
+        return criticalFailure;
+    }
+
+    public void setCriticalFailure(boolean criticalFailure) {
+        this.criticalFailure = criticalFailure;
+    }
+
+    public boolean isCriticalSuccess() {
+        return criticalSuccess;
+    }
+
+    public void setCriticalSuccess(boolean criticalSuccess) {
+        this.criticalSuccess = criticalSuccess;
     }
 }

@@ -15,7 +15,6 @@
  */
 package ch.ar.castabot.plugins.roll;
 
-import ch.ar.castabot.CastabotClient;
 import ch.ar.castabot.env.pc.PseudoCode;
 import ch.ar.castabot.plugins.Plugin;
 import java.io.IOException;
@@ -162,26 +161,23 @@ public class Rules {
         }
         
         // Check for critical success/failure
-        boolean criticalFailure = false;
-        boolean criticalSuccess = false;
-        
         pcRoll.setFormula(rolltype.getCriticalFailure());
         if (Boolean.parseBoolean(pcRoll.evaluate())) {
-            criticalFailure = true;
+            ret.setCriticalFailure(true);
         }
         pcRoll.setFormula(rolltype.getCriticalSuccess());
         if (Boolean.parseBoolean(pcRoll.evaluate())) {
-            criticalSuccess = true;
+            ret.setCriticalSuccess(true);
         }
         
         // Do potential dice explosion and handle critical failure
-        String caption = rolltype.getDesc() + ": ";
-        if (criticalSuccess) {
+        String caption = rolltype.getDesc() + " ";
+        if (ret.isCriticalSuccess()) {
             caption += " (Réussite critique!)\r\n";
             if (rolltype.canExplode()) {
                 explosion(pcRoll, rolltype, ret);
             }
-        } else if (criticalFailure) {
+        } else if (ret.isCriticalFailure()) {
             caption += " (Échec critique!)\r\n";
         }
         ret.setCaption(caption);

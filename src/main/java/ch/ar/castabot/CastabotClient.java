@@ -37,6 +37,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.ReadyEvent;
@@ -68,60 +69,57 @@ public class CastabotClient extends ListenerAdapter {
         }
     }
     
-    // Check if the message is worth answering to (ie. message is a command)
-    private boolean isMessageWorthAnsweringTo(Message message) {
-        boolean ret = false;
-        if(!message.getChannel().getName().equals("general")) {
-            if (message.getAttachments().isEmpty()) {
-                JSONArray cmdChars = castabot.getSettings().getJSONArray("cmd_chars");
-                for (int i = 0; i < cmdChars.length(); i++) {
-                    JSONArray cmdChar = cmdChars.getJSONArray(i);
-                    if (message.getContent().substring(0, 1).equals(cmdChar.get(1))) {
-                        ret = true;
+    private void handleCommand(Message message) {
+        Command command = new Command(message.getGuild(), message.getAuthor(), message);
+        if (command.isWorthAnswer()) {
+            for (PluginResponse response : command.execute()) {
+                // Handle message type
+                switch (command.getType()) {
+                    case Command.TYPE_NORMAL:
+                        // Send in channel
+                        sendResponseMessage(message.getTextChannel(), message.getAuthor(), response, false);
                         break;
-                    } 
+                    case Command.TYPE_SECRET:
+                        // Send PM
+                        sendResponseMessage(message.getTextChannel(), message.getAuthor(), response, true);
+                        break;
+                    case Command.TYPE_BOTH:
+                        // Send both in channel and PM
+                        sendResponseMessage(message.getTextChannel(), message.getAuthor(), response, false);
+                        sendResponseMessage(message.getTextChannel(), message.getAuthor(), response, true);
+                        break;
                 }
             }
         }
-        
-        return ret;
     }
     
-    private void handleCommand(Message message) {
-        Command command = new Command(message.getGuild(), message.getAuthor(), message);
-        for (PluginResponse response : command.execute()) {
-            if (command.isSecret()) {
-                if (response.getFile() != null) {
-                    Message msg= null;
-                    if (response.getText() != null) {
-                        MessageBuilder msgBuild = new MessageBuilder();
-                        msgBuild.append("<@"+response.getTarget().getId()+"> "+response.getText());
-                        msgBuild.setEmbed(response.getEmbed());
-                        msg = msgBuild.build();
-                    }
-                    sendPrivateFile(response.getTarget(), response.getFile(), msg);
-                } else {
-                    MessageBuilder msgBuild = new MessageBuilder();
-                    msgBuild.append("<@"+response.getTarget().getId()+"> "+response.getText());
-                    msgBuild.setEmbed(response.getEmbed());
-                    sendPrivateMessage(response.getTarget(), msgBuild.build());
-                }
-            } else {
-                if (response.getFile() != null) {
-                    MessageBuilder msgBuild = new MessageBuilder();
-                    msgBuild.append("<@"+response.getTarget().getId()+"> "+response.getText());
-                    msgBuild.setEmbed(response.getEmbed());
-                    try {
-                        message.getChannel().sendFile(response.getFile(), msgBuild.build()).queue();
-                    } catch (IOException ex) {
-                        Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                } else {
-                    MessageBuilder msgBuild = new MessageBuilder();
-                    msgBuild.append("<@"+response.getTarget().getId()+"> "+response.getText());
-                    msgBuild.setEmbed(response.getEmbed());
-                    message.getChannel().sendMessage(msgBuild.build()).queue();
-                }
+    private void sendResponseMessage(TextChannel channel, User target, PluginResponse response, boolean PM) {
+        MessageBuilder msgBuild = new MessageBuilder();
+        msgBuild.append("<@"+target.getId()+"> "+response.printText());
+        msgBuild.setEmbed(response.getEmbed());
+        if (response.getFile() != null) {
+            sendFile(channel, target, response.getFile(), msgBuild.build(), PM);
+        } else {
+            sendMessage(channel, target, msgBuild.build(), PM);
+        }
+    }
+    
+    private void sendMessage(TextChannel channel, User target, final Message message, boolean PM) {
+        if (PM) {
+            sendPrivateMessage(target, message);
+        } else {
+            channel.sendMessage(message).queue();
+        }
+    }
+    
+    private void sendFile(TextChannel channel, User target, final File file, final Message message, boolean PM) {
+        if (PM) {
+            sendPrivateFile(target, file, message);
+        } else {
+            try {
+                channel.sendFile(file, message).queue();
+            } catch (IOException ex) {
+                Logger.getLogger(CastabotClient.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -188,14 +186,12 @@ public class CastabotClient extends ListenerAdapter {
     }
     
     public synchronized static MusicManager getGuildAudioPlayer(Guild guild) {
-        long guildId = Long.parseLong(guild.getId());
-        Map<Long, MusicManager> musicManagers = (Map<Long, MusicManager>) castabot.getPluginSettings(guild).getValue("audio", "musicManagers");
+        MusicManager musicManager = (MusicManager) castabot.getPluginSettings(guild).getValue("audio", "musicManager");
         AudioPlayerManager playerManager = (AudioPlayerManager) castabot.getPluginSettings(guild).getValue("audio", "playerManager");
-        MusicManager musicManager = musicManagers.get(guildId);
         
         if (musicManager == null) {
             musicManager = new MusicManager(playerManager);
-            musicManagers.put(guildId, musicManager);
+            castabot.getPluginSettings(guild).setValue("audio", "musicManager", musicManager);
         }
         guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
 
@@ -239,17 +235,13 @@ public class CastabotClient extends ListenerAdapter {
         if (event.isFromType(ChannelType.PRIVATE)) {
             // Print bot PMs
             System.out.printf("[PM] %s: %s\n", event.getAuthor().getName(), event.getMessage().getContent());
-            // Handle commands and stuff
-            if (isMessageWorthAnsweringTo(message)) {
-                handleCommand(message);
-            }
         } else {
             // Print channel messages
             System.out.printf("[%s][%s] %s: %s\n", event.getGuild().getName(), event.getTextChannel().getName(), event.getMember().getEffectiveName(), event.getMessage().getContent());
             // Handle commands and stuff
-            if (isMessageWorthAnsweringTo(message)) {
+            //if (isMessageWorthAnsweringTo(message)) {
                 handleCommand(message);
-            }
+            //}
         }
     }
 

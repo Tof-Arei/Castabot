@@ -64,28 +64,44 @@ public class Deck {
     private void fill(JSONObject objDeck, boolean out) {
         activateAction = objDeck.getString("activate_action");
         imgDeck = objDeck.getString("img_deck");
-        for (String format : objDeck.getString("format").split(";")) {
+        // Generate cards
+        List<Card> lstCard = new ArrayList<>();
+        for (String format : objDeck.getString("cards").split(";")) {
             String[] splitFormat = format.split("-");
-            for (int i = 0; i < Integer.parseInt(splitFormat[1]); i++) {
-                String[] rawCard = new String[3];
-                rawCard[0] = splitFormat[0];
-                rawCard[1] = (rawCard[0].equals("0")) ? "0" : String.valueOf(i+1);
-                rawCard[2] = "";
-                
-                for (int j = 0; j < objDeck.getJSONArray("descs").length(); j++) {
-                    JSONObject objDesc = objDeck.getJSONArray("descs").getJSONObject(j);
-                    if (objDesc.has(rawCard[0]+"-"+rawCard[1])) {
-                        rawCard[2] = objDesc.getString(rawCard[0]+"-"+rawCard[1]);
-                    }
-                }
-                
-                Card card = new Card(this, Integer.parseInt(rawCard[0]), Integer.parseInt(rawCard[1]), rawCard[2]);
-                if (!out) {
-                    lstCardsIn.add(card);
-                } else {
-                    lstCardsOut.add(card);
+            String[] splitCards = splitFormat[1].split(":");
+            int color = Integer.parseInt(splitFormat[0]);
+            int beg = Integer.parseInt(splitCards[0]);
+            int end = Integer.parseInt(splitCards[1]);
+            for (int i = beg; i <= end; i++) {
+                Card card = new Card(this, color, i);
+                lstCard.add(card);
+            }
+        }
+        
+        // Generate joker(s)
+        String[] splitJokers = objDeck.getString("joker").split(";");
+        int nbJokers = Integer.parseInt(splitJokers[1]);
+        for (int i = 0; i < nbJokers; i++) {
+            String[] rawJoker = splitJokers[0].split("-");
+            Card card = new Card(this, Integer.parseInt(rawJoker[0]), Integer.parseInt(rawJoker[1]));
+            lstCard.add(card);
+        }
+        
+        // Add descriptions
+        for (Card card : lstCard) {
+            for (int j = 0; j < objDeck.getJSONArray("descs").length(); j++) {
+                JSONObject objDesc = objDeck.getJSONArray("descs").getJSONObject(j);
+                if (objDesc.has(card.toString())) {
+                    card.setDesc(objDesc.getString(card.toString()));
                 }
             }
+        }
+        
+        // Put generated cards in the deck
+        if (!out) {
+            lstCardsIn.addAll(lstCard);
+        } else {
+            lstCardsOut.addAll(lstCard);
         }
     }
     

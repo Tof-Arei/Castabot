@@ -5,7 +5,8 @@
             "extends": "MJ",
             "commands": {
                 "admin": {
-                    "args": {}
+                    "args": {
+                    }
                 }
             }
         },
@@ -34,6 +35,7 @@
             "commands": {
                 "audio": {
                     "args": {
+                        "-h": true,
                         "play": true,
                         "pause": true,
                         "resume": true,
@@ -44,11 +46,13 @@
                 },
                 "cards": {
                     "args": {
+                        "-h": true,
                         "draw": true
                     }
                 },
                 "roll": {
                     "args": {
+                        "-h": true,
                         "roll": true,
                         "token": true
                     }
@@ -67,6 +71,7 @@
                 },
                 "audio": {
                     "args": {
+                        "-h": false,
                         "play": false,
                         "pause": false,
                         "resume": false,
@@ -77,6 +82,7 @@
                 },
                 "cards": {
                     "args": {
+                        "-h": false,
                         "draw": false,
                         "drawall": false,
                         "shuffle": false,
@@ -85,6 +91,7 @@
                 },
                 "roll": {
                     "args": {
+                        "-h": false,
                         "fill": false,
                         "default": false,
                         "rules": false,
@@ -95,7 +102,9 @@
                     "args": {}
                 },
                 "love": {
-                    "args": {}
+                    "args": {
+                        "-h": false
+                    }
                 }
             }
         }

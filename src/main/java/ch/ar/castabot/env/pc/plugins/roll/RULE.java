@@ -18,8 +18,6 @@ package ch.ar.castabot.env.pc.plugins.roll;
 import ch.ar.castabot.env.pc.PseudoCode;
 import ch.ar.castabot.plugins.PluginSettings;
 import ch.ar.castabot.plugins.roll.Rules;
-import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  *

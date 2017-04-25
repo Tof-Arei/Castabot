@@ -16,6 +16,7 @@
  */
 package ch.ar.castabot;
 
+import ch.ar.castabot.env.audio.MusicManager;
 import ch.ar.castabot.env.audio.PlayerManager;
 import ch.ar.castabot.env.permissions.Permissions;
 import ch.ar.castabot.plugins.PluginException;
@@ -37,8 +38,8 @@ import net.dv8tion.jda.core.entities.Guild;
 import org.json.JSONObject;
 
 /**
- * @todo even more refactoring : message/privateMessage handling/sending
- * @todo even more settings.json refactoring (merge command with command_shorts)
+ * @todo audio (multi-server stop bug)
+ * @todo better command output (embeds)
  * @todo make help command react with permissions
  * @author Arei
  */
@@ -46,7 +47,7 @@ public class Castabot {
     private final Properties config = new Properties();
     private JSONObject settings;
     private Permissions permissions;
-    private Map<Guild, PluginSettings> hmGuildSettings = new HashMap<>();
+    private volatile Map<Guild, PluginSettings> hmGuildSettings = new HashMap<>();
 
     public Castabot() {
          try {
@@ -70,8 +71,9 @@ public class Castabot {
     public void initSettings(Guild guild) throws PluginException {
         PluginSettings pluginSettings = new PluginSettings();
         Map<String, Object> audioSettings = new HashMap<>();
-        audioSettings.put("musicManagers", new HashMap<>());
-        audioSettings.put("playerManager", new PlayerManager());
+        PlayerManager playerManager = new PlayerManager();
+        audioSettings.put("musicManager", new MusicManager(playerManager));
+        audioSettings.put("playerManager", playerManager);
         pluginSettings.addSetting("audio", audioSettings);
         
         Map<String, Object> cardsSettings = new HashMap<>();
