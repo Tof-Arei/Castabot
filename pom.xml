@@ -67,7 +67,6 @@
             <groupId>com.sedmelluq</groupId>
             <artifactId>lavaplayer-common</artifactId>
             <version>1.0.4</version>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
