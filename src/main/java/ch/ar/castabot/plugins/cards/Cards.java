@@ -20,13 +20,10 @@ import ch.ar.castabot.env.pc.PseudoCode;
 import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
 /**
@@ -34,8 +31,8 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
  * @author Arei
  */
 public class Cards extends Plugin {
-    public Cards(String[] args, TextChannel source, User user) throws IOException, Exception {
-        super(args, source, user);
+    public Cards(String[] args, String guildId, String channelId, String userId) {
+        super(args, guildId, channelId, userId);
     }
     
     private List<PluginResponse> drawAll() throws PluginException {
@@ -46,7 +43,7 @@ public class Cards extends Plugin {
             targetChannel = args[1];
         }
         
-        for (VoiceChannel voiceChannel : source.getGuild().getVoiceChannels()) {
+        for (VoiceChannel voiceChannel : CastabotClient.getGuild(guildId).getVoiceChannels()) {
             boolean draw = true;
             if (targetChannel != null) {
                 if (!targetChannel.equals(voiceChannel.getName())) {
@@ -62,12 +59,12 @@ public class Cards extends Plugin {
             }
         }
         
-        Deck deck = (Deck) CastabotClient.getCastabot().getPluginSettings(source.getGuild()).getValue("cards", "deck");
+        Deck deck = (Deck) CastabotClient.getCastabot().getPluginSettings(guildId).getValue("cards", "deck");
         if (deck.getNbCardsLeft() >= lstMember.size()) {
             Collections.shuffle(lstMember);
             for (Member member : lstMember) {
                 Card card = deck.draw();
-                ret.add(new PluginResponse(card.print()+"\r\n"+CastabotClient.getCastabot().getConfig().getProperty("web_root")+"files/cards/default/"+card+".png", member.getUser()));
+                ret.add(new PluginResponse(card.print()+"\r\n"+CastabotClient.getCastabot().getConfig().getProperty("web_root")+"files/cards/default/"+card+".png", member.getUser().getId()));
             }
         } else {
             throw new PluginException("CARDS-4", "Plus assez de cartes pour tout les joueurs. Veuillez mélanger.");
@@ -78,7 +75,7 @@ public class Cards extends Plugin {
     
     private String init(String deckName) throws PluginException {
         Deck deck = new Deck(deckName);
-        CastabotClient.getCastabot().getPluginSettings(source.getGuild()).setValue("cards", "deck", deck);
+        CastabotClient.getCastabot().getPluginSettings(guildId).setValue("cards", "deck", deck);
         String ret = "Jeu de cartes initié avec le deck ["+deck.getName()+"] et mélangé.";
         
         PseudoCode pc = new PseudoCode(deck.getActivateAction());
@@ -92,23 +89,23 @@ public class Cards extends Plugin {
     @Override
     public List<PluginResponse> run() throws PluginException {
         List<PluginResponse> ret = new ArrayList<>();
-        Deck deck = (Deck) CastabotClient.getCastabot().getPluginSettings(source.getGuild()).getValue("cards", "deck");
+        Deck deck = (Deck) CastabotClient.getCastabot().getPluginSettings(guildId).getValue("cards", "deck");
         switch (args[0]) {
             case "deck" :
                 if (args.length > 1) {
-                    ret.add(new PluginResponse(init(args[1]), user));
+                    ret.add(new PluginResponse(init(args[1]), userId));
                 }
                 break;
             case "draw" :
                 Card card = deck.draw();
-                ret.add(new PluginResponse(card.print()+"\r\n"+card.getUrl(), user));
+                ret.add(new PluginResponse(card.print()+"\r\n"+card.getUrl(), userId));
                 break;
             case "drawall":
                 ret = drawAll();
                 break;
             case "shuffle" :
                 deck.shuffle();
-                ret.add(new PluginResponse("Jeu de cartes mélangé.", user));
+                ret.add(new PluginResponse("Jeu de cartes mélangé.", userId));
                 break;
         }
         

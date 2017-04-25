@@ -33,20 +33,20 @@ public class LoadResultHandler implements AudioLoadResultHandler {
     private final String trackUrl;
 
     public LoadResultHandler(TextChannel channel, String trackUrl) {
-        this.playerManager = (PlayerManager) CastabotClient.getCastabot().getPluginSettings(channel.getGuild()).getValue("audio", "playerManager");
+        this.playerManager = (PlayerManager) CastabotClient.getCastabot().getPluginSettings(channel.getGuild().getId()).getValue("audio", "playerManager");
         this.channel = channel;
-        this.musicManager = (MusicManager) CastabotClient.getCastabot().getPluginSettings(channel.getGuild()).getValue("audio", "musicManager");
+        this.musicManager = (MusicManager) CastabotClient.getCastabot().getPluginSettings(channel.getGuild().getId()).getValue("audio", "musicManager");
         this.trackUrl = trackUrl;
     }
     
     @Override
     public void trackLoaded(AudioTrack track) {
-        channel.sendMessage(playerManager.play(channel, musicManager, track)).queue();
+        channel.sendMessage(playerManager.play(musicManager, track)).queue();
     }
 
     @Override
     public void playlistLoaded(AudioPlaylist playlist) {
-        playerManager.playlistLoaded(channel, playlist);
+        playerManager.playlistLoaded(playlist);
     }
 
     @Override

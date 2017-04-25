@@ -20,16 +20,14 @@ import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
 import java.util.ArrayList;
 import java.util.List;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.TextChannel;
 
 /**
  *
  * @author Arei
  */
 public class Love extends Plugin {
-    public Love(String[] args, TextChannel source, User user) {
-        super(args, source, user);
+    public Love(String[] args, String guildId, String channelId, String userId) {
+        super(args, guildId, channelId, userId);
     }
 
     @Override
@@ -37,7 +35,7 @@ public class Love extends Plugin {
         List<PluginResponse> ret = new ArrayList<>();
         switch (args[0]) {
             case "love":
-                ret.add(new PluginResponse("Kyuukyuu!!! ❤ ❤ ❤", user));
+                ret.add(new PluginResponse("Kyuukyuu!!! ❤ ❤ ❤", userId));
                 break;
         }
         return ret;

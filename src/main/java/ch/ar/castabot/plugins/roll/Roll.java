@@ -28,16 +28,14 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.TextChannel;
 
 /**
  *
  * @author Arei
  */
 public class Roll extends Plugin {
-    public Roll(String[] args, TextChannel source, User user) {
-        super(args, source, user);
+    public Roll(String[] args, String guildId, String channelId, String userId) {
+        super(args, guildId, channelId, userId);
     }
     
     // 1. Players rolls a set of dice.
@@ -49,7 +47,7 @@ public class Roll extends Plugin {
     //      - Do rerolls if any, states criticals if any.
     // 4b. Bot finally outputs the roll result to the user
     private PluginResponse roll(String[] args) throws PluginException {
-        Rules rules = (Rules) CastabotClient.getCastabot().getPluginSettings(source.getGuild()).getValue("roll", "rules");
+        Rules rules = (Rules) CastabotClient.getCastabot().getPluginSettings(guildId).getValue("roll", "rules");
         String str = "";
         for (int i = 1; i < args.length;i++) {
             str += args[i] + " ";
@@ -153,16 +151,16 @@ public class Roll extends Plugin {
         }
         embBuild.addField(new MessageEmbed.Field("Total", rollResult.getTotal(), false));
         
-        return new PluginResponse(embBuild.build(), user);
+        return new PluginResponse(embBuild.build(), userId);
     }
     
     private String rules(String rulesName) {
         Rules rules = new Rules(rulesName);
-        CastabotClient.getCastabot().getPluginSettings(source.getGuild()).setValue("roll", "rules", rules);
+        CastabotClient.getCastabot().getPluginSettings(guildId).setValue("roll", "rules", rules);
         String ret = "Activation des règles de roll ["+rules.getName()+"].";
         
         PseudoCode pc = new PseudoCode(rules.getActivateAction());
-        pc.addObject("Guild", source.getGuild());
+        pc.addObject("Guild", CastabotClient.getGuild(guildId));
         String eval = pc.evaluate();
         if (eval != null) {
             ret += "\r\n" + eval;
@@ -171,9 +169,9 @@ public class Roll extends Plugin {
     }
     
     private String fill() {
-        Rules rules = (Rules) CastabotClient.getCastabot().getPluginSettings(source.getGuild()).getValue("roll", "rules");
+        Rules rules = (Rules) CastabotClient.getCastabot().getPluginSettings(guildId).getValue("roll", "rules");
         PseudoCode pc = new PseudoCode();
-        pc.addObject("Guild", source.getGuild());
+        pc.addObject("Guild", CastabotClient.getGuild(guildId));
         
         TokenPouch tokenPouch = new TokenPouch();
         List<Token> lstToken = new ArrayList<>();
@@ -181,7 +179,7 @@ public class Roll extends Plugin {
             addToken(lstToken, tokenPouch, token, rules, pc);
         }
         
-        CastabotClient.getCastabot().getPluginSettings(source.getGuild()).setValue("roll", "tokenPouch", tokenPouch);
+        CastabotClient.getCastabot().getPluginSettings(guildId).setValue("roll", "tokenPouch", tokenPouch);
         return "Poche à token remplies selon les règles: [" + rules.getName() + "].\r\n Tokens générés: [" + tokenPouch.countTokens() + "].";
     }
     
@@ -204,7 +202,7 @@ public class Roll extends Plugin {
     
     private String token(int nb) {
         String ret = "";
-        TokenPouch tokenPouch = (TokenPouch) CastabotClient.getCastabot().getPluginSettings(source.getGuild()).getValue("roll", "tokenPouch");
+        TokenPouch tokenPouch = (TokenPouch) CastabotClient.getCastabot().getPluginSettings(guildId).getValue("roll", "tokenPouch");
         if (nb <= tokenPouch.countTokens()) {
             Map<Token, Integer> hmToken = new HashMap<>();
             for (int i = 0; i < nb; i++) {
@@ -231,11 +229,11 @@ public class Roll extends Plugin {
         List<PluginResponse> ret = new ArrayList<>();
         switch (args[0]) {
             case "fill":
-                ret.add(new PluginResponse(fill(), user));
+                ret.add(new PluginResponse(fill(), userId));
                 break;
             case "rules":
                 if (args.length > 1) {
-                    ret.add(new PluginResponse(rules(args[1]), user));
+                    ret.add(new PluginResponse(rules(args[1]), userId));
                 }
                 break;
             case "roll":
@@ -245,9 +243,9 @@ public class Roll extends Plugin {
                 break;
             case "token":
                 if (args.length > 1) {
-                    ret.add(new PluginResponse(token(Integer.parseInt(args[1])), user));
+                    ret.add(new PluginResponse(token(Integer.parseInt(args[1])), userId));
                 } else {
-                    ret.add(new PluginResponse(token(1), user));
+                    ret.add(new PluginResponse(token(1), userId));
                 }
                 break;
         }

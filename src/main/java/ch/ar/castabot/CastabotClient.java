@@ -24,7 +24,6 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.security.auth.login.LoginException;
@@ -40,14 +39,12 @@ import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.guild.GuildBanEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import org.json.JSONArray;
 
 /**
  *
@@ -57,12 +54,19 @@ public class CastabotClient extends ListenerAdapter {
     private static JDA jda;
     private static Castabot castabot;
     
-    private CastabotClient() {}
-    
     public static void main(String[] args) {
         try {    
             castabot = new Castabot();
             jda = new JDABuilder(AccountType.BOT).setToken(castabot.getConfig().getProperty("bot_token")).addEventListener(new CastabotClient()).buildBlocking();
+            
+            for (Guild guild : jda.getGuilds()) {
+                try {
+                    castabot.initSettings(guild.getId());
+                    registerAudioManager(guild);
+                } catch (PluginException ex) {
+                    Logger.getLogger(CastabotClient.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
             System.out.println("Castabot™ prêt!");
         } catch (LoginException | IllegalArgumentException | InterruptedException | RateLimitedException ex) {
             Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
@@ -70,7 +74,7 @@ public class CastabotClient extends ListenerAdapter {
     }
     
     private void handleCommand(Message message) {
-        Command command = new Command(message.getGuild(), message.getAuthor(), message);
+        Command command = new Command(message.getGuild().getId(), message.getChannel().getId(), message.getAuthor().getId(), message.getContent());
         if (command.isWorthAnswer()) {
             for (PluginResponse response : command.execute()) {
                 // Handle message type
@@ -156,9 +160,42 @@ public class CastabotClient extends ListenerAdapter {
         }
     }
     
-    public static int getAvailablePlayers(Guild guild, String roleName) {
+    public static Guild getGuild(String guildId) {
+        Guild ret = null;
+        for (Guild guild : jda.getGuilds()) {
+            if (guild.getId().equals(guildId)) {
+                ret = guild;
+                break;
+            }
+        }
+        return ret;
+    }
+    
+    public static TextChannel getTextChannel(String guildId, String channelId) {
+        TextChannel ret = null;
+        for (TextChannel channel : getGuild(guildId).getTextChannels()) {
+            if (channel.getId().equals(channelId)) {
+                ret = channel;
+                break;
+            }
+        }
+        return ret;
+    }
+    
+    public static Member getMember(String guildId, String userId) {
+        Member ret = null;
+        for (Member member : getGuild(guildId).getMembers()) {
+            if (member.getUser().getId().equals(userId)) {
+                ret = member;
+                break;
+            }
+        }
+        return ret;
+    }
+    
+    public static int getAvailablePlayers(String guildId, String roleName) {
         int ret = 0;
-        for (VoiceChannel voiceChannel : guild.getVoiceChannels()) {
+        for (VoiceChannel voiceChannel : getGuild(guildId).getVoiceChannels()) {
             for (Member member : voiceChannel.getMembers()) {
                 if (!member.getUser().isBot() && hasRole(member, roleName)) {
                     ret++;
@@ -180,39 +217,15 @@ public class CastabotClient extends ListenerAdapter {
     }
     
     public synchronized static void registerAudioManager(Guild guild) {
-        PlayerManager playerManager = (PlayerManager) castabot.getPluginSettings(guild).getValue("audio", "playerManager");
+        PlayerManager playerManager = (PlayerManager) castabot.getPluginSettings(guild.getId()).getValue("audio", "playerManager");
         AudioSourceManagers.registerRemoteSources(playerManager);
         AudioSourceManagers.registerLocalSource(playerManager);
-    }
-    
-    public synchronized static MusicManager getGuildAudioPlayer(Guild guild) {
-        MusicManager musicManager = (MusicManager) castabot.getPluginSettings(guild).getValue("audio", "musicManager");
-        AudioPlayerManager playerManager = (AudioPlayerManager) castabot.getPluginSettings(guild).getValue("audio", "playerManager");
-        
-        if (musicManager == null) {
-            musicManager = new MusicManager(playerManager);
-            castabot.getPluginSettings(guild).setValue("audio", "musicManager", musicManager);
-        }
-        guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
-
-        return musicManager;
-    }
-    
-    @Override
-    public void onReady(ReadyEvent event) {
-        for (Guild guild : event.getJDA().getGuilds()) {
-            try {
-                castabot.initSettings(guild);
-            } catch (PluginException ex) {
-                Logger.getLogger(CastabotClient.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
     }
     
     @Override
     public void onGuildJoin(GuildJoinEvent event) {
         try {
-            castabot.initSettings(event.getGuild());
+            castabot.initSettings(event.getGuild().getId());
         } catch (PluginException ex) {
             Logger.getLogger(CastabotClient.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -220,12 +233,12 @@ public class CastabotClient extends ListenerAdapter {
     
     @Override
     public void onGuildLeave(GuildLeaveEvent event) {
-        castabot.deleteSettings(event.getGuild());
+        castabot.deleteSettings(event.getGuild().getId());
     }
     
     @Override
     public void onGuildBan(GuildBanEvent event) {
-        castabot.deleteSettings(event.getGuild());
+        castabot.deleteSettings(event.getGuild().getId());
     }
     
     @Override
@@ -239,9 +252,7 @@ public class CastabotClient extends ListenerAdapter {
             // Print channel messages
             System.out.printf("[%s][%s] %s: %s\n", event.getGuild().getName(), event.getTextChannel().getName(), event.getMember().getEffectiveName(), event.getMessage().getContent());
             // Handle commands and stuff
-            //if (isMessageWorthAnsweringTo(message)) {
-                handleCommand(message);
-            //}
+            handleCommand(message);
         }
     }
 

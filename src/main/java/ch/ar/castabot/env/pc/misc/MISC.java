@@ -30,7 +30,7 @@ public class MISC extends PseudoCode {
     
     private int players(String roleName) {
         Guild guild = (Guild) getObject("Guild", 0);
-        return CastabotClient.getAvailablePlayers(guild, roleName);
+        return CastabotClient.getAvailablePlayers(guild.getId(), roleName);
     }
     
     @Override

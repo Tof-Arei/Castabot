@@ -21,8 +21,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
 import org.json.JSONObject;
 
 /**
@@ -31,14 +29,16 @@ import org.json.JSONObject;
  */
 public abstract class Plugin {
     protected String[] args;
-    protected TextChannel source;
-    protected User user;
+    protected String guildId;
+    protected String channelId;
+    protected String userId;
     protected JSONObject settings;
     
-    public Plugin(String[] args, TextChannel source, User user) {
+    public Plugin(String[] args, String guildId, String channelId, String userId) {
         this.args = args;
-        this.source = source;
-        this.user = user;
+        this.guildId = guildId;
+        this.channelId = channelId;
+        this.userId = userId;
         
         try {
             byte[] rawPermissions = Files.readAllBytes(Paths.get("data/config/settings.json"));

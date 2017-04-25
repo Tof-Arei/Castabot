@@ -17,7 +17,7 @@ package ch.ar.castabot.plugins;
 
 import java.io.File;
 import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.User;
+
 /**
  *
  * @author Arei
@@ -26,27 +26,27 @@ public class PluginResponse {
     private String text;
     private MessageEmbed embed;
     private File file;
-    private final User target;
+    private final String targetId;
     
-    public PluginResponse(String text, MessageEmbed embed, File file, User target) {
+    public PluginResponse(String text, MessageEmbed embed, File file, String targetId) {
         this.text = text;
         this.file = file;
-        this.target = target;
+        this.targetId = targetId;
     }
     
-    public PluginResponse(String text, User target) {
+    public PluginResponse(String text, String targetId) {
         this.text = text;
-        this.target = target;
+        this.targetId = targetId;
     }
     
-    public PluginResponse(MessageEmbed embed, User target) {
+    public PluginResponse(MessageEmbed embed, String targetId) {
         this.embed = embed;
-        this.target = target;
+        this.targetId = targetId;
     }
     
-    public PluginResponse(File file, User target) {
+    public PluginResponse(File file, String targetId) {
         this.file = file;
-        this.target = target;
+        this.targetId = targetId;
     }
 
     public String printText() {
@@ -65,7 +65,7 @@ public class PluginResponse {
         return file;
     }
     
-    public User getTarget() {
-        return target;
+    public String getTargetId() {
+        return targetId;
     }
 }

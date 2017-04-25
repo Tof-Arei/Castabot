@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.dv8tion.jda.core.entities.Guild;
 import org.json.JSONObject;
 
 /**
@@ -52,7 +51,7 @@ public class Castabot {
     private final Properties config = new Properties();
     private JSONObject settings;
     private Permissions permissions;
-    private volatile Map<Guild, PluginSettings> hmGuildSettings = new HashMap<>();
+    private volatile Map<String, PluginSettings> hmGuildSettings = new HashMap<>();
 
     public Castabot() {
          try {
@@ -73,10 +72,10 @@ public class Castabot {
         }
     }
     
-    public void initSettings(Guild guild) throws PluginException {
+    public void initSettings(String guildId) throws PluginException {
         PluginSettings pluginSettings = new PluginSettings();
         Map<String, Object> audioSettings = new HashMap<>();
-        PlayerManager playerManager = new PlayerManager();
+        PlayerManager playerManager = new PlayerManager(CastabotClient.getGuild(guildId));
         audioSettings.put("musicManager", new MusicManager(playerManager));
         audioSettings.put("playerManager", playerManager);
         pluginSettings.addSetting("audio", audioSettings);
@@ -90,12 +89,11 @@ public class Castabot {
         rollSettings.put("tokenPouch", new TokenPouch());
         pluginSettings.addSetting("roll", rollSettings);
         
-        hmGuildSettings.put(guild, pluginSettings);
-        CastabotClient.registerAudioManager(guild);
+        hmGuildSettings.put(guildId, pluginSettings);
     }
     
-    public void deleteSettings(Guild guild) {
-        hmGuildSettings.remove(guild);
+    public void deleteSettings(String guildId) {
+        hmGuildSettings.remove(guildId);
     }
     
     public Properties getConfig() {
@@ -110,11 +108,11 @@ public class Castabot {
         return permissions;
     }
     
-    public PluginSettings getPluginSettings(Guild guild) {
-        return hmGuildSettings.get(guild);
+    public PluginSettings getPluginSettings(String guildId) {
+        return hmGuildSettings.get(guildId);
     }
     
-    public PluginSettings getPluginSettings(String guildName) {
+    /*public PluginSettings getPluginSettings(String guildName) {
         PluginSettings ret = null;
         for (Guild guild : hmGuildSettings.keySet()) {
             if (guild.getName().equals(guildName)) {
@@ -123,5 +121,5 @@ public class Castabot {
             }
         }
         return ret;
-    }
+    }*/
 }

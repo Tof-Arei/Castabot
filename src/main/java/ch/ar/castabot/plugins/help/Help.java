@@ -20,16 +20,14 @@ import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
 import java.util.ArrayList;
 import java.util.List;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.TextChannel;
 
 /**
  *
  * @author Arei
  */
 public class Help extends Plugin {
-    public Help(String[] args, TextChannel source, User user) {
-        super(args, source, user);
+    public Help(String[] args, String guildId, String channelId, String userId) {
+        super(args, guildId, channelId, userId);
     }
     
     @Override
@@ -43,7 +41,7 @@ public class Help extends Plugin {
         retStr += "- help : affice la liste des commandes.  \r\n";
         retStr += "Nb: Utiliser une commande avec l'argument -h (ou --help) permet d'afficher les informations sur la commande. \r\n";
         retStr += "Utiliser le caractère & (ou lancer la commande via message privé) permet d'effectuer un lancement de commande secret. \r\n";
-        ret.add(new PluginResponse(retStr, user));
+        ret.add(new PluginResponse(retStr, userId));
         
         return ret;
     }

@@ -44,9 +44,10 @@ public class Command {
     public static final int TYPE_SECRET = 1;
     public static final int TYPE_BOTH = 2;
     
-    private final Guild guild;
-    private final User user;
-    private final Message message;
+    private final String guildId;
+    private final String channelId;
+    private final String userId;
+    private final String message;
     
     private String command = null;
     private String desc = null;
@@ -55,9 +56,10 @@ public class Command {
     
     private final JSONObject settings = CastabotClient.getCastabot().getSettings();
     
-    public Command(Guild guild, User user, Message message) {
-        this.guild = guild;
-        this.user = user;
+    public Command(String guildId, String channelId, String userId, String message) {
+        this.guildId = guildId;
+        this.userId = userId;
+        this.channelId = channelId;
         this.message = message;
         parseCommand();
     }
@@ -69,8 +71,8 @@ public class Command {
     
     // Parse the message, extract the command and arguments
     private void parseCommand() {
-        String strChar = message.getContent().substring(0, 1);
-        String[] strArgs = message.getContent().substring(1).split(" ");
+        String strChar = message.substring(0, 1);
+        String[] strArgs = message.substring(1).split(" ");
         JSONObject rawCommandSettings = settings.getJSONObject("command_settings");
         
         // Check the commande type
@@ -91,7 +93,7 @@ public class Command {
                 JSONArray arrShorts = rawShorts.getJSONArray(argKey);
                 for (int i = 0; i < arrShorts.length(); i++) {
                     String cmdShort = arrShorts.getString(i);
-                    String shortCommand = message.getContent().substring(1);
+                    String shortCommand = message.substring(1);
                     Pattern patShort = Pattern.compile(cmdShort);
                     Matcher matShort = patShort.matcher(shortCommand);
                     
@@ -154,19 +156,19 @@ public class Command {
             
             String className = command.substring(0, 1).toUpperCase() + command.substring(1);
             Class<?> clazz = Class.forName("ch.ar.castabot.plugins."+command+"."+className);
-            Class[] types = {String[].class, TextChannel.class, User.class};
+            Class[] types = {String[].class, String.class, String.class, String.class};
             Constructor<?> constructor = clazz.getConstructor(types);
-            Object[] classArgs = {args, message.getChannel(), user};
+            Object[] classArgs = {args, guildId, channelId, userId};
             Plugin instance = (Plugin) constructor.newInstance(classArgs);
             
             if (args.length > 0) {
                 if (args[0].equals("-h") || args[0].equals("--help")) {
                     JSONObject rawCommands = settings.getJSONObject("command_settings").getJSONObject("commands");
                     if (rawCommands.has(command)) {
-                        Rules rules = (Rules) CastabotClient.getCastabot().getPluginSettings(guild).getValue("roll", "rules");
+                        Rules rules = (Rules) CastabotClient.getCastabot().getPluginSettings(guildId).getValue("roll", "rules");
                         PseudoCode pc = new PseudoCode(rawCommands.getJSONObject(command).getString("desc"));
                         pc.addObject(Rules.class.getName(), rules);
-                        ret.add(new PluginResponse(pc.evaluate(), user));
+                        ret.add(new PluginResponse(pc.evaluate(), userId));
                     }
                 }
             }
@@ -177,7 +179,7 @@ public class Command {
                 }
             }
         } catch (PluginException e) {
-            ret.add(new PluginResponse(e.getMessage(), user));
+            ret.add(new PluginResponse(e.getMessage(), userId));
         } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -186,7 +188,7 @@ public class Command {
     }
     
     private boolean checkPermissions() {
-        UserPermission userPermission = CastabotClient.getCastabot().getPermissions().getUserPermissions(guild.getMember(user));
+        UserPermission userPermission = CastabotClient.getCastabot().getPermissions().getUserPermissions(CastabotClient.getMember(guildId, userId));
         return userPermission.getCommandPermission(command).getArgPermission(args[0]);
     }
 
