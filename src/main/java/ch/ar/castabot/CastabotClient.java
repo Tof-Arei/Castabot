@@ -15,12 +15,10 @@
  */
 package ch.ar.castabot;
 
-import ch.ar.castabot.env.audio.MusicManager;
 import ch.ar.castabot.env.audio.PlayerManager;
 import ch.ar.castabot.plugins.Command;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import java.io.File;
 import java.io.IOException;
@@ -61,7 +59,7 @@ public class CastabotClient extends ListenerAdapter {
             
             for (Guild guild : jda.getGuilds()) {
                 try {
-                    castabot.initSettings(guild.getId());
+                    castabot.initSettings(guild);
                     registerAudioManager(guild);
                 } catch (PluginException ex) {
                     Logger.getLogger(CastabotClient.class.getName()).log(Level.SEVERE, null, ex);
@@ -225,7 +223,7 @@ public class CastabotClient extends ListenerAdapter {
     @Override
     public void onGuildJoin(GuildJoinEvent event) {
         try {
-            castabot.initSettings(event.getGuild().getId());
+            castabot.initSettings(event.getGuild());
         } catch (PluginException ex) {
             Logger.getLogger(CastabotClient.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -252,7 +250,9 @@ public class CastabotClient extends ListenerAdapter {
             // Print channel messages
             System.out.printf("[%s][%s] %s: %s\n", event.getGuild().getName(), event.getTextChannel().getName(), event.getMember().getEffectiveName(), event.getMessage().getContent());
             // Handle commands and stuff
-            handleCommand(message);
+            if (message.getContent().length() > 0) {
+                handleCommand(message);
+            }
         }
     }
 

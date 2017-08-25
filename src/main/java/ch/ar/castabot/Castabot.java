@@ -24,8 +24,10 @@ import ch.ar.castabot.plugins.PluginSettings;
 import ch.ar.castabot.plugins.cards.Deck;
 import ch.ar.castabot.plugins.roll.Rules;
 import ch.ar.castabot.plugins.roll.TokenPouch;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -34,6 +36,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.dv8tion.jda.core.entities.Guild;
 import org.json.JSONObject;
 
 /**
@@ -50,7 +53,7 @@ import org.json.JSONObject;
 public class Castabot {
     private final Properties config = new Properties();
     private JSONObject settings;
-    private Permissions permissions;
+    private volatile Map<String, Permissions> hmGuildPermissions = new HashMap<>();
     private volatile Map<String, PluginSettings> hmGuildSettings = new HashMap<>();
 
     public Castabot() {
@@ -61,8 +64,6 @@ public class Castabot {
             System.out.println("Préchauffage de la machine à café.");
             byte[] rawFile = Files.readAllBytes(Paths.get("data/config/settings.json"));
             settings = new JSONObject(new String(rawFile));
-            rawFile = Files.readAllBytes(Paths.get("data/config/permissions.json"));
-            permissions = new Permissions(new JSONObject(new String(rawFile)));
             
             System.out.println("Peignage de la moustache.");
         } catch (FileNotFoundException ex) {
@@ -72,10 +73,31 @@ public class Castabot {
         }
     }
     
-    public void initSettings(String guildId) throws PluginException {
+    public void initSettings(Guild guild) throws PluginException {
+        // Try to find the server specific permission files
+        File file = new File("data/config/permissions/"+guild.getId()+".json");
+        try {
+            if (file.exists()) {
+                byte[] rawFile = Files.readAllBytes(Paths.get("data/config/permissions/"+guild.getId()+".json"));
+                Permissions permissions = new Permissions(new JSONObject(new String(rawFile)));
+                hmGuildPermissions.put(guild.getId(), permissions);
+            } else {
+                // If nothing found, create a new permission file copying the default file
+                byte[] rawFile = Files.readAllBytes(Paths.get("data/config/permissions/default.json"));
+                String rawPermissions = new String(rawFile).replace("{server-name}", guild.getName());
+                FileOutputStream fos = new FileOutputStream("data/config/permissions/"+guild.getId()+".json");
+                fos.write(rawPermissions.getBytes());
+
+                Permissions permissions = new Permissions(new JSONObject(rawPermissions));
+                hmGuildPermissions.put(guild.getId(), permissions);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         PluginSettings pluginSettings = new PluginSettings();
         Map<String, Object> audioSettings = new HashMap<>();
-        PlayerManager playerManager = new PlayerManager(CastabotClient.getGuild(guildId));
+        PlayerManager playerManager = new PlayerManager(guild);
         audioSettings.put("musicManager", new MusicManager(playerManager));
         audioSettings.put("playerManager", playerManager);
         pluginSettings.addSetting("audio", audioSettings);
@@ -89,7 +111,7 @@ public class Castabot {
         rollSettings.put("tokenPouch", new TokenPouch());
         pluginSettings.addSetting("roll", rollSettings);
         
-        hmGuildSettings.put(guildId, pluginSettings);
+        hmGuildSettings.put(guild.getId(), pluginSettings);
     }
     
     public void deleteSettings(String guildId) {
@@ -104,22 +126,11 @@ public class Castabot {
         return settings;
     }
     
-    public Permissions getPermissions() {
-        return permissions;
+    public Permissions getPermissions(String guildId) {
+        return hmGuildPermissions.get(guildId);
     }
     
     public PluginSettings getPluginSettings(String guildId) {
         return hmGuildSettings.get(guildId);
     }
-    
-    /*public PluginSettings getPluginSettings(String guildName) {
-        PluginSettings ret = null;
-        for (Guild guild : hmGuildSettings.keySet()) {
-            if (guild.getName().equals(guildName)) {
-                ret = getPluginSettings(guild);
-                break;
-            }
-        }
-        return ret;
-    }*/
 }

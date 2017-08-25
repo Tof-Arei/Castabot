@@ -1,0 +1,74 @@
+{
+    "server-name": "{server-name}",
+    "roles": {
+        "@everyone": {
+            "priority": 1,
+            "extends": "",
+            "commands": {
+                "admin": {
+                    "args": {}
+                },
+                "audio": {
+                    "args": {
+                        "-h": true,
+                        "play": true,
+                        "pause": true,
+                        "resume": true,
+                        "loop": true,
+                        "skip": true,
+                        "stop": true
+                    }
+                },
+                "cards": {
+                    "args": {
+                        "-h": true,
+                        "draw": true,
+                        "drawall": true,
+                        "shuffle": true,
+                        "deck": true
+                    }
+                },
+                "roll": {
+                    "args": {
+                        "-h": true,
+                        "fill": true,
+                        "default": true,
+                        "rules": true,
+                        "token": true
+                    }
+                },
+                "help": {
+                    "args": {}
+                },
+                "love": {
+                    "args": {
+			"love": false,
+                        "-h": true
+                    }
+                }
+            }
+        }
+    },
+    "users": {
+        "251426460873654272": {
+            "name": "Kyuuji",
+            "commands": {
+                "love": {
+                    "args": {
+                        "love": true
+                    }
+                }
+            }
+        },
+        "269579097229754368xxxxxx": {
+            "name": "Arei",
+            "commands": {
+                "love": {
+                    "args": {
+                        "love": true
+                    }
+                }
+            }
+        }
+    }
+}

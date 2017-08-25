@@ -41,12 +41,12 @@ public class UserPermission {
         }
     }
     
-    protected void addPermission(UserPermission userPermission) {
+    protected void addPermission(UserPermission userPermission, boolean erase) {
         for (String commandKey : userPermission.getCommandPermissions().keySet()) {
             if (getCommandPermission(commandKey) == null) {
                 hmCommandPermission.put(commandKey, userPermission.getCommandPermission(commandKey));
             }
-            getCommandPermission(commandKey).addArgs(userPermission.getCommandPermission(commandKey).getArgs());
+            getCommandPermission(commandKey).addArgs(userPermission.getCommandPermission(commandKey).getArgs(), erase);
         }
     }
     

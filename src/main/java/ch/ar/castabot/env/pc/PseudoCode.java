@@ -58,8 +58,13 @@ public class PseudoCode {
         String ret = null;
         
         if (formula.length() > 0) {
-            formula = formula.substring(1);
-            formula = formula.substring(0, formula.length()-1);
+            if (formula.contains("{")) {
+                formula = formula.substring(1);
+            }
+            if (formula.contains("}")) {
+                formula = formula.substring(0, formula.length()-1);
+            }
+            
             String[] splitFormula = formula.split(";");
             
             int posOpen = 0, posClose = formula.length(), cursor = 0;

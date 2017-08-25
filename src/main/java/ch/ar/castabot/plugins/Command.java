@@ -28,10 +28,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -188,7 +184,7 @@ public class Command {
     }
     
     private boolean checkPermissions() {
-        UserPermission userPermission = CastabotClient.getCastabot().getPermissions().getUserPermissions(CastabotClient.getMember(guildId, userId));
+        UserPermission userPermission = CastabotClient.getCastabot().getPermissions(guildId).getUserPermissions(CastabotClient.getMember(guildId, userId));
         return userPermission.getCommandPermission(command).getArgPermission(args[0]);
     }
 

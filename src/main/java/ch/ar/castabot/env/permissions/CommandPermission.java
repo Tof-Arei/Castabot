@@ -35,9 +35,11 @@ public class CommandPermission {
         }
     }
     
-    public void addArgs(Map<String, Boolean> newArg) {
+    public void addArgs(Map<String, Boolean> newArg, boolean erase) {
        for (String argKey : newArg.keySet()) {
            if (hmArg.get(argKey) == null) {
+               hmArg.put(argKey, newArg.get(argKey));
+           } else if (erase) {
                hmArg.put(argKey, newArg.get(argKey));
            }
        }

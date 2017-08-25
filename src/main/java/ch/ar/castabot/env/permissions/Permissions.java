@@ -49,7 +49,7 @@ public class Permissions {
         // Look for user speicific permissions
         for (UserPermission userPermission : getSpecificPermissions(UserPermission.TYPE_USER)) {
             if (userPermission.getTarget().equals(member.getUser().getId())) {
-                baseRolePermission.addPermission(userPermission);
+                baseRolePermission.addPermission(userPermission, true);
                 break;
             }
         }

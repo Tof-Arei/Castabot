@@ -15,8 +15,6 @@
  */
 package ch.ar.castabot.env.permissions;
 
-import ch.ar.castabot.CastabotClient;
-import java.util.List;
 import org.json.JSONObject;
 
 /**
@@ -34,7 +32,7 @@ public class RolePermission extends UserPermission {
         xtends = objRolePermission.getString("extends");
         
         if (rolesPermission.has(xtends)) {
-            addPermission(new RolePermission(xtends, rolesPermission, rolesPermission.getJSONObject(xtends)));
+            addPermission(new RolePermission(xtends, rolesPermission, rolesPermission.getJSONObject(xtends)), false);
         }
     }
     
