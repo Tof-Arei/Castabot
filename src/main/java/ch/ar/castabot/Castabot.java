@@ -95,7 +95,13 @@ public class Castabot {
             Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        PluginSettings pluginSettings = new PluginSettings();
+        // Check if settings are already registered, if so, delete them (reload)
+        PluginSettings pluginSettings = hmGuildSettings.get(guild.getId());
+        if (pluginSettings != null) {
+            hmGuildSettings.remove(guild.getId());
+        }
+        
+        pluginSettings = new PluginSettings();
         Map<String, Object> audioSettings = new HashMap<>();
         PlayerManager playerManager = new PlayerManager(guild);
         audioSettings.put("musicManager", new MusicManager(playerManager));

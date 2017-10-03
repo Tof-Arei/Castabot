@@ -32,29 +32,33 @@ public class Permissions {
         initPermissions(objPermissions);
     }
     
-    public UserPermission getUserPermissions(Member member) {
+    public RolePermission getRolePermission(Member member) {
         // Get @everyone permissions
-        RolePermission baseRolePermission = (RolePermission) getPermission(UserPermission.TYPE_ROLE, "@everyone");
+        RolePermission ret = (RolePermission) getPermission(UserPermission.TYPE_ROLE, "@everyone");
         // Look for role specific permissions
         for (Role role : member.getRoles()) {
             for (RolePermission rPermission : (List<RolePermission>) getSpecificPermissions(UserPermission.TYPE_ROLE)) {
                 if (rPermission.getTarget().equals(role.getName())) {
-                    if (rPermission.getPriority() > baseRolePermission.getPriority()) {
-                        baseRolePermission = rPermission;
+                    if (rPermission.getPriority() > ret.getPriority()) {
+                        ret = rPermission;
                     }
                 }
             }
         }
-
+        return ret;
+    }
+    
+    public UserPermission getUserPermissions(Member member) {
+        UserPermission ret = null;
         // Look for user speicific permissions
         for (UserPermission userPermission : getSpecificPermissions(UserPermission.TYPE_USER)) {
             if (userPermission.getTarget().equals(member.getUser().getId())) {
-                baseRolePermission.addPermission(userPermission, true);
+                ret = userPermission;
                 break;
             }
         }
         
-        return baseRolePermission;
+        return ret;
     }
     
     private void initPermissions(JSONObject objPermissions) {

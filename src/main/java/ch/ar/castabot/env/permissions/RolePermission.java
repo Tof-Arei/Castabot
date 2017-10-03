@@ -27,7 +27,7 @@ public class RolePermission extends UserPermission {
     
     public RolePermission(String target, JSONObject rolesPermission, JSONObject objRolePermission) {
         super(target, objRolePermission);
-        this.type = TYPE_ROLE;
+        type = TYPE_ROLE;
         priority = objRolePermission.getInt("priority");
         xtends = objRolePermission.getString("extends");
         

@@ -30,6 +30,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
@@ -61,6 +62,7 @@ public class CastabotClient extends ListenerAdapter {
                 try {
                     castabot.initSettings(guild);
                     registerAudioManager(guild);
+                    jda.getPresence().setGame(Game.of("Chat-Bot"));
                 } catch (PluginException ex) {
                     Logger.getLogger(CastabotClient.class.getName()).log(Level.SEVERE, null, ex);
                 }

@@ -18,6 +18,7 @@ package ch.ar.castabot.plugins;
 import ch.ar.castabot.Castabot;
 import ch.ar.castabot.CastabotClient;
 import ch.ar.castabot.env.pc.PseudoCode;
+import ch.ar.castabot.env.permissions.RolePermission;
 import ch.ar.castabot.env.permissions.UserPermission;
 import ch.ar.castabot.plugins.roll.Rules;
 import java.lang.reflect.Constructor;
@@ -184,8 +185,14 @@ public class Command {
     }
     
     private boolean checkPermissions() {
+        RolePermission rolePermission = CastabotClient.getCastabot().getPermissions(guildId).getRolePermission(CastabotClient.getMember(guildId, userId));
         UserPermission userPermission = CastabotClient.getCastabot().getPermissions(guildId).getUserPermissions(CastabotClient.getMember(guildId, userId));
-        return userPermission.getCommandPermission(command).getArgPermission(args[0]);
+        
+        boolean ret = rolePermission.getCommandPermission(command).getArgPermission(args[0]);
+        if (ret == false && userPermission != null) {
+            ret = userPermission.getCommandPermission(command).getArgPermission(args[0]);
+        }
+        return ret;
     }
 
     public String getCommand() {

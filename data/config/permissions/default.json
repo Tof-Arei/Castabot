@@ -6,7 +6,9 @@
             "extends": "",
             "commands": {
                 "admin": {
-                    "args": {}
+                    "args": {
+                        "reload": true
+                    }
                 },
                 "audio": {
                     "args": {
@@ -43,6 +45,7 @@
                 "love": {
                     "args": {
 			"love": false,
+                        "hate": false,
                         "-h": true
                     }
                 }
@@ -60,12 +63,12 @@
                 }
             }
         },
-        "269579097229754368xxxxxx": {
+        "269579097229754368": {
             "name": "Arei",
             "commands": {
                 "love": {
                     "args": {
-                        "love": true
+                        "hate": true
                     }
                 }
             }

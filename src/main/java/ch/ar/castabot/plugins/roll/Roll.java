@@ -42,8 +42,8 @@ public class Roll extends Plugin {
     // 2. Bot parses the roll, according to the active rules and optional argument :
     //      - Are the dices authorized?
     //      - Is the roll format valid?
-    // 3a. (OK) Returns error to the user.
-    // 3b. (KO) Bot execute the roll, check the results and :
+    // 3a. (KO) Returns error to the user.
+    // 3b. (OK) Bot execute the roll, check the results and :
     //      - Do rerolls if any, states criticals if any.
     // 4b. Bot finally outputs the roll result to the user
     private PluginResponse roll(String[] args) throws PluginException {

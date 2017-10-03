@@ -15,7 +15,6 @@
  */
 package ch.ar.castabot.env.pc;
 
-import ch.ar.castabot.plugins.roll.FixedValue;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

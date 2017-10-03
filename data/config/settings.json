@@ -6,9 +6,15 @@
             "%": "2"
         },
         "commands": {
+            "admin" : {
+                "desc": "Commandes admin.",
+                "shorts": {
+                    "reload": ["^(reload)$"]
+                }
+            },
             "audio": {
                 "desc": "Jouer des fichiers audio sur le canal vocal. \r\n Arguments: play <url> | pause/resume | loop | stop \r\n Exemple: !audio play <youtube_id>",
-                "shorts" : {
+                "shorts": {
                     "play": ["^(play) (.+)$"],
                     "pause": ["^(pause)$"],
                     "resume": ["^(resume)$"],
@@ -38,7 +44,8 @@
             "love": {
                 "desc": "Commande réservée à Kyuuji.",
                 "shorts": {
-                    "love": ["^(love)$"]
+                    "love": ["^(love)$"],
+                    "hate": ["^(hate)$"]
                 }
             }
         }

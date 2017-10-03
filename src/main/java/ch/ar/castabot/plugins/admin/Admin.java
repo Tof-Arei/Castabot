@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ch.ar.castabot.plugins.love;
+package ch.ar.castabot.plugins.admin;
 
+import ch.ar.castabot.CastabotClient;
 import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
@@ -23,24 +24,24 @@ import java.util.List;
 
 /**
  *
- * @author Arei
+ * @author christophe
  */
-public class Love extends Plugin {
-    public Love(String[] args, String guildId, String channelId, String userId) {
+public class Admin extends Plugin {
+    public Admin(String[] args, String guildId, String channelId, String userId) {
         super(args, guildId, channelId, userId);
     }
-
+    
     @Override
     public List<PluginResponse> run() throws PluginException {
         List<PluginResponse> ret = new ArrayList<>();
+        
         switch (args[0]) {
-            case "love":
-                ret.add(new PluginResponse("Kyuukyuu!!! ❤ ❤ ❤", userId));
-                break;
-            case "hate":
-                ret.add(new PluginResponse("https://imgur.com/2pbqbhg", userId));
+            case "reload":
+                CastabotClient.getCastabot().initSettings(CastabotClient.getGuild(guildId));
+                ret.add(new PluginResponse("Configuration du serveur [" + CastabotClient.getGuild(guildId).getName() + "] rechargée.", userId));
                 break;
         }
+        
         return ret;
     }
 }

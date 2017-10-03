@@ -32,7 +32,7 @@ public class UserPermission {
     protected final Map<String, CommandPermission> hmCommandPermission = new HashMap<>();
     
     public UserPermission(String target, JSONObject objUserPermission) {
-        this.type = TYPE_USER;
+        type = TYPE_USER;
         this.target = target;
         for (String commandKey : objUserPermission.getJSONObject("commands").keySet()) {
             JSONObject objCommandPermission = objUserPermission.getJSONObject("commands").getJSONObject(commandKey);
@@ -40,7 +40,7 @@ public class UserPermission {
             hmCommandPermission.put(commandKey, commandPermission);
         }
     }
-    
+
     protected void addPermission(UserPermission userPermission, boolean erase) {
         for (String commandKey : userPermission.getCommandPermissions().keySet()) {
             if (getCommandPermission(commandKey) == null) {
