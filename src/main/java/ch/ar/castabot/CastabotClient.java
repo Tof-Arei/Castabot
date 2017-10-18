@@ -120,44 +120,21 @@ public class CastabotClient extends ListenerAdapter {
         if (PM) {
             sendPrivateFile(target, file, message);
         } else {
-            try {
-                channel.sendFile(file, message).queue();
-            } catch (IOException ex) {
-                Logger.getLogger(CastabotClient.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            channel.sendFile(file, message).queue();
         }
     }
     
     private void sendPrivateMessage(User target, final Message message) {
-        if (!target.hasPrivateChannel()) {
-            target.openPrivateChannel().queue(
-                success -> {
-                    target.getPrivateChannel().sendMessage(message).queue();
-                }
-            );
-        } else {
-            target.getPrivateChannel().sendMessage(message).queue();
-        }
+        target.openPrivateChannel().queue((channel) -> {
+            channel.sendMessage(message).queue();
+        });
     }
     
     private void sendPrivateFile(User target, final File file, final Message message) {
-        if (!target.hasPrivateChannel()) {
-            target.openPrivateChannel().queue(
-                success -> {
-                    try {
-                        target.getPrivateChannel().sendFile(file, message).queue();
-                    } catch (IOException ex) {
-                        Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            );
-        } else {
-            try {
-                target.getPrivateChannel().sendFile(file, message).queue();
-            } catch (IOException ex) {
-                Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+        target.openPrivateChannel().queue((channel) -> {
+            channel.sendMessage(message).queue();
+            channel.sendFile(file, message).queue();
+        });
     }
     
     public static Guild getGuild(String guildId) {
