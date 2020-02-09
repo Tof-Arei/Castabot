@@ -91,29 +91,6 @@ public class CastabotClient extends ListenerAdapter {
         }
     }
     
-    /*public static void main(String[] args) {
-        try {
-            JDABuilder jdaBuilder= new JDABuilder(Castabot.getCastabot().getConfig().getProperty("bot_token"));
-            jdaBuilder.setActivity(Activity.playing("Chat Bot"));
-            jda = jdaBuilder.addEventListeners(new CastabotClient()).build();
-            jda.awaitReady();
-            
-            for (Guild guild : jda.getGuilds()) {
-                try {
-                    System.out.println("Chargement des paramètres du serveur ["+guild.getName()+"].");
-                    Castabot.getCastabot().initSettings(guild.getId(), guild.getName());
-                    initClientSettings(guild);
-                } catch (PluginException ex) {
-                    Logger.getLogger(CastabotClient.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            
-            System.out.println("Castabot™ prêt!");
-        } catch (LoginException | InterruptedException ex) {
-            Logger.getLogger(CastabotClient.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }*/
-    
     private void initClientSettings(Guild guild) {
         PlayerManager playerManager = new PlayerManager(guild);
         hmMusicManager.put(guild.getId(), new MusicManager(playerManager));
