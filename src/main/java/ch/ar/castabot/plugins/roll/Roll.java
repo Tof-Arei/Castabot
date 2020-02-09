@@ -27,7 +27,7 @@
  */
 package ch.ar.castabot.plugins.roll;
 
-import ch.ar.castabot.client.CastabotClient;
+import ch.ar.castabot.Castabot;
 import ch.ar.castabot.env.pc.PseudoCode;
 import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
@@ -44,8 +44,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Arei
  */
 public class Roll extends Plugin {
-    public Roll(String[] args, String guildId, String channelId, String userId) {
-        super(args, guildId, channelId, userId);
+    public Roll(String[] args, Map<String, String> hmParams) {
+        super(args, hmParams);
     }
     
     // 1. Players rolls a set of dice.
@@ -57,7 +57,7 @@ public class Roll extends Plugin {
     //      - Do rerolls if any, states criticals if any.
     // 4b. Bot finally outputs the roll result to the user
     private PluginResponse roll(String[] args) throws PluginException {
-        Rules rules = (Rules) CastabotClient.getCastabot().getPluginSettings(guildId).getValue("roll", "rules");
+        Rules rules = (Rules) Castabot.getCastabot().getPluginSettings(hmParams.get("guildId")).getValue("roll", "rules");
         String str = "";
         for (int i = 1; i < args.length;i++) {
             str += args[i] + " ";
@@ -167,11 +167,11 @@ public class Roll extends Plugin {
     
     private String rules(String rulesName) {
         Rules rules = new Rules(rulesName);
-        CastabotClient.getCastabot().getPluginSettings(guildId).setValue("roll", "rules", rules);
+        Castabot.getCastabot().getPluginSettings(hmParams.get("guildId")).setValue("roll", "rules", rules);
         String ret = "Activation des règles de roll ["+rules.getName()+"].";
         
         PseudoCode pc = new PseudoCode(rules.getActivateAction());
-        pc.addObject("Guild", CastabotClient.getGuild(guildId).getId());
+        pc.addObject("Guild", hmParams.get("guildId"));
         String eval = pc.evaluate();
         if (eval != null) {
             ret += "\r\n" + eval;
@@ -180,9 +180,9 @@ public class Roll extends Plugin {
     }
     
     private String fill() {
-        Rules rules = (Rules) CastabotClient.getCastabot().getPluginSettings(guildId).getValue("roll", "rules");
+        Rules rules = (Rules) Castabot.getCastabot().getPluginSettings(hmParams.get("guildId")).getValue("roll", "rules");
         PseudoCode pc = new PseudoCode();
-        pc.addObject("Guild", CastabotClient.getGuild(guildId).getId());
+        pc.addObject("Guild", hmParams.get("guildId"));
         
         TokenPouch tokenPouch = new TokenPouch();
         List<Token> lstToken = new ArrayList<>();
@@ -190,7 +190,7 @@ public class Roll extends Plugin {
             addToken(lstToken, tokenPouch, token, rules, pc);
         }
         
-        CastabotClient.getCastabot().getPluginSettings(guildId).setValue("roll", "tokenPouch", tokenPouch);
+        Castabot.getCastabot().getPluginSettings(hmParams.get("guildId")).setValue("roll", "tokenPouch", tokenPouch);
         return "Poche à token remplies selon les règles: [" + rules.getName() + "].\r\n Tokens générés: [" + tokenPouch.countTokens() + "].";
     }
     
@@ -213,7 +213,7 @@ public class Roll extends Plugin {
     
     private String token(int nb) {
         String ret = "";
-        TokenPouch tokenPouch = (TokenPouch) CastabotClient.getCastabot().getPluginSettings(guildId).getValue("roll", "tokenPouch");
+        TokenPouch tokenPouch = (TokenPouch) Castabot.getCastabot().getPluginSettings(hmParams.get("guildId")).getValue("roll", "tokenPouch");
         if (nb <= tokenPouch.countTokens()) {
             Map<Token, Integer> hmToken = new HashMap<>();
             for (int i = 0; i < nb; i++) {

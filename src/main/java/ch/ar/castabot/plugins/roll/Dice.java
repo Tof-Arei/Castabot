@@ -27,6 +27,7 @@
  */
 package ch.ar.castabot.plugins.roll;
 
+import ch.ar.castabot.Castabot;
 import ch.ar.castabot.client.CastabotClient;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -58,7 +59,7 @@ public class Dice extends RollElement {
     private int generateWebInteger(int min, int max) {
         int ret = 0;
         try {
-            String strUrl = CastabotClient.getCastabot().getConfig().getProperty("web_root") + "rand.php?min=" + String.valueOf(min) + "&max=" + String.valueOf(max);
+            String strUrl = Castabot.getCastabot().getConfig().getProperty("web_root") + "rand.php?min=" + String.valueOf(min) + "&max=" + String.valueOf(max);
             strUrl = strUrl.replace("$min", String.valueOf(min)).replace("$max", String.valueOf(max));
             URL url = new URL(strUrl);
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));

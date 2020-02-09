@@ -56,12 +56,13 @@ import org.json.JSONObject;
  * @author Arei
  */
 public class Castabot {
+    private static Castabot instance;
     private final Properties config = new Properties();
     private JSONObject settings;
     private volatile Map<String, Permissions> hmGuildPermissions = new HashMap<>();
     private volatile Map<String, PluginSettings> hmGuildSettings = new HashMap<>();
 
-    public Castabot() {
+    private Castabot() {
          try {
             config.load(new FileInputStream("data/config/config.properties"));
             System.out.println("Démarrage du Castabot™ v"+config.getProperty("bot_version"));
@@ -117,6 +118,13 @@ public class Castabot {
         pluginSettings.addSetting("roll", rollSettings);
         
         hmGuildSettings.put(guildId, pluginSettings);
+    }
+    
+    public static Castabot getCastabot() {
+        if (instance == null) {
+            instance = new Castabot();
+        }
+        return instance;
     }
     
     public void deleteSettings(String guildId) {

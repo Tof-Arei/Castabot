@@ -31,7 +31,9 @@ import ch.ar.castabot.client.plugins.PluginResponse;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONObject;
@@ -42,16 +44,13 @@ import org.json.JSONObject;
  */
 public abstract class Plugin {
     protected String[] args;
-    protected String guildId;
-    protected String channelId;
-    protected String userId;
+    protected Map<String, String> hmParams = new HashMap<>();
+    
     protected JSONObject settings;
     
-    public Plugin(String[] args, String guildId, String channelId, String userId) {
+    public Plugin(String[] args, Map<String, String> hmParams) {
         this.args = args;
-        this.guildId = guildId;
-        this.channelId = channelId;
-        this.userId = userId;
+        this.hmParams = hmParams;
         
         try {
             byte[] rawPermissions = Files.readAllBytes(Paths.get("data/config/settings.json"));

@@ -27,6 +27,7 @@
  */
 package ch.ar.castabot.plugins.cards;
 
+import ch.ar.castabot.Castabot;
 import ch.ar.castabot.client.CastabotClient;
 import java.io.File;
 
@@ -115,7 +116,7 @@ public class Card {
     }
     
     public String getUrl() {
-        String webRoot = CastabotClient.getCastabot().getConfig().getProperty("web_root");
+        String webRoot = Castabot.getCastabot().getConfig().getProperty("web_root");
         return webRoot + "files/cards/" + deck.getImgDeck() + "/" + this + ".png";
     }
     

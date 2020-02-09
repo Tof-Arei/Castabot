@@ -34,16 +34,17 @@ import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.client.plugins.PluginResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author Arei
  */
 public class Audio extends Plugin {
-    private PlayerManager playerManager = (PlayerManager) CastabotClient.getPlayerManager(guildId);
+    private PlayerManager playerManager = (PlayerManager) CastabotClient.getPlayerManager(hmParams.get("guildId"));
     
-    public Audio(String[] args, String guildId, String channelId, String userId) {
-        super(args, guildId, channelId, userId);
+    public Audio(String[] args, Map<String, String> hmParams) {
+        super(args, hmParams);
     }
     
     @Override
@@ -51,7 +52,7 @@ public class Audio extends Plugin {
         List<PluginResponse> ret = new ArrayList<>();
         switch (args[0]) {
             case "play":
-                playerManager.loadAndPlay(CastabotClient.getTextChannel(guildId, channelId), args[1]);
+                playerManager.loadAndPlay(CastabotClient.getTextChannel(hmParams.get("guildId"), hmParams.get("channelId")), args[1]);
                 break;
             case "pause":
                 ret.add(new PluginResponse(playerManager.pause()));

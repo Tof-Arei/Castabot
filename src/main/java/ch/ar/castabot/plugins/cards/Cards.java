@@ -27,26 +27,27 @@
  */
 package ch.ar.castabot.plugins.cards;
 
-import ch.ar.castabot.client.CastabotClient;
+import ch.ar.castabot.Castabot;
 import ch.ar.castabot.env.pc.PseudoCode;
 import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.client.plugins.PluginResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author Arei
  */
 public class Cards extends Plugin {
-    public Cards(String[] args, String guildId, String channelId, String userId) {
-        super(args, guildId, channelId, userId);
+    public Cards(String[] args, Map<String, String> hmParams) {
+        super(args, hmParams);
     }
     
     private String init(String deckName) throws PluginException {
         Deck deck = new Deck(deckName);
-        CastabotClient.getCastabot().getPluginSettings(guildId).setValue("cards", "deck", deck);
+        Castabot.getCastabot().getPluginSettings(hmParams.get("guildId")).setValue("cards", "deck", deck);
         String ret = "Jeu de cartes initié avec le deck ["+deck.getName()+"] et mélangé.";
         
         PseudoCode pc = new PseudoCode(deck.getActivateAction());
@@ -60,7 +61,7 @@ public class Cards extends Plugin {
     @Override
     public List<PluginResponse> run() throws PluginException {
         List<PluginResponse> ret = new ArrayList<>();
-        Deck deck = (Deck) CastabotClient.getCastabot().getPluginSettings(guildId).getValue("cards", "deck");
+        Deck deck = (Deck) Castabot.getCastabot().getPluginSettings(hmParams.get("guildId")).getValue("cards", "deck");
         switch (args[0]) {
             case "deck" :
                 if (args.length > 1) {

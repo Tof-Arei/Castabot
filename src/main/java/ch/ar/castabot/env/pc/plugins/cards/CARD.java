@@ -27,6 +27,7 @@
  */
 package ch.ar.castabot.env.pc.plugins.cards;
 
+import ch.ar.castabot.Castabot;
 import ch.ar.castabot.client.CastabotClient;
 import ch.ar.castabot.env.pc.PseudoCode;
 import ch.ar.castabot.plugins.PluginException;
@@ -50,7 +51,7 @@ public class CARD extends PseudoCode {
             String guildId = (String) getObject("Guild", 0);
             Deck deck = new Deck(deckName);
             deck.shuffle();
-            CastabotClient.getCastabot().getPluginSettings(guildId).setValue("cards", "deck", deck);
+            Castabot.getCastabot().getPluginSettings(guildId).setValue("cards", "deck", deck);
             ret += "Jeu de cartes initié avec le deck ["+deck.getName()+"] et mélangé.";
         } catch (PluginException ex) {
             Logger.getLogger(CARD.class.getName()).log(Level.SEVERE, null, ex);
@@ -62,7 +63,7 @@ public class CARD extends PseudoCode {
         String ret = "";
         try {
             String guildId = (String) getObject("Guild", 0);
-            Deck deck = (Deck) CastabotClient.getCastabot().getPluginSettings(guildId).getValue("cards", "deck");
+            Deck deck = (Deck) Castabot.getCastabot().getPluginSettings(guildId).getValue("cards", "deck");
             deck.shuffle();
             ret += "Jeu de cartes mélangé.";
         } catch (PluginException ex) {

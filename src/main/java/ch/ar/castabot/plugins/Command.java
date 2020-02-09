@@ -38,6 +38,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -54,23 +55,19 @@ public class Command {
     public static final int TYPE_SECRET = 1;
     public static final int TYPE_BOTH = 2;
     
-    private final String guildId;
-    private final String channelId;
-    private final String userId;
     private final String message;
+    private final Map<String, String> hmParams;
     
     private String command = null;
     private String desc = null;
     private String[] args = null;
     private int type = -1;
     
-    private final JSONObject settings = CastabotClient.getCastabot().getSettings();
+    private final JSONObject settings = Castabot.getCastabot().getSettings();
     
-    public Command(String guildId, String channelId, String userId, String message) {
-        this.guildId = guildId;
-        this.userId = userId;
-        this.channelId = channelId;
+    public Command(String message, Map<String, String> hmParams) {
         this.message = message;
+        this.hmParams = hmParams;
         parseCommand();
     }
     
@@ -166,16 +163,16 @@ public class Command {
             
             String className = command.substring(0, 1).toUpperCase() + command.substring(1);
             Class<?> clazz = Class.forName("ch.ar.castabot.plugins."+command+"."+className);
-            Class[] types = {String[].class, String.class, String.class, String.class};
+            Class[] types = {String[].class, Map.class};
             Constructor<?> constructor = clazz.getConstructor(types);
-            Object[] classArgs = {args, guildId, channelId, userId};
+            Object[] classArgs = {args, hmParams};
             Plugin instance = (Plugin) constructor.newInstance(classArgs);
             
             if (args.length > 0) {
                 if (args[0].equals("-h") || args[0].equals("--help")) {
                     JSONObject rawCommands = settings.getJSONObject("command_settings").getJSONObject("commands");
                     if (rawCommands.has(command)) {
-                        Rules rules = (Rules) CastabotClient.getCastabot().getPluginSettings(guildId).getValue("roll", "rules");
+                        Rules rules = (Rules) Castabot.getCastabot().getPluginSettings(hmParams.get("guildId")).getValue("roll", "rules");
                         PseudoCode pc = new PseudoCode(rawCommands.getJSONObject(command).getString("desc"));
                         pc.addObject(Rules.class.getName(), rules);
                         ret.add(new PluginResponse(pc.evaluate()));
@@ -198,8 +195,8 @@ public class Command {
     }
     
     private boolean checkPermissions() {
-        RolePermission rolePermission = CastabotClient.getCastabot().getPermissions(guildId).getRolePermission(CastabotClient.getMember(guildId, userId));
-        UserPermission userPermission = CastabotClient.getCastabot().getPermissions(guildId).getUserPermissions(CastabotClient.getMember(guildId, userId));
+        RolePermission rolePermission = Castabot.getCastabot().getPermissions(hmParams.get("guildId")).getRolePermission(CastabotClient.getMember(hmParams.get("guildId"), hmParams.get("userId")));
+        UserPermission userPermission = Castabot.getCastabot().getPermissions(hmParams.get("guildId")).getUserPermissions(CastabotClient.getMember(hmParams.get("guildId"), hmParams.get("userId")));
         
         boolean ret = rolePermission.getCommandPermission(command).getArgPermission(args[0]);
         if (ret == false && userPermission != null) {

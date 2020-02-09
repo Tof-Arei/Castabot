@@ -32,14 +32,15 @@ import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.client.plugins.PluginResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author Arei
  */
 public class Help extends Plugin {
-    public Help(String[] args, String guildId, String channelId, String userId) {
-        super(args, guildId, channelId, userId);
+    public Help(String[] args, Map<String, String> hmParams) {
+        super(args, hmParams);
     }
     
     @Override

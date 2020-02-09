@@ -27,20 +27,22 @@
  */
 package ch.ar.castabot.plugins.admin;
 
+import ch.ar.castabot.Castabot;
 import ch.ar.castabot.client.CastabotClient;
 import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.client.plugins.PluginResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author christophe
  */
 public class Admin extends Plugin {
-    public Admin(String[] args, String guildId, String channelId, String userId) {
-        super(args, guildId, channelId, userId);
+    public Admin(String[] args, Map<String, String> hmParams) {
+        super(args, hmParams);
     }
     
     @Override
@@ -49,8 +51,8 @@ public class Admin extends Plugin {
         
         switch (args[0]) {
             case "reload":
-                CastabotClient.getCastabot().initSettings(CastabotClient.getGuild(guildId).getId(), CastabotClient.getGuild(guildId).getName());
-                ret.add(new PluginResponse("Configuration du serveur [" + CastabotClient.getGuild(guildId).getName() + "] rechargée."));
+                Castabot.getCastabot().initSettings(hmParams.get("guildId"), hmParams.get("guildName"));
+                ret.add(new PluginResponse("Configuration du serveur [" + hmParams.get("guildName") + "] rechargée."));
                 break;
         }
         
