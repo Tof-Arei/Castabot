@@ -15,3 +15,6 @@ https://github.com/sedmelluq/lavaplayer
 
 Reflections<br />
 https://github.com/ronmamo/reflections
+
+JSON<br />
+https://github.com/stleary/JSON-java
