@@ -6,6 +6,12 @@
             "%": "2"
         },
         "commands": {
+            "help" : {
+                "desc": "Commandes d'aide.",
+                "shorts": {
+                    "help": ["^(help)$"]
+                }
+            },
             "admin" : {
                 "desc": "Commandes admin.",
                 "shorts": {

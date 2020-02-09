@@ -53,9 +53,6 @@ import org.json.JSONObject;
  * @todo make help command react with permissions
  * @todo still more refactoring: 
  *          - Make plugins and PC modules testable
- *          - Separate JDA, lavaplayer and related tasks from Castabot, Plugins and PC modules.
- *            (Use PluginManager to retrieve needed Discord-related objects with bare Strings as arguments instead of Guild object)
- *          - Leave everything Discord-related related in CastabotClient
  * @author Arei
  */
 public class Castabot {

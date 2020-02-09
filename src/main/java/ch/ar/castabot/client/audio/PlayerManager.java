@@ -49,7 +49,7 @@ public class PlayerManager extends DefaultAudioPlayerManager {
     }
     
     public void loadAndPlay(TextChannel channel, String trackUrl) {
-        MusicManager musicManager = (MusicManager) CastabotClient.getCastabot().getPluginSettings(guild.getId()).getValue("audio", "musicManager");
+        MusicManager musicManager = (MusicManager) CastabotClient.getMusicManager(guild.getId());
         LoadResultHandler lrHandler = new LoadResultHandler(channel, trackUrl);
         loadItemOrdered(musicManager, trackUrl, lrHandler);
     }
@@ -70,25 +70,25 @@ public class PlayerManager extends DefaultAudioPlayerManager {
     }
 
     public String pause() {
-        MusicManager musicManager = (MusicManager) CastabotClient.getCastabot().getPluginSettings(guild.getId()).getValue("audio", "musicManager");
+        MusicManager musicManager = (MusicManager) CastabotClient.getMusicManager(guild.getId());
         musicManager.getPlayer().setPaused(true);
         return "Piste suspendue.";
     }
     
     public String resume() {
-        MusicManager musicManager = (MusicManager) CastabotClient.getCastabot().getPluginSettings(guild.getId()).getValue("audio", "musicManager");
+        MusicManager musicManager = (MusicManager) CastabotClient.getMusicManager(guild.getId());
         musicManager.getPlayer().setPaused(false);
         return "Piste rétablie.";
     }
     
     public String loop() {
-        MusicManager musicManager = (MusicManager) CastabotClient.getCastabot().getPluginSettings(guild.getId()).getValue("audio", "musicManager");
+        MusicManager musicManager = (MusicManager) CastabotClient.getMusicManager(guild.getId());
         musicManager.getScheduler().loopTrack();
         return "Piste mise en boucle.";
     }
     
     public String skip() {
-        MusicManager musicManager = (MusicManager) CastabotClient.getCastabot().getPluginSettings(guild.getId()).getValue("audio", "musicManager");
+        MusicManager musicManager = (MusicManager) CastabotClient.getMusicManager(guild.getId());
         musicManager.getScheduler().nextTrack();
         AudioTrack track = musicManager.getPlayer().getPlayingTrack();
         if (track != null) {
@@ -100,10 +100,6 @@ public class PlayerManager extends DefaultAudioPlayerManager {
     
     public String stop() {
         skip();
-        //MusicManager musicManager = CastabotClient.getGuildAudioPlayer(channel.getGuild());
-        //musicManager.getPlayer().destroy();
-        //PlayerManager playerManager = (PlayerManager) CastabotClient.getCastabot().getPluginSettings(channel.getGuild()).getValue("audio", "playerManager");
-        //CastabotClient.getCastabot().getPluginSettings(channel.getGuild()).setValue("audio", "musicManager", new MusicManager(playerManager));
         disconnectFromVoiceChannel(guild.getAudioManager());
         return "Arrêt du lecteur.";
     }

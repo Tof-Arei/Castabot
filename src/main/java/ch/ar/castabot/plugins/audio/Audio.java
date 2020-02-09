@@ -40,7 +40,7 @@ import java.util.List;
  * @author Arei
  */
 public class Audio extends Plugin {
-    private PlayerManager playerManager = (PlayerManager) CastabotClient.getCastabot().getPluginSettings(guildId).getValue("audio", "playerManager");
+    private PlayerManager playerManager = (PlayerManager) CastabotClient.getPlayerManager(guildId);
     
     public Audio(String[] args, String guildId, String channelId, String userId) {
         super(args, guildId, channelId, userId);

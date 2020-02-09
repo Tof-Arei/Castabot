@@ -31,6 +31,25 @@ package ch.ar.castabot.env.logging;
  *
  * @author christophe
  */
-public class Logger {
+public class CLogger {
+    public class Level {
+        public static final int DISABLED = -1;
+        public static final int EVERYTHING = 0;
+        public static final int CHANNELS = 1;
+        public static final int PM = 2;
+    }
     
+    public class Content {
+        public static final int EVERYTHING = 0;
+        public static final int MESSAGES = 1;
+        public static final int COMMANDS = 2;
+    }
+    
+    private int level = -1;
+    private int content = 0;
+    
+    public CLogger(int level, int content) {
+        this.level = level;
+        this.content = content;
+    }
 }
