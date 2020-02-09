@@ -25,7 +25,7 @@
  * 
  * Good luck and Godspeed.
  */
-package ch.ar.castabot.plugins;
+package ch.ar.castabot.client.plugins;
 
 import java.io.File;
 import net.dv8tion.jda.api.entities.MessageEmbed;

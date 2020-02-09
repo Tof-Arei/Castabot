@@ -27,6 +27,7 @@
  */
 package ch.ar.castabot.plugins;
 
+import ch.ar.castabot.client.plugins.PluginResponse;
 import ch.ar.castabot.Castabot;
 import ch.ar.castabot.client.CastabotClient;
 import ch.ar.castabot.env.pc.PseudoCode;

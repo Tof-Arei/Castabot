@@ -29,7 +29,7 @@ package ch.ar.castabot.plugins.help;
 
 import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
-import ch.ar.castabot.plugins.PluginResponse;
+import ch.ar.castabot.client.plugins.PluginResponse;
 import java.util.ArrayList;
 import java.util.List;
 

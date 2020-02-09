@@ -32,7 +32,7 @@ import ch.ar.castabot.client.audio.MusicManager;
 import ch.ar.castabot.client.audio.PlayerManager;
 import ch.ar.castabot.plugins.Command;
 import ch.ar.castabot.plugins.PluginException;
-import ch.ar.castabot.plugins.PluginResponse;
+import ch.ar.castabot.client.plugins.PluginResponse;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import java.io.File;
 import java.util.HashMap;
