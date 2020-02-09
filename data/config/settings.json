@@ -40,13 +40,6 @@
                     "rules": ["^(rules) (.+)$"],
                     "token": ["^(token)$", "^(token) (.+)$"]
                 }
-            },
-            "love": {
-                "desc": "Commande réservée à Kyuuji.",
-                "shorts": {
-                    "love": ["^(love)$"],
-                    "hate": ["^(hate)$"]
-                }
             }
         }
     }

@@ -1,17 +1,29 @@
 /*
- * Copyright 2017 Arei.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *                GLWT(Good Luck With That) Public License
+ *                  Copyright (c) Everyone, except Author
+ * 
+ * Everyone is permitted to copy, distribute, modify, merge, sell, publish,
+ * sublicense or whatever they want with this software but at their OWN RISK.
+ * 
+ *                             Preamble
+ * 
+ * The author has absolutely no clue what the code in this project does.
+ * It might just work or not, there is no third option.
+ * 
+ * 
+ *                 GOOD LUCK WITH THAT PUBLIC LICENSE
+ *    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION, AND MODIFICATION
+ * 
+ *   0. You just DO WHATEVER YOU WANT TO as long as you NEVER LEAVE A
+ * TRACE TO TRACK THE AUTHOR of the original product to blame for or hold
+ * responsible.
+ * 
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ * 
+ * Good luck and Godspeed.
  */
 package ch.ar.castabot.env.pc.math;
 

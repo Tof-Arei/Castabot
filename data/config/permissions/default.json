@@ -41,37 +41,10 @@
                 },
                 "help": {
                     "args": {}
-                },
-                "love": {
-                    "args": {
-			"love": false,
-                        "hate": false,
-                        "-h": true
-                    }
                 }
             }
         }
     },
     "users": {
-        "251426460873654272": {
-            "name": "Kyuuji",
-            "commands": {
-                "love": {
-                    "args": {
-                        "love": true
-                    }
-                }
-            }
-        },
-        "269579097229754368": {
-            "name": "Arei",
-            "commands": {
-                "love": {
-                    "args": {
-                        "hate": true
-                    }
-                }
-            }
-        }
     }
 }

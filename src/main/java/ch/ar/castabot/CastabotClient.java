@@ -1,17 +1,29 @@
 /*
- * Copyright 2017 Arei.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *                GLWT(Good Luck With That) Public License
+ *                  Copyright (c) Everyone, except Author
+ * 
+ * Everyone is permitted to copy, distribute, modify, merge, sell, publish,
+ * sublicense or whatever they want with this software but at their OWN RISK.
+ * 
+ *                             Preamble
+ * 
+ * The author has absolutely no clue what the code in this project does.
+ * It might just work or not, there is no third option.
+ * 
+ * 
+ *                 GOOD LUCK WITH THAT PUBLIC LICENSE
+ *    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION, AND MODIFICATION
+ * 
+ *   0. You just DO WHATEVER YOU WANT TO as long as you NEVER LEAVE A
+ * TRACE TO TRACK THE AUTHOR of the original product to blame for or hold
+ * responsible.
+ * 
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ * 
+ * Good luck and Godspeed.
  */
 package ch.ar.castabot;
 
@@ -21,40 +33,39 @@ import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import java.io.File;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.security.auth.login.LoginException;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.events.guild.GuildBanEvent;
-import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.events.guild.GuildBanEvent;
+import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 /**
  *
  * @author Arei
  */
 public class CastabotClient extends ListenerAdapter {
+    private static JDABuilder jdaBuilder;
     private static JDA jda;
     private static Castabot castabot;
     
     public static void main(String[] args) {
-        try {    
+        /*try {    
             castabot = new Castabot();
             jda = new JDABuilder(AccountType.BOT).setToken(castabot.getConfig().getProperty("bot_token")).addEventListener(new CastabotClient()).buildBlocking();
             
@@ -62,20 +73,42 @@ public class CastabotClient extends ListenerAdapter {
                 try {
                     castabot.initSettings(guild);
                     registerAudioManager(guild);
-                    jda.getPresence().setGame(Game.of("Chat-Bot"));
+                    jda.getPresence().setGame(Game.of(GameType.DEFAULT, "Chat-Bot"));
                 } catch (PluginException ex) {
                     Logger.getLogger(CastabotClient.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
             System.out.println("Castabot™ prêt!");
-        } catch (LoginException | IllegalArgumentException | InterruptedException | RateLimitedException ex) {
+        } catch (LoginException | IllegalArgumentException | InterruptedException ex) {
             Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
+        }*/
+        
+        try {
+            castabot = new Castabot();
+            
+            jdaBuilder= new JDABuilder(castabot.getConfig().getProperty("bot_token"));
+            jdaBuilder.setActivity(Activity.playing("Chat Bot"));
+            jda = jdaBuilder.addEventListeners(new CastabotClient()).build();
+            jda.awaitReady();
+            
+            for (Guild guild : jda.getGuilds()) {
+                try {
+                    castabot.initSettings(guild);
+                    registerAudioManager(guild);
+                } catch (PluginException ex) {
+                    Logger.getLogger(CastabotClient.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            System.out.println("Castabot™ prêt!");
+        } catch (LoginException | InterruptedException ex) {
+            Logger.getLogger(CastabotClient.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
     private void handleCommand(Message message) {
-        Command command = new Command(message.getGuild().getId(), message.getChannel().getId(), message.getAuthor().getId(), message.getContent());
-        if (command.isWorthAnswer()) {
+        Command command = new Command(message.getGuild().getId(), message.getChannel().getId(), message.getAuthor().getId(), message.getContentDisplay());
+        if (command.isWorthAnAnswer()) {
             for (PluginResponse response : command.execute()) {
                 // Handle message type
                 switch (command.getType()) {
@@ -120,7 +153,9 @@ public class CastabotClient extends ListenerAdapter {
         if (PM) {
             sendPrivateFile(target, file, message);
         } else {
-            channel.sendFile(file, message).queue();
+            sendMessage(channel, target, message, PM);
+            channel.sendFile(file);
+            //channel.sendFile(file, message).queue();
         }
     }
     
@@ -133,7 +168,8 @@ public class CastabotClient extends ListenerAdapter {
     private void sendPrivateFile(User target, final File file, final Message message) {
         target.openPrivateChannel().queue((channel) -> {
             channel.sendMessage(message).queue();
-            channel.sendFile(file, message).queue();
+            channel.sendFile(file);
+            //channel.sendFile(file, message).queue();
         });
     }
     
@@ -221,15 +257,14 @@ public class CastabotClient extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         Message message = event.getMessage();
-        
         if (event.isFromType(ChannelType.PRIVATE)) {
             // Print bot PMs
-            System.out.printf("[PM] %s: %s\n", event.getAuthor().getName(), event.getMessage().getContent());
+            System.out.printf("[PM] %s: %s\n", event.getAuthor().getName(), message.getContentDisplay());
         } else {
             // Print channel messages
-            System.out.printf("[%s][%s] %s: %s\n", event.getGuild().getName(), event.getTextChannel().getName(), event.getMember().getEffectiveName(), event.getMessage().getContent());
+            System.out.printf("[%s][%s] %s: %s\n", event.getGuild().getName(), event.getTextChannel().getName(), event.getMember().getEffectiveName(), message.getContentDisplay());
             // Handle commands and stuff
-            if (message.getContent().length() > 0) {
+            if (message.getContentDisplay().length() > 0) {
                 handleCommand(message);
             }
         }
