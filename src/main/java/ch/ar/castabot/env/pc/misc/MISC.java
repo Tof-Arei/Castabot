@@ -27,7 +27,7 @@
  */
 package ch.ar.castabot.env.pc.misc;
 
-import ch.ar.castabot.client.CastabotClient;
+import ch.ar.castabot.Castabot;
 import ch.ar.castabot.env.pc.PseudoCode;
 
 
@@ -42,7 +42,7 @@ public class MISC extends PseudoCode {
     
     private int players(String roleName) {
         String guildId = (String) getObject("Guild", 0);
-        return CastabotClient.getAvailablePlayers(guildId, roleName);
+        return Castabot.getCastabotClient().getAvailablePlayers(guildId, roleName);
     }
     
     @Override

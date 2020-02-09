@@ -27,6 +27,7 @@
  */
 package ch.ar.castabot;
 
+import ch.ar.castabot.client.CastabotClient;
 import ch.ar.castabot.client.permissions.Permissions;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginSettings;
@@ -57,21 +58,28 @@ import org.json.JSONObject;
  */
 public class Castabot {
     private static Castabot instance;
+    private static CastabotClient castabotClient;
     private final Properties config = new Properties();
     private JSONObject settings;
     private volatile Map<String, Permissions> hmGuildPermissions = new HashMap<>();
     private volatile Map<String, PluginSettings> hmGuildSettings = new HashMap<>();
-
-    private Castabot() {
-         try {
+    
+    public static void main(String[] args) {
+        instance = new Castabot();
+        instance.initCastabot();
+    }
+    
+    private Castabot() {}
+    
+    private void initCastabot() {
+        try {
             config.load(new FileInputStream("data/config/config.properties"));
             System.out.println("Démarrage du Castabot™ v"+config.getProperty("bot_version"));
-            
             System.out.println("Préchauffage de la machine à café.");
             byte[] rawFile = Files.readAllBytes(Paths.get("data/config/settings.json"));
             settings = new JSONObject(new String(rawFile));
-            
             System.out.println("Peignage de la moustache.");
+            castabotClient = new CastabotClient();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -125,6 +133,10 @@ public class Castabot {
             instance = new Castabot();
         }
         return instance;
+    }
+    
+    public static CastabotClient getCastabotClient() {
+        return castabotClient;
     }
     
     public void deleteSettings(String guildId) {

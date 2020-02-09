@@ -68,7 +68,30 @@ public class CastabotClient extends ListenerAdapter {
     private static final Map<String, MusicManager> hmMusicManager = new HashMap<>();
     private static final Map<String, PlayerManager> hmPlayerManager = new HashMap<>();
     
-    public static void main(String[] args) {
+    public CastabotClient() {
+        try {
+            JDABuilder jdaBuilder= new JDABuilder(Castabot.getCastabot().getConfig().getProperty("bot_token"));
+            jdaBuilder.setActivity(Activity.playing("Chat Bot"));
+            jda = jdaBuilder.addEventListeners(this).build();
+            jda.awaitReady();
+            
+            for (Guild guild : jda.getGuilds()) {
+                try {
+                    System.out.println("Chargement des paramètres du serveur ["+guild.getName()+"].");
+                    Castabot.getCastabot().initSettings(guild.getId(), guild.getName());
+                    initClientSettings(guild);
+                } catch (PluginException ex) {
+                    Logger.getLogger(CastabotClient.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            System.out.println("Castabot™ prêt!");
+        } catch (LoginException | InterruptedException ex) {
+            Logger.getLogger(CastabotClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /*public static void main(String[] args) {
         try {
             JDABuilder jdaBuilder= new JDABuilder(Castabot.getCastabot().getConfig().getProperty("bot_token"));
             jdaBuilder.setActivity(Activity.playing("Chat Bot"));
@@ -89,9 +112,9 @@ public class CastabotClient extends ListenerAdapter {
         } catch (LoginException | InterruptedException ex) {
             Logger.getLogger(CastabotClient.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
+    }*/
     
-    private static void initClientSettings(Guild guild) {
+    private void initClientSettings(Guild guild) {
         PlayerManager playerManager = new PlayerManager(guild);
         hmMusicManager.put(guild.getId(), new MusicManager(playerManager));
         hmPlayerManager.put(guild.getId(), playerManager);
@@ -141,7 +164,7 @@ public class CastabotClient extends ListenerAdapter {
         }
     }
     
-    public static void sendMessage(TextChannel channel, User target, final Message message, boolean PM) {
+    public void sendMessage(TextChannel channel, User target, final Message message, boolean PM) {
         if (PM) {
             sendPrivateMessage(target, message);
         } else {
@@ -149,7 +172,7 @@ public class CastabotClient extends ListenerAdapter {
         }
     }
     
-    public static void sendFile(TextChannel channel, User target, final File file, final Message message, boolean PM) {
+    public void sendFile(TextChannel channel, User target, final File file, final Message message, boolean PM) {
         if (PM) {
             sendPrivateFile(target, file, message);
         } else {
@@ -158,20 +181,20 @@ public class CastabotClient extends ListenerAdapter {
         }
     }
     
-    public static void sendPrivateMessage(User target, final Message message) {
+    public void sendPrivateMessage(User target, final Message message) {
         target.openPrivateChannel().queue((channel) -> {
             channel.sendMessage(message).queue();
         });
     }
     
-    public static void sendPrivateFile(User target, final File file, final Message message) {
+    public void sendPrivateFile(User target, final File file, final Message message) {
         target.openPrivateChannel().queue((channel) -> {
             channel.sendMessage(message).queue();
             channel.sendFile(file);
         });
     }
     
-    private static Guild getGuild(String guildId) {
+    private Guild getGuild(String guildId) {
         Guild ret = null;
         for (Guild guild : jda.getGuilds()) {
             if (guild.getId().equals(guildId)) {
@@ -182,7 +205,7 @@ public class CastabotClient extends ListenerAdapter {
         return ret;
     }
     
-    public static TextChannel getTextChannel(String guildId, String channelId) {
+    public TextChannel getTextChannel(String guildId, String channelId) {
         TextChannel ret = null;
         for (TextChannel channel : getGuild(guildId).getTextChannels()) {
             if (channel.getId().equals(channelId)) {
@@ -193,7 +216,7 @@ public class CastabotClient extends ListenerAdapter {
         return ret;
     }
     
-    public static Member getMember(String guildId, String userId) {
+    public Member getMember(String guildId, String userId) {
         Member ret = null;
         for (Member member : getGuild(guildId).getMembers()) {
             if (member.getUser().getId().equals(userId)) {
@@ -204,7 +227,7 @@ public class CastabotClient extends ListenerAdapter {
         return ret;
     }
     
-    public static int getAvailablePlayers(String guildId, String roleName) {
+    public int getAvailablePlayers(String guildId, String roleName) {
         int ret = 0;
         for (VoiceChannel voiceChannel : getGuild(guildId).getVoiceChannels()) {
             for (Member member : voiceChannel.getMembers()) {

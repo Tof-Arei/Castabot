@@ -27,6 +27,7 @@
  */
 package ch.ar.castabot.client.audio;
 
+import ch.ar.castabot.Castabot;
 import ch.ar.castabot.client.CastabotClient;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
@@ -47,7 +48,7 @@ public class LoadResultHandler implements AudioLoadResultHandler {
 
     public LoadResultHandler(String guildId, String channelId, String trackUrl) {
         this.playerManager = (PlayerManager) CastabotClient.getPlayerManager(guildId);
-        this.channel = CastabotClient.getTextChannel(guildId, channelId);
+        this.channel = Castabot.getCastabotClient().getTextChannel(guildId, channelId);
         this.musicManager = (MusicManager) CastabotClient.getMusicManager(guildId);
         this.trackUrl = trackUrl;
     }
