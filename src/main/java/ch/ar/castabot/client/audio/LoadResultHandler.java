@@ -34,7 +34,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.TextChannel;
 
-
 /**
  *
  * @author Arei
@@ -44,17 +43,19 @@ public class LoadResultHandler implements AudioLoadResultHandler {
     private final TextChannel channel;
     private final MusicManager musicManager;
     private final String trackUrl;
+    private String message;
 
-    public LoadResultHandler(TextChannel channel, String trackUrl) {
-        this.playerManager = (PlayerManager) CastabotClient.getPlayerManager(channel.getGuild().getId());
-        this.channel = channel;
-        this.musicManager = (MusicManager) CastabotClient.getMusicManager(channel.getGuild().getId());
+    public LoadResultHandler(String guildId, String channelId, String trackUrl) {
+        this.playerManager = (PlayerManager) CastabotClient.getPlayerManager(guildId);
+        this.channel = CastabotClient.getTextChannel(guildId, channelId);
+        this.musicManager = (MusicManager) CastabotClient.getMusicManager(guildId);
         this.trackUrl = trackUrl;
     }
     
     @Override
     public void trackLoaded(AudioTrack track) {
-        channel.sendMessage(playerManager.play(musicManager, track)).queue();
+        //channel.sendMessage(playerManager.play(musicManager, track)).queue();
+        message = playerManager.play(musicManager, track);
     }
 
     @Override
@@ -64,11 +65,17 @@ public class LoadResultHandler implements AudioLoadResultHandler {
 
     @Override
     public void noMatches() {
-        channel.sendMessage("Morceau introuvable: " + trackUrl).queue();
+        //channel.sendMessage("Morceau introuvable: " + trackUrl).queue();
+        message = "Morceau introuvable: " + trackUrl;
     }
 
     @Override
     public void loadFailed(FriendlyException exception) {
-        channel.sendMessage("Impossible de lire: " + exception.getMessage()).queue();
+        //channel.sendMessage("Impossible de lire: " + exception.getMessage()).queue();
+        message = "Impossible de lire: " + exception.getMessage();
+    }
+    
+    public String getMessage() {
+        return message;
     }
 }

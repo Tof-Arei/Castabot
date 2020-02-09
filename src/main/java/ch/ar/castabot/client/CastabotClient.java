@@ -65,8 +65,8 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class CastabotClient extends ListenerAdapter {
     private static JDA jda;
     
-    private static Map<String, MusicManager> hmMusicManager = new HashMap<>();
-    private static Map<String, PlayerManager> hmPlayerManager = new HashMap<>();
+    private static final Map<String, MusicManager> hmMusicManager = new HashMap<>();
+    private static final Map<String, PlayerManager> hmPlayerManager = new HashMap<>();
     
     public static void main(String[] args) {
         try {
@@ -141,7 +141,7 @@ public class CastabotClient extends ListenerAdapter {
         }
     }
     
-    private void sendMessage(TextChannel channel, User target, final Message message, boolean PM) {
+    public static void sendMessage(TextChannel channel, User target, final Message message, boolean PM) {
         if (PM) {
             sendPrivateMessage(target, message);
         } else {
@@ -149,7 +149,7 @@ public class CastabotClient extends ListenerAdapter {
         }
     }
     
-    private void sendFile(TextChannel channel, User target, final File file, final Message message, boolean PM) {
+    public static void sendFile(TextChannel channel, User target, final File file, final Message message, boolean PM) {
         if (PM) {
             sendPrivateFile(target, file, message);
         } else {
@@ -158,20 +158,20 @@ public class CastabotClient extends ListenerAdapter {
         }
     }
     
-    private void sendPrivateMessage(User target, final Message message) {
+    public static void sendPrivateMessage(User target, final Message message) {
         target.openPrivateChannel().queue((channel) -> {
             channel.sendMessage(message).queue();
         });
     }
     
-    private void sendPrivateFile(User target, final File file, final Message message) {
+    public static void sendPrivateFile(User target, final File file, final Message message) {
         target.openPrivateChannel().queue((channel) -> {
             channel.sendMessage(message).queue();
             channel.sendFile(file);
         });
     }
     
-    public static Guild getGuild(String guildId) {
+    private static Guild getGuild(String guildId) {
         Guild ret = null;
         for (Guild guild : jda.getGuilds()) {
             if (guild.getId().equals(guildId)) {

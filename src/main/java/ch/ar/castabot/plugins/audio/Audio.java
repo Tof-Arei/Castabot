@@ -52,7 +52,7 @@ public class Audio extends Plugin {
         List<PluginResponse> ret = new ArrayList<>();
         switch (args[0]) {
             case "play":
-                playerManager.loadAndPlay(hmParams.get("guildId"), hmParams.get("channelId"), args[1]);
+                ret.add(new PluginResponse(playerManager.loadAndPlay(hmParams.get("channelId"), args[1])));
                 break;
             case "pause":
                 ret.add(new PluginResponse(playerManager.pause()));

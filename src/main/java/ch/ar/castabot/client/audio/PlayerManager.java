@@ -28,14 +28,19 @@
 package ch.ar.castabot.client.audio;
 
 import ch.ar.castabot.client.CastabotClient;
+import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
-
 
 /**
  *
@@ -48,10 +53,23 @@ public class PlayerManager extends DefaultAudioPlayerManager {
         this.guild = guild;
     }
     
-    public void loadAndPlay(String guildId, String channelId, String trackUrl) {
+    @Override
+    public Future<Void> loadItemOrdered(Object orderingKey, String identifier, AudioLoadResultHandler lrHandler) {
+        Future<Void> ret = super.loadItemOrdered(orderingKey, identifier, lrHandler);
+        try {
+            ret.get(100, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException ex) {
+            Logger.getLogger(PlayerManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return ret;
+    }
+    
+    public String loadAndPlay(String channelId, String trackUrl) {
         MusicManager musicManager = (MusicManager) CastabotClient.getMusicManager(guild.getId());
-        LoadResultHandler lrHandler = new LoadResultHandler(CastabotClient.getTextChannel(guildId, channelId), trackUrl);
+        LoadResultHandler lrHandler = new LoadResultHandler(guild.getId(), channelId, trackUrl);
         loadItemOrdered(musicManager, trackUrl, lrHandler);
+        
+        return lrHandler.getMessage();
     }
     
     public String playlistLoaded(AudioPlaylist playlist) {
