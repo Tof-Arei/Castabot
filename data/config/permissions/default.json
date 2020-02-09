@@ -9,7 +9,7 @@
                     "args": {
                         "reload": true
                     }
-                },
+        },
                 "audio": {
                     "args": {
                         "-h": true,
@@ -25,7 +25,6 @@
                     "args": {
                         "-h": true,
                         "draw": true,
-                        "drawall": true,
                         "shuffle": true,
                         "deck": true
                     }
@@ -43,8 +42,8 @@
                     "args": {}
                 }
             }
-        }
-    },
+                    }
+                },
     "users": {
     }
 }

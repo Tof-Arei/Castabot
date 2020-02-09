@@ -28,7 +28,6 @@
                 "shorts": {
                     "deck": ["^(deck)$"],
                     "draw": ["^(draw)$"],
-                    "drawall": ["^(drawall)$", "^(drawall) (.+)$"],
                     "shuffle": ["^(shuffle)$"]
                 }
             },

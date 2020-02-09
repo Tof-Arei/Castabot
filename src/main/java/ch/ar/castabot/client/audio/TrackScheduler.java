@@ -25,7 +25,7 @@
  * 
  * Good luck and Godspeed.
  */
-package ch.ar.castabot.env.audio;
+package ch.ar.castabot.client.audio;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;

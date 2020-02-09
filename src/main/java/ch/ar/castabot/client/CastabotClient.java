@@ -25,14 +25,18 @@
  * 
  * Good luck and Godspeed.
  */
-package ch.ar.castabot;
+package ch.ar.castabot.client;
 
-import ch.ar.castabot.env.audio.PlayerManager;
+import ch.ar.castabot.Castabot;
+import ch.ar.castabot.client.audio.MusicManager;
+import ch.ar.castabot.client.audio.PlayerManager;
 import ch.ar.castabot.plugins.Command;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.security.auth.login.LoginException;
@@ -74,7 +78,8 @@ public class CastabotClient extends ListenerAdapter {
             
             for (Guild guild : jda.getGuilds()) {
                 try {
-                    castabot.initSettings(guild);
+                    castabot.initSettings(guild.getId(), guild.getName());
+                    initClientSettings(guild);
                     registerAudioManager(guild);
                 } catch (PluginException ex) {
                     Logger.getLogger(CastabotClient.class.getName()).log(Level.SEVERE, null, ex);
@@ -85,6 +90,14 @@ public class CastabotClient extends ListenerAdapter {
         } catch (LoginException | InterruptedException ex) {
             Logger.getLogger(CastabotClient.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    private static void initClientSettings(Guild guild) {
+        Map<String, Object> audioSettings = new HashMap<>();
+        PlayerManager playerManager = new PlayerManager(guild);
+        audioSettings.put("musicManager", new MusicManager(playerManager));
+        audioSettings.put("playerManager", playerManager);
+        castabot.getPluginSettings(guild.getId()).addSetting("audio", audioSettings); 
     }
     
     private void handleCommand(Message message) {
@@ -217,7 +230,7 @@ public class CastabotClient extends ListenerAdapter {
     @Override
     public void onGuildJoin(GuildJoinEvent event) {
         try {
-            castabot.initSettings(event.getGuild());
+            castabot.initSettings(event.getGuild().getId(), event.getGuild().getName());
         } catch (PluginException ex) {
             Logger.getLogger(CastabotClient.class.getName()).log(Level.SEVERE, null, ex);
         }

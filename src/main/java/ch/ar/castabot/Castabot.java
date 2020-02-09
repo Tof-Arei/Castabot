@@ -27,8 +27,6 @@
  */
 package ch.ar.castabot;
 
-import ch.ar.castabot.env.audio.MusicManager;
-import ch.ar.castabot.env.audio.PlayerManager;
 import ch.ar.castabot.env.permissions.Permissions;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginSettings;
@@ -47,7 +45,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.dv8tion.jda.api.entities.Guild;
 import org.json.JSONObject;
 
 /**
@@ -84,41 +81,35 @@ public class Castabot {
         }
     }
     
-    public void initSettings(Guild guild) throws PluginException {
+    public void initSettings(String guildId, String guildName) throws PluginException {
         // Try to find the server specific permission files
-        File file = new File("data/config/permissions/"+guild.getId()+".json");
+        File file = new File("data/config/permissions/"+guildId+".json");
         try {
             if (file.exists()) {
-                byte[] rawFile = Files.readAllBytes(Paths.get("data/config/permissions/"+guild.getId()+".json"));
+                byte[] rawFile = Files.readAllBytes(Paths.get("data/config/permissions/"+guildId+".json"));
                 Permissions permissions = new Permissions(new JSONObject(new String(rawFile)));
-                hmGuildPermissions.put(guild.getId(), permissions);
+                hmGuildPermissions.put(guildId, permissions);
             } else {
                 // If nothing found, create a new permission file copying the default file
                 byte[] rawFile = Files.readAllBytes(Paths.get("data/config/permissions/default.json"));
-                String rawPermissions = new String(rawFile).replace("{server-name}", guild.getName());
-                FileOutputStream fos = new FileOutputStream("data/config/permissions/"+guild.getId()+".json");
+                String rawPermissions = new String(rawFile).replace("{server-name}", guildName);
+                FileOutputStream fos = new FileOutputStream("data/config/permissions/"+guildId+".json");
                 fos.write(rawPermissions.getBytes());
 
                 Permissions permissions = new Permissions(new JSONObject(rawPermissions));
-                hmGuildPermissions.put(guild.getId(), permissions);
+                hmGuildPermissions.put(guildId, permissions);
             }
         } catch (IOException ex) {
             Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         // Check if settings are already registered, if so, delete them (reload)
-        PluginSettings pluginSettings = hmGuildSettings.get(guild.getId());
+        PluginSettings pluginSettings = hmGuildSettings.get(guildId);
         if (pluginSettings != null) {
-            hmGuildSettings.remove(guild.getId());
+            hmGuildSettings.remove(guildId);
         }
         
         pluginSettings = new PluginSettings();
-        Map<String, Object> audioSettings = new HashMap<>();
-        PlayerManager playerManager = new PlayerManager(guild);
-        audioSettings.put("musicManager", new MusicManager(playerManager));
-        audioSettings.put("playerManager", playerManager);
-        pluginSettings.addSetting("audio", audioSettings);
-        
         Map<String, Object> cardsSettings = new HashMap<>();
         cardsSettings.put("deck", new Deck("default"));
         pluginSettings.addSetting("cards", cardsSettings);
@@ -128,7 +119,7 @@ public class Castabot {
         rollSettings.put("tokenPouch", new TokenPouch());
         pluginSettings.addSetting("roll", rollSettings);
         
-        hmGuildSettings.put(guild.getId(), pluginSettings);
+        hmGuildSettings.put(guildId, pluginSettings);
     }
     
     public void deleteSettings(String guildId) {

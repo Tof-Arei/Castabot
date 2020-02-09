@@ -25,35 +25,34 @@
  * 
  * Good luck and Godspeed.
  */
-package ch.ar.castabot.env.audio;
+package ch.ar.castabot.client.audio;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.TrackMarker;
-import com.sedmelluq.discord.lavaplayer.track.TrackMarkerHandler;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 
 /**
  *
  * @author Arei
  */
-public class LoopHandler implements TrackMarkerHandler {
+public class MusicManager {
     private final AudioPlayer player;
-    private final AudioTrack track;
-    private final long marker;
-    
-    public LoopHandler(AudioPlayer player, AudioTrack track, long marker) {
-        this.player = player;
-        this.track = track;
-        this.marker = marker;
+    private final TrackScheduler scheduler;
+
+    public MusicManager(AudioPlayerManager manager) {
+        player = manager.createPlayer();
+        scheduler = new TrackScheduler(player);
+        player.addListener(scheduler);
     }
-    
-    private void loopTrack() {
-        player.playTrack(track.makeClone());
-        track.setMarker(new TrackMarker(marker, this));
+
+    public AudioPlayerSendHandler getSendHandler() {
+        return new AudioPlayerSendHandler(player);
     }
-    
-    @Override
-    public void handle(MarkerState ms) {
-        loopTrack();
+
+    public AudioPlayer getPlayer() {
+        return player;
+    }
+
+    public TrackScheduler getScheduler() {
+        return scheduler;
     }
 }

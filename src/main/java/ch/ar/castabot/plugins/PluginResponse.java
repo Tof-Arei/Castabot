@@ -38,27 +38,22 @@ public class PluginResponse {
     private String text;
     private MessageEmbed embed;
     private File file;
-    private final String targetId;
     
-    public PluginResponse(String text, MessageEmbed embed, File file, String targetId) {
+    public PluginResponse(String text, MessageEmbed embed, File file) {
         this.text = text;
         this.file = file;
-        this.targetId = targetId;
     }
     
-    public PluginResponse(String text, String targetId) {
+    public PluginResponse(String text) {
         this.text = text;
-        this.targetId = targetId;
     }
     
-    public PluginResponse(MessageEmbed embed, String targetId) {
+    public PluginResponse(MessageEmbed embed) {
         this.embed = embed;
-        this.targetId = targetId;
     }
     
-    public PluginResponse(File file, String targetId) {
+    public PluginResponse(File file) {
         this.file = file;
-        this.targetId = targetId;
     }
 
     public String printText() {
@@ -75,9 +70,5 @@ public class PluginResponse {
 
     public File getFile() {
         return file;
-    }
-    
-    public String getTargetId() {
-        return targetId;
     }
 }

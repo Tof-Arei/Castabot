@@ -27,7 +27,7 @@
  */
 package ch.ar.castabot.plugins.roll;
 
-import ch.ar.castabot.CastabotClient;
+import ch.ar.castabot.client.CastabotClient;
 import ch.ar.castabot.env.pc.PseudoCode;
 import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
@@ -163,7 +163,7 @@ public class Roll extends Plugin {
         }
         embBuild.addField(new MessageEmbed.Field("Total", rollResult.getTotal(), false));
         
-        return new PluginResponse(embBuild.build(), userId);
+        return new PluginResponse(embBuild.build());
     }
     
     private String rules(String rulesName) {
@@ -172,7 +172,7 @@ public class Roll extends Plugin {
         String ret = "Activation des règles de roll ["+rules.getName()+"].";
         
         PseudoCode pc = new PseudoCode(rules.getActivateAction());
-        pc.addObject("Guild", CastabotClient.getGuild(guildId));
+        pc.addObject("Guild", CastabotClient.getGuild(guildId).getId());
         String eval = pc.evaluate();
         if (eval != null) {
             ret += "\r\n" + eval;
@@ -183,7 +183,7 @@ public class Roll extends Plugin {
     private String fill() {
         Rules rules = (Rules) CastabotClient.getCastabot().getPluginSettings(guildId).getValue("roll", "rules");
         PseudoCode pc = new PseudoCode();
-        pc.addObject("Guild", CastabotClient.getGuild(guildId));
+        pc.addObject("Guild", CastabotClient.getGuild(guildId).getId());
         
         TokenPouch tokenPouch = new TokenPouch();
         List<Token> lstToken = new ArrayList<>();
@@ -241,11 +241,11 @@ public class Roll extends Plugin {
         List<PluginResponse> ret = new ArrayList<>();
         switch (args[0]) {
             case "fill":
-                ret.add(new PluginResponse(fill(), userId));
+                ret.add(new PluginResponse(fill()));
                 break;
             case "rules":
                 if (args.length > 1) {
-                    ret.add(new PluginResponse(rules(args[1]), userId));
+                    ret.add(new PluginResponse(rules(args[1])));
                 }
                 break;
             case "roll":
@@ -255,9 +255,9 @@ public class Roll extends Plugin {
                 break;
             case "token":
                 if (args.length > 1) {
-                    ret.add(new PluginResponse(token(Integer.parseInt(args[1])), userId));
+                    ret.add(new PluginResponse(token(Integer.parseInt(args[1]))));
                 } else {
-                    ret.add(new PluginResponse(token(1), userId));
+                    ret.add(new PluginResponse(token(1)));
                 }
                 break;
         }

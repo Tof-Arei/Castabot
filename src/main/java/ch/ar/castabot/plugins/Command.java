@@ -28,7 +28,7 @@
 package ch.ar.castabot.plugins;
 
 import ch.ar.castabot.Castabot;
-import ch.ar.castabot.CastabotClient;
+import ch.ar.castabot.client.CastabotClient;
 import ch.ar.castabot.env.pc.PseudoCode;
 import ch.ar.castabot.env.permissions.RolePermission;
 import ch.ar.castabot.env.permissions.UserPermission;
@@ -177,7 +177,7 @@ public class Command {
                         Rules rules = (Rules) CastabotClient.getCastabot().getPluginSettings(guildId).getValue("roll", "rules");
                         PseudoCode pc = new PseudoCode(rawCommands.getJSONObject(command).getString("desc"));
                         pc.addObject(Rules.class.getName(), rules);
-                        ret.add(new PluginResponse(pc.evaluate(), userId));
+                        ret.add(new PluginResponse(pc.evaluate()));
                     }
                 }
             }
@@ -188,7 +188,7 @@ public class Command {
                 }
             }
         } catch (PluginException e) {
-            ret.add(new PluginResponse(e.getMessage(), userId));
+            ret.add(new PluginResponse(e.getMessage()));
         } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
         }

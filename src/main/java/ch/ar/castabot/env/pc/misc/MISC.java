@@ -27,9 +27,8 @@
  */
 package ch.ar.castabot.env.pc.misc;
 
-import ch.ar.castabot.CastabotClient;
+import ch.ar.castabot.client.CastabotClient;
 import ch.ar.castabot.env.pc.PseudoCode;
-import net.dv8tion.jda.api.entities.Guild;
 
 
 /**
@@ -42,8 +41,8 @@ public class MISC extends PseudoCode {
     }
     
     private int players(String roleName) {
-        Guild guild = (Guild) getObject("Guild", 0);
-        return CastabotClient.getAvailablePlayers(guild.getId(), roleName);
+        String guildId = (String) getObject("Guild", 0);
+        return CastabotClient.getAvailablePlayers(guildId, roleName);
     }
     
     @Override

@@ -27,7 +27,7 @@
  */
 package ch.ar.castabot.plugins.cards;
 
-import ch.ar.castabot.CastabotClient;
+import ch.ar.castabot.client.CastabotClient;
 import java.io.File;
 
 /**

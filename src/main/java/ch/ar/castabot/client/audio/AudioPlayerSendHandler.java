@@ -25,35 +25,34 @@
  * 
  * Good luck and Godspeed.
  */
-package ch.ar.castabot.plugins.admin;
+package ch.ar.castabot.client.audio;
 
-import ch.ar.castabot.client.CastabotClient;
-import ch.ar.castabot.plugins.Plugin;
-import ch.ar.castabot.plugins.PluginException;
-import ch.ar.castabot.plugins.PluginResponse;
-import java.util.ArrayList;
-import java.util.List;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
+import java.nio.ByteBuffer;
+import net.dv8tion.jda.api.audio.AudioSendHandler;
+
 
 /**
  *
- * @author christophe
+ * @author Arei
  */
-public class Admin extends Plugin {
-    public Admin(String[] args, String guildId, String channelId, String userId) {
-        super(args, guildId, channelId, userId);
+public class AudioPlayerSendHandler implements AudioSendHandler {
+    private final AudioPlayer audioPlayer;
+    private AudioFrame lastFrame;
+
+    public AudioPlayerSendHandler(AudioPlayer audioPlayer) {
+        this.audioPlayer = audioPlayer;
     }
-    
+
     @Override
-    public List<PluginResponse> run() throws PluginException {
-        List<PluginResponse> ret = new ArrayList<>();
-        
-        switch (args[0]) {
-            case "reload":
-                CastabotClient.getCastabot().initSettings(CastabotClient.getGuild(guildId).getId(), CastabotClient.getGuild(guildId).getName());
-                ret.add(new PluginResponse("Configuration du serveur [" + CastabotClient.getGuild(guildId).getName() + "] rechargée."));
-                break;
-        }
-        
-        return ret;
+    public boolean canProvide() {
+        lastFrame = audioPlayer.provide();
+        return lastFrame != null;
+    }
+
+    @Override
+    public ByteBuffer provide20MsAudio() {
+      return ByteBuffer.wrap(lastFrame.getData());
     }
 }

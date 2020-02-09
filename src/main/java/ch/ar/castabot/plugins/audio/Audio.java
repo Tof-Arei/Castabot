@@ -27,8 +27,8 @@
  */
 package ch.ar.castabot.plugins.audio;
 
-import ch.ar.castabot.CastabotClient;
-import ch.ar.castabot.env.audio.PlayerManager;
+import ch.ar.castabot.client.CastabotClient;
+import ch.ar.castabot.client.audio.PlayerManager;
 import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
@@ -54,19 +54,19 @@ public class Audio extends Plugin {
                 playerManager.loadAndPlay(CastabotClient.getTextChannel(guildId, channelId), args[1]);
                 break;
             case "pause":
-                ret.add(new PluginResponse(playerManager.pause(), userId));
+                ret.add(new PluginResponse(playerManager.pause()));
                 break;
             case "resume":
-                ret.add(new PluginResponse(playerManager.resume(), userId));
+                ret.add(new PluginResponse(playerManager.resume()));
                 break;
             case "loop":
-                ret.add(new PluginResponse(playerManager.loop(), userId));
+                ret.add(new PluginResponse(playerManager.loop()));
                 break;
             case "skip":
-                ret.add(new PluginResponse(playerManager.skip(), userId));
+                ret.add(new PluginResponse(playerManager.skip()));
                 break;
             case "stop":
-                ret.add(new PluginResponse(playerManager.stop(), userId));
+                ret.add(new PluginResponse(playerManager.stop()));
                 break;
         }
         return ret;

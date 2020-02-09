@@ -53,7 +53,7 @@ public class Help extends Plugin {
         retStr += "- help : affice la liste des commandes.  \r\n";
         retStr += "Nb: Utiliser une commande avec l'argument -h (ou --help) permet d'afficher les informations sur la commande. \r\n";
         retStr += "Utiliser le caractère & (ou lancer la commande via message privé) permet d'effectuer un lancement de commande secret. \r\n";
-        ret.add(new PluginResponse(retStr, userId));
+        ret.add(new PluginResponse(retStr));
         
         return ret;
     }

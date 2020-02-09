@@ -27,7 +27,7 @@
  */
 package ch.ar.castabot.plugins.roll;
 
-import ch.ar.castabot.CastabotClient;
+import ch.ar.castabot.client.CastabotClient;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

@@ -27,16 +27,13 @@
  */
 package ch.ar.castabot.plugins.cards;
 
-import ch.ar.castabot.CastabotClient;
+import ch.ar.castabot.client.CastabotClient;
 import ch.ar.castabot.env.pc.PseudoCode;
 import ch.ar.castabot.plugins.Plugin;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginResponse;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 
 /**
  *
@@ -45,44 +42,6 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 public class Cards extends Plugin {
     public Cards(String[] args, String guildId, String channelId, String userId) {
         super(args, guildId, channelId, userId);
-    }
-    
-    private List<PluginResponse> drawAll() throws PluginException {
-        List<PluginResponse> ret = new ArrayList<>();
-        List<Member> lstMember = new ArrayList<>();
-        String targetChannel = null;
-        if (args.length > 1) {
-            targetChannel = args[1];
-        }
-        
-        for (VoiceChannel voiceChannel : CastabotClient.getGuild(guildId).getVoiceChannels()) {
-            boolean draw = true;
-            if (targetChannel != null) {
-                if (!targetChannel.equals(voiceChannel.getName())) {
-                    draw = false;
-                }
-            }
-            if (draw) {
-                for (Member member : voiceChannel.getMembers()) { 
-                    if (!member.getUser().isBot()) {
-                        lstMember.add(member);
-                    }
-                }
-            }
-        }
-        
-        Deck deck = (Deck) CastabotClient.getCastabot().getPluginSettings(guildId).getValue("cards", "deck");
-        if (deck.getNbCardsLeft() >= lstMember.size()) {
-            Collections.shuffle(lstMember);
-            for (Member member : lstMember) {
-                Card card = deck.draw();
-                ret.add(new PluginResponse(card.print()+"\r\n"+CastabotClient.getCastabot().getConfig().getProperty("web_root")+"files/cards/default/"+card+".png", member.getUser().getId()));
-            }
-        } else {
-            throw new PluginException("CARDS-4", "Plus assez de cartes pour tout les joueurs. Veuillez mélanger.");
-        }
-        
-        return ret;
     }
     
     private String init(String deckName) throws PluginException {
@@ -105,19 +64,16 @@ public class Cards extends Plugin {
         switch (args[0]) {
             case "deck" :
                 if (args.length > 1) {
-                    ret.add(new PluginResponse(init(args[1]), userId));
+                    ret.add(new PluginResponse(init(args[1])));
                 }
                 break;
             case "draw" :
                 Card card = deck.draw();
-                ret.add(new PluginResponse(card.print()+"\r\n"+card.getUrl(), userId));
-                break;
-            case "drawall":
-                ret = drawAll();
+                ret.add(new PluginResponse(card.print()+"\r\n"+card.getUrl()));
                 break;
             case "shuffle" :
                 deck.shuffle();
-                ret.add(new PluginResponse("Jeu de cartes mélangé.", userId));
+                ret.add(new PluginResponse("Jeu de cartes mélangé."));
                 break;
         }
         
