@@ -41,8 +41,9 @@ public class CLogger {
     
     public class Content {
         public static final int EVERYTHING = 0;
-        public static final int MESSAGES = 1;
-        public static final int COMMANDS = 2;
+        public static final int SYSTEM = 1;
+        public static final int MESSAGES = 2;
+        public static final int COMMANDS = 3;
     }
     
     private int level = -1;

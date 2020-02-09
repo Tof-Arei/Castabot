@@ -27,9 +27,9 @@
  */
 package ch.ar.castabot.client.permissions;
 
+import ch.ar.castabot.client.CastabotClient;
 import java.util.ArrayList;
 import java.util.List;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import org.json.JSONObject;
 
@@ -44,11 +44,11 @@ public class Permissions {
         initPermissions(objPermissions);
     }
     
-    public RolePermission getRolePermission(Member member) {
+    public RolePermission getRolePermission(String guildId, String userId) {
         // Get @everyone permissions
         RolePermission ret = (RolePermission) getPermission(UserPermission.TYPE_ROLE, "@everyone");
         // Look for role specific permissions
-        for (Role role : member.getRoles()) {
+        for (Role role : CastabotClient.getMember(guildId, userId).getRoles()) {
             for (RolePermission rPermission : (List<RolePermission>) getSpecificPermissions(UserPermission.TYPE_ROLE)) {
                 if (rPermission.getTarget().equals(role.getName())) {
                     if (rPermission.getPriority() > ret.getPriority()) {
@@ -60,11 +60,11 @@ public class Permissions {
         return ret;
     }
     
-    public UserPermission getUserPermissions(Member member) {
+    public UserPermission getUserPermissions(String userId) {
         UserPermission ret = null;
         // Look for user speicific permissions
         for (UserPermission userPermission : getSpecificPermissions(UserPermission.TYPE_USER)) {
-            if (userPermission.getTarget().equals(member.getUser().getId())) {
+            if (userPermission.getTarget().equals(userId)) {
                 ret = userPermission;
                 break;
             }

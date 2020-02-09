@@ -77,6 +77,7 @@ public class CastabotClient extends ListenerAdapter {
             
             for (Guild guild : jda.getGuilds()) {
                 try {
+                    System.out.println("Chargement des paramètres du serveur ["+guild.getName()+"].");
                     Castabot.getCastabot().initSettings(guild.getId(), guild.getName());
                     initClientSettings(guild);
                 } catch (PluginException ex) {
@@ -229,6 +230,7 @@ public class CastabotClient extends ListenerAdapter {
     @Override
     public void onGuildJoin(GuildJoinEvent event) {
         try {
+            System.out.println("Création des paramètres du serveur ["+event.getGuild().getName()+"].");
             Castabot.getCastabot().initSettings(event.getGuild().getId(), event.getGuild().getName());
         } catch (PluginException ex) {
             Logger.getLogger(CastabotClient.class.getName()).log(Level.SEVERE, null, ex);
@@ -237,11 +239,13 @@ public class CastabotClient extends ListenerAdapter {
     
     @Override
     public void onGuildLeave(GuildLeaveEvent event) {
+        System.out.println("Suppression des paramètres du serveur ["+event.getGuild().getName()+"].");
         Castabot.getCastabot().deleteSettings(event.getGuild().getId());
     }
     
     @Override
     public void onGuildBan(GuildBanEvent event) {
+        System.out.println("Suppression des paramètres du serveur ["+event.getGuild().getName()+"].");
         Castabot.getCastabot().deleteSettings(event.getGuild().getId());
     }
     

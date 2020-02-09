@@ -48,9 +48,9 @@ public class PlayerManager extends DefaultAudioPlayerManager {
         this.guild = guild;
     }
     
-    public void loadAndPlay(TextChannel channel, String trackUrl) {
+    public void loadAndPlay(String guildId, String channelId, String trackUrl) {
         MusicManager musicManager = (MusicManager) CastabotClient.getMusicManager(guild.getId());
-        LoadResultHandler lrHandler = new LoadResultHandler(channel, trackUrl);
+        LoadResultHandler lrHandler = new LoadResultHandler(CastabotClient.getTextChannel(guildId, channelId), trackUrl);
         loadItemOrdered(musicManager, trackUrl, lrHandler);
     }
     

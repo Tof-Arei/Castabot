@@ -41,7 +41,7 @@ import java.util.Map;
  * @author Arei
  */
 public class Audio extends Plugin {
-    private PlayerManager playerManager = (PlayerManager) CastabotClient.getPlayerManager(hmParams.get("guildId"));
+    private final PlayerManager playerManager = (PlayerManager) CastabotClient.getPlayerManager(hmParams.get("guildId"));
     
     public Audio(String[] args, Map<String, String> hmParams) {
         super(args, hmParams);
@@ -52,7 +52,7 @@ public class Audio extends Plugin {
         List<PluginResponse> ret = new ArrayList<>();
         switch (args[0]) {
             case "play":
-                playerManager.loadAndPlay(CastabotClient.getTextChannel(hmParams.get("guildId"), hmParams.get("channelId")), args[1]);
+                playerManager.loadAndPlay(hmParams.get("guildId"), hmParams.get("channelId"), args[1]);
                 break;
             case "pause":
                 ret.add(new PluginResponse(playerManager.pause()));
