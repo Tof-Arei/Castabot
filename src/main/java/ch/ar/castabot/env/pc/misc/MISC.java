@@ -30,7 +30,6 @@ package ch.ar.castabot.env.pc.misc;
 import ch.ar.castabot.Castabot;
 import ch.ar.castabot.env.pc.PseudoCode;
 
-
 /**
  *
  * @author Arei

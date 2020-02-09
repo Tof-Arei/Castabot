@@ -42,7 +42,7 @@ public class MUL extends PseudoCode {
     public String calculate() {
         int total = 1;
         String[] splitFormula = formula.split(";");
-        for (int i = 1; i < splitFormula.length;i++) {
+        for (int i = 1; i < splitFormula.length; i++) {
             if (!splitFormula[i].equals("NULL")) {
                 total *= Integer.parseInt(splitFormula[i]);
             } else {

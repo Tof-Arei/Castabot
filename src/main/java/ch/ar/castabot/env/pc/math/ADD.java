@@ -42,7 +42,7 @@ public class ADD extends PseudoCode {
     public String calculate() {
         int total = 0;
         String[] splitFormula = formula.split(";");
-        for (int i = 1; i < splitFormula.length;i++) {
+        for (int i = 1; i < splitFormula.length; i++) {
             total += Integer.parseInt(splitFormula[i]);
         }
         return String.valueOf(total);

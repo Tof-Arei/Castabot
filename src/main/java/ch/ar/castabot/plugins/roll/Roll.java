@@ -59,7 +59,7 @@ public class Roll extends Plugin {
     private PluginResponse roll(String[] args) throws PluginException {
         Rules rules = (Rules) Castabot.getCastabot().getPluginSettings(hmParams.get("guildId")).getValue("roll", "rules");
         String str = "";
-        for (int i = 1; i < args.length;i++) {
+        for (int i = 1; i < args.length; i++) {
             str += args[i] + " ";
         }
         str = str.replaceAll("D", "d").trim();

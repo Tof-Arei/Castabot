@@ -54,6 +54,7 @@ import org.json.JSONObject;
  * @todo make help command react with permissions
  * @todo still more refactoring: 
  *          - Make plugins and PC modules testable
+ * @todo clean ch.ar.castabot.plugins.roll clusteruck
  * @author Arei
  */
 public class Castabot {

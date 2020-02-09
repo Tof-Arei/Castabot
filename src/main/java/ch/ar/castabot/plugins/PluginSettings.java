@@ -46,7 +46,6 @@ public class PluginSettings {
     }
 
     public void setValue(String plugin, String setting, Object value) {
-        //lstSetting.get(plugin).replace(setting, value);
         hmSettings.get(plugin).put(setting, value);
     }
 
