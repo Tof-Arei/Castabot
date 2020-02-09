@@ -65,24 +65,6 @@ public class CastabotClient extends ListenerAdapter {
     private static Castabot castabot;
     
     public static void main(String[] args) {
-        /*try {    
-            castabot = new Castabot();
-            jda = new JDABuilder(AccountType.BOT).setToken(castabot.getConfig().getProperty("bot_token")).addEventListener(new CastabotClient()).buildBlocking();
-            
-            for (Guild guild : jda.getGuilds()) {
-                try {
-                    castabot.initSettings(guild);
-                    registerAudioManager(guild);
-                    jda.getPresence().setGame(Game.of(GameType.DEFAULT, "Chat-Bot"));
-                } catch (PluginException ex) {
-                    Logger.getLogger(CastabotClient.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            System.out.println("Castabot™ prêt!");
-        } catch (LoginException | IllegalArgumentException | InterruptedException ex) {
-            Logger.getLogger(Castabot.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
-        
         try {
             castabot = new Castabot();
             
@@ -155,7 +137,6 @@ public class CastabotClient extends ListenerAdapter {
         } else {
             sendMessage(channel, target, message, PM);
             channel.sendFile(file);
-            //channel.sendFile(file, message).queue();
         }
     }
     
@@ -169,7 +150,6 @@ public class CastabotClient extends ListenerAdapter {
         target.openPrivateChannel().queue((channel) -> {
             channel.sendMessage(message).queue();
             channel.sendFile(file);
-            //channel.sendFile(file, message).queue();
         });
     }
     
