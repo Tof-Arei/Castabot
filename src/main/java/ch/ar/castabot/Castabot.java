@@ -27,7 +27,7 @@
  */
 package ch.ar.castabot;
 
-import ch.ar.castabot.env.permissions.Permissions;
+import ch.ar.castabot.client.permissions.Permissions;
 import ch.ar.castabot.plugins.PluginException;
 import ch.ar.castabot.plugins.PluginSettings;
 import ch.ar.castabot.plugins.cards.Deck;

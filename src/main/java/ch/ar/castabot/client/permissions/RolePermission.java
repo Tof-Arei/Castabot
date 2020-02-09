@@ -25,7 +25,7 @@
  * 
  * Good luck and Godspeed.
  */
-package ch.ar.castabot.env.permissions;
+package ch.ar.castabot.client.permissions;
 
 import org.json.JSONObject;
 

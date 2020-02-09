@@ -27,7 +27,9 @@
  */
 package ch.ar.castabot.client.plugins;
 
+import java.awt.Color;
 import java.io.File;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
 /**
@@ -36,10 +38,15 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
  */
 public class PluginResponse {
     private String text;
-    private MessageEmbed embed;
     private File file;
+    private Color embedColor;
+    private EmbedBuilder embedBuilder;
     
-    public PluginResponse(String text, MessageEmbed embed, File file) {
+    public PluginResponse() {
+        
+    }
+    
+    public PluginResponse(String text, File file) {
         this.text = text;
         this.file = file;
     }
@@ -48,27 +55,48 @@ public class PluginResponse {
         this.text = text;
     }
     
-    public PluginResponse(MessageEmbed embed) {
-        this.embed = embed;
+    public PluginResponse(String text, Color embedColor) {
+        this.text = text;
+        this.embedColor = embedColor;
     }
     
     public PluginResponse(File file) {
         this.file = file;
+    }
+    
+    public void addEmbedField(String caption, String text, boolean inline) {
+        getEmbedBuilder().addField(new MessageEmbed.Field(caption, text, inline));
     }
 
     public String printText() {
         return (text == null) ? "" : "\r\n" + text;
     }
     
-    public String getText() {
-        return text;
+    private EmbedBuilder getEmbedBuilder() {
+        if (embedBuilder == null) {
+            embedBuilder = new EmbedBuilder();
+            embedBuilder.setColor(embedColor);
+        }
+        return embedBuilder;
     }
     
-    public MessageEmbed getEmbed() {
-        return embed;
+    public String getText() {
+        return text;
     }
 
     public File getFile() {
         return file;
+    }
+    
+    public MessageEmbed getEmbed() {
+       if (embedBuilder != null) {
+           return embedBuilder.build();
+       } else {
+           return null;
+       }
+    }
+    
+    public void setEmbedColor(Color embedColor) {
+        this.embedColor = embedColor;
     }
 }

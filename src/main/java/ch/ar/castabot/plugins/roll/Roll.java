@@ -38,8 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 
 /**
  *
@@ -151,19 +149,20 @@ public class Roll extends Plugin {
         }
         
         // Send response to user
-        EmbedBuilder embBuild = new EmbedBuilder();
+        //EmbedBuilder embBuild = new EmbedBuilder();
+        PluginResponse response = new PluginResponse();
         if (rollResult.isCriticalFailure()) {
-            embBuild.setColor(Color.RED);
+            response.setEmbedColor(Color.RED);
         } else if (rollResult.isCriticalSuccess()) {
-            embBuild.setColor(Color.GREEN);
+            response.setEmbedColor(Color.GREEN);
         }
-        embBuild.addField(new MessageEmbed.Field(rollResult.getCaption(), originalRoll, false));
+        response.addEmbedField(rollResult.getCaption(), originalRoll, false);
         if (!explosion.equals("")) {
-            embBuild.addField(new MessageEmbed.Field("Explosion", explosion, false));
+            response.addEmbedField("Explosion", explosion, false);
         }
-        embBuild.addField(new MessageEmbed.Field("Total", rollResult.getTotal(), false));
+        response.addEmbedField("Total", rollResult.getTotal(), false);
         
-        return new PluginResponse(embBuild.build());
+        return response;
     }
     
     private String rules(String rulesName) {
